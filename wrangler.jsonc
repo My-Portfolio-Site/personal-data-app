@@ -13,5 +13,11 @@
 	},
 	"observability": {
 		"enabled": true
-	}
+	},
+	"routes": [
+    {
+      "pattern": "personal.keshab.co.in",
+      "custom_domain": true
+    }
+  ]
 }
