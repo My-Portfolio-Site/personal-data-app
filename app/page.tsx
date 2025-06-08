@@ -7,6 +7,7 @@ export default function Home() {
       <h2 className='p-3'>Personal Data App</h2>
       <p className='p-3'>This app is running on Cloudflare Workers.</p>
       <h4 className='p-3'>Environment: {context.env.NEXTJS_ENV}</h4>
+      <p>Test Var: {context.env.TEST_VAR}</p>
     </section>
   )
 }

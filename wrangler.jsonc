@@ -19,5 +19,8 @@
       "pattern": "personal.keshab.co.in",
       "custom_domain": true
     }
-  ]
+  ],
+	"vars": {
+		"TEST_VAR": "test_value",
+	}
 }
