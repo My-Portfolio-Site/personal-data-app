@@ -1,26 +1,31 @@
 {
-	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "personal",
-	"main": ".open-next/worker.js",
-	"compatibility_date": "2025-03-01",
-	"compatibility_flags": [
-		"nodejs_compat",
-		"global_fetch_strictly_public"
-	],
-	"assets": {
-		"binding": "ASSETS",
-		"directory": ".open-next/assets"
-	},
-	"observability": {
-		"enabled": true
-	},
-	"routes": [
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "personal",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2025-03-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "binding": "ASSETS",
+    "directory": ".open-next/assets"
+  },
+  "observability": {
+    "enabled": true
+  },
+  "routes": [
     {
       "pattern": "personal.keshab.co.in",
       "custom_domain": true
     }
   ],
-	"vars": {
-		"TEST_VAR": "test_value",
-	}
+  "vars": {
+    "TEST_VAR": "test_value"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "personal-data-db",
+      "database_id": "425783a5-402e-4959-b82e-d7f0abe23a93",
+      "preview_database_id": "2d4ca79d-b6e2-4b7c-81ed-cc478e1c1dbb"
+    }
+  ]
 }
