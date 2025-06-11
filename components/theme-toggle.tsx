@@ -1,43 +1,36 @@
-"use client"
+'use client'
 
-import * as React from "react"
-import { Moon, Sun } from "lucide-react"
-import { useTheme } from "next-themes"
+import * as React from 'react'
+import { Moon, SunMedium, Laptop } from 'lucide-react'
+import { useTheme } from 'next-themes'
 
-import { Button } from "@/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 export function ThemeToggle() {
   const { setTheme } = useTheme()
 
   return (
-    <div className="fixed top-0 right-0 m-3">
+    <div className='fixed top-0 right-0 m-3'>
+      <Tabs defaultValue='system' className='w-full' onChange={(value) => console.log(value)}>
+        <TabsList className='h-7'>
 
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon">
-          <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
-          <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
-          <span className="sr-only">Toggle theme</span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setTheme("light")}>
-          Light
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("dark")}>
-          Dark
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("system")}>
-          System
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+          <TabsTrigger value='light' className='px-[2px] py-[1px]'>
+            <span className="" onClick={() => setTheme('light')}>
+              <SunMedium size={16}/>
+            </span>
+          </TabsTrigger>
+          <TabsTrigger value='dark' className='px-[2px] py-[1px]'>
+            <span className="" onClick={() => setTheme('dark')}>
+              <Moon size={16}/>
+            </span>
+          </TabsTrigger>
+          <TabsTrigger value='system' className='px-[2px] py-[1px]'>
+            <span className="" onClick={() => setTheme('system')}>
+              <Laptop size={16}/>
+            </span>
+          </TabsTrigger>
+        </TabsList>
+      </Tabs>
     </div>
   )
 }

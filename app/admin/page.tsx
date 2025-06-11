@@ -10,19 +10,14 @@ export const metadata: Metadata = {
 }
 
 export default async function AdminPanel() {
-  // const invitesResponse = await fetchAllInvites()
-  // const usersResponse = await fetchAllUsers()
-
-  // console.log(invitesResponse?.data);
-  
-  // if("error" in invitesResponse) return 
 
   return (
     <div className='px-10 py-8'>
-      <Tabs defaultValue='users' className='w-full'>
+      <Tabs defaultValue='invites' className='w-full'>
         <TabsList>
           <TabsTrigger value='users'>Users</TabsTrigger>
           <TabsTrigger value='invites'>Invites</TabsTrigger>
+          <TabsTrigger value='sessions'>Sessions</TabsTrigger>
         </TabsList>
         <TabsContent value='users'>
           <DisplayUsers />

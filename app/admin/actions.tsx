@@ -19,9 +19,8 @@ export async function fetchAllInvites() {
     
     const response = await fetch(API_INVITES_URL, { method: "GET" });
     if (!response.ok) {
-      const error= { error: "Failed to fetch invites", status: response.status };
-      console.log(error)
-      return error as ApiError;
+      console.log("Failed to fetch invites,", "status:", response.status);
+      throw new Error("Failed to fetch invites")
     }
     return (await response.json()) as Invite[];
   } catch (err) {
