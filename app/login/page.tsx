@@ -1,4 +1,10 @@
-import { LoginForm } from "@/components/login-form";
+import { LoginForm } from "@/app/login/_components/login-form";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: 'Login',
+  description: 'App and API for personal data management',
+}
 
 export default function LoginPage() {
   return (
