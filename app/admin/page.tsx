@@ -1,8 +1,8 @@
 import { Metadata } from 'next'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { fetchAllInvites, fetchAllUsers } from './actions'
-import DisplayInvites from '@/app/admin/_components/display-invites'
-import DisplayUsers from '@/app/admin/_components/display-users'
+import UsersTab from '@/app/admin/_components/users-tab'
+import InvitesTab from '@/app/admin//_components/invites-tab'
+
 
 export const metadata: Metadata = {
   title: 'Admin Page',
@@ -20,10 +20,10 @@ export default async function AdminPanel() {
           <TabsTrigger value='sessions'>Sessions</TabsTrigger>
         </TabsList>
         <TabsContent value='users'>
-          <DisplayUsers />
+          <UsersTab />
         </TabsContent>
         <TabsContent value='invites'>
-          <DisplayInvites />
+          <InvitesTab />
         </TabsContent>
       </Tabs>
     </div>

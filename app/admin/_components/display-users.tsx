@@ -1,5 +1,5 @@
 'use client'
-import { fetchAllUsers } from '../actions'
+import { deleteUser, fetchAllUsers } from '../actions'
 import { User } from '@/schemas/user'
 import { useEffect, useState } from 'react'
 import { RefreshCw, UserPlus, UserRoundPen, Trash2 } from 'lucide-react'
@@ -14,50 +14,24 @@ import {
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 
-export default function DisplayUsers() {
-  const [users, setusers] = useState<User[]>([])
-  const [error, setError] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState<boolean>(false)
+export default function DisplayUsers({users, triggerRefresh}: {users: User[],  triggerRefresh: () => void}) {
+const [isLoading, setIsLoading] = useState(false)
 
-  async function loadUsers() {
+  async function handleDelete(id: string) {
     setIsLoading(true)
-    const result = await fetchAllUsers()
+    const result = await deleteUser(id)
     if ('error' in result) {
-      setError(result.error)
-    } else {
-      setusers(result)
+      console.log(result.error)
+      toast.error(result.error)
+      setIsLoading(false)
+      return
     }
+    toast.success('User deleted successfully')
     setIsLoading(false)
-  }
-
-  useEffect(() => {
-    loadUsers()
-  }, [])
-
-  if (error) {
-    toast.error(error)
+    triggerRefresh()
+    return
   }
   return (
-    <div className=''>
-      <div className='mx-2 my-5 flex flex-row gap-3'>
-        <Button
-          variant='secondary'
-          size='icon'
-          onClick={loadUsers}
-          disabled={isLoading}
-          className='hover:bg-muted-foreground'
-        >
-          {isLoading ? <RefreshCw className='animate-spin' /> : <RefreshCw />}
-        </Button>
-        <Button
-          variant='secondary'
-          size='icon'
-          disabled={isLoading}
-          className='hover:bg-muted-foreground'
-        >
-          <UserPlus />
-        </Button>
-      </div>
       <div className='grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5'>
         {users.map((user) => {
           const color = user.userVerified ? 'border-success' : 'border-warning'
@@ -68,13 +42,15 @@ export default function DisplayUsers() {
                   {user.name}
                 </CardTitle>
                 <CardAction>
-                  <Button variant='secondary' size='icon' className='size-7 mr-2'>
+                  <Button disabled={isLoading} variant='secondary' size='icon' className='size-7 mr-2'>
                     <UserRoundPen size={16} color='#0887e7' strokeWidth={3} />
                   </Button>
                   <Button
                     variant='secondary'
                     size='icon'
                     className='size-7 mr-2'
+                    disabled={isLoading}
+                    onClick={() => handleDelete(user.id)}
                   >
                     <Trash2 color='#ff7070' size={16} strokeWidth={3} />
                   </Button>
@@ -88,7 +64,6 @@ export default function DisplayUsers() {
             </Card>
           )
         })}
-      </div>
     </div>
   )
 }

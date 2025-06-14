@@ -1,8 +1,6 @@
 'use client'
 import { Invite } from '@/schemas/invite'
-import { useEffect, useState } from 'react'
-import { RefreshCw, MailPlus, SquarePen, Trash2 } from 'lucide-react'
-import { fetchAllInvites } from '../actions'
+import {SquarePen, Trash2 } from 'lucide-react'
 import {
   Card,
   CardHeader,
@@ -11,57 +9,32 @@ import {
   CardContent,
   CardAction,
 } from '@/components/ui/card'
-import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
+import { useState } from 'react'
+import { toast } from 'sonner'
+import { deleteInvite } from '../actions'
+import UpdateInviteForm from './update-invite-form'
 
-export default function DisplayInvites() {
-  const [invites, setInvites] = useState<Invite[]>([])
-  const [error, setError] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState<boolean>(false)
+export default function DisplayInvites({ invites,  triggerRefresh }: { invites: Invite[],  triggerRefresh: () => void }) {
+  const [isLoading, setIsLoading] = useState(false)
 
-  async function loadInvites() {
+  async function handleDelete(id: string) {
     setIsLoading(true)
-    const result = await fetchAllInvites()
+    const result = await deleteInvite(id)
     if ('error' in result) {
-      setError(result.error)
-    } else {
-      setInvites(result)
+      console.log(result.error)
+      toast.error(result.error)
+      setIsLoading(false)
+      return
     }
+    toast.success('Invite deleted successfully')
     setIsLoading(false)
-  }
-
-  useEffect(() => {
-    loadInvites()
-  }, [])
-
-  if (error) {
-    toast.error(error)
+    triggerRefresh()
+    return
   }
 
   return (
-    <div className=''>
-      <div className='mx-2 my-5 flex flex-row gap-3'>
-        <Button
-          variant='secondary'
-          size='icon'
-          onClick={loadInvites}
-          disabled={isLoading}
-          className='hover:bg-muted-foreground'
-        >
-          {isLoading ? <RefreshCw className='animate-spin' /> : <RefreshCw />}
-        </Button>
-        <Button
-          variant='secondary'
-          size='icon'
-          disabled={isLoading}
-          className='hover:bg-muted-foreground'
-        >
-          <MailPlus />
-        </Button>
-      </div>
-      <div className='grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5'>
-        {error && <div>Error: {error}</div>}
+      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5'>
         {invites.map((invite) => {
           const color =
             invite.status === 'pending'
@@ -72,7 +45,7 @@ export default function DisplayInvites() {
           return (
             <Card
               key={invite.id}
-              className={`border-1 ${color} w-full max-w-xs`}
+              className={`border-1 ${color} w-full min-w-xs max-w-sm`}
             >
               <CardHeader>
                 <CardTitle className='text-lg font-semibold'>
@@ -82,14 +55,13 @@ export default function DisplayInvites() {
                   <p className='capitalize text-primary font-medium'>{invite.role} | {invite.status}</p>
                 </CardDescription>
                 <CardAction>
-                  <Button
-                    variant='secondary'
-                    size='icon'
-                    className='size-7 mr-2'
-                  >
-                    <SquarePen size={16} color='#0887e7' strokeWidth={3} />
-                  </Button>
-                  <Button variant='secondary' size='icon' className='size-7'>
+                  
+                  <UpdateInviteForm
+                    isLoading={isLoading}
+                    triggerRefresh={()=>triggerRefresh()}
+                    inviteData={{ id: invite.id, email: invite.email, role: invite.role }}
+                  />
+                  <Button onClick={() => handleDelete(invite.id)} disabled={isLoading} variant='secondary' size='icon' className='size-7'>
                     <Trash2 color='#ff7070' size={16} strokeWidth={3} />
                   </Button>
                 </CardAction>
@@ -112,7 +84,6 @@ export default function DisplayInvites() {
             </Card>
           )
         })}
-      </div>
     </div>
   )
 }

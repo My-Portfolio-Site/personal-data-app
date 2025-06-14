@@ -13,11 +13,16 @@ export const inviteSchema = z.object({
 });
 
 // Schema for adding a new invite
-export const addInviteSchema = z.object({
-  email: z.email().nonempty(),
-  role: z.enum(["user", "admin"]).optional().default("user"),
+export const createInviteFormSchema = z.object({
+  email: z.email({error: 'Email id is required'}).nonempty(),
+  role: z.enum(["user", "admin"]),
+});
+
+export const createInviteSchema = z.object({
+  email: z.email({error: 'Email id is required'}).nonempty(),
+  role: z.enum(["user", "admin"]),
   invitedBy: z.string().nonempty(),
-  expires: z.date().default(() => new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)).transform((date) => date.toISOString()),
+  expires: z.string().nonempty()
 });
 
 // Schema for accepting an invite
@@ -31,14 +36,10 @@ export const acceptInviteSchema = z.object({
 // Schema for updating an invite
 export const updateInviteSchema = z.object({
   id: z.string().nonempty(),
-  email: z.email().optional(),
-  role: z.enum(["user", "admin"]).optional(),
-  invitedBy: z.string().optional(),
-  expires: z.date().optional(),
-  status: z.enum(["pending", "accepted", "rejected"]).optional(),
-  updatedAt: z.date().optional(),
-  createdAt: z.date().optional(),
+  email: z.email(),
+  role: z.enum(["user", "admin"])
 });
+
 
 // Schema for deleting a invite (requires only the ID)
 export const deleteInviteSchema = z.object({
@@ -47,7 +48,8 @@ export const deleteInviteSchema = z.object({
 
 // Exporting types for invites
 export type Invite = z.infer<typeof inviteSchema>;
-export type AddInvite = z.infer<typeof addInviteSchema>;
+export type CreateInvite = z.infer<typeof createInviteSchema>;
+export type CreateInviteForm = z.infer<typeof createInviteFormSchema>;
 export type AcceptInvite = z.infer<typeof acceptInviteSchema>;
 export type UpdateInvite = z.infer<typeof updateInviteSchema>;
 export type DeleteInvite = z.infer<typeof deleteInviteSchema>;

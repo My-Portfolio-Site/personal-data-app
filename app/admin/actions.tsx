@@ -1,92 +1,153 @@
-"use server";
-
-import { addInviteSchema, updateInviteSchema, deleteInviteSchema, Invite, AddInvite, UpdateInvite, DeleteInvite } from "@/schemas/invite";
-import { User } from "@/schemas/user";
+'use server'
+import { revalidatePath } from 'next/cache'
+import {
+  createInviteFormSchema,
+  updateInviteSchema,
+  deleteInviteSchema,
+  Invite,
+  CreateInviteForm,
+  UpdateInvite,
+  DeleteInvite,
+  createInviteSchema,
+} from '@/schemas/invite'
+import { User, deleteUserSchema } from '@/schemas/user'
+import { auth } from '@/lib/auth'
 // Error type for API responses
 type ApiError = {
-  error: string;
-  status?: number;
-};
+  error: string
+  status?: number
+}
+type ApiResponseMessage = {
+  message: string
+  status?: number
+}
 // Base URL for the API
-const API_BASE_URL = "http://localhost:3000/api";
+const API_BASE_URL = 'http://localhost:3000/api'
 
 //==============================Invites=====================================//
-const API_INVITES_URL = API_BASE_URL + "/invites";
+const API_INVITES_URL = API_BASE_URL + '/invites'
 // Fetch all invites
 export async function fetchAllInvites() {
   try {
-    console.log("Fetching invites...", API_INVITES_URL);
-    
-    const response = await fetch(API_INVITES_URL, { method: "GET" });
+    console.log('Fetching invites...', API_INVITES_URL)
+
+    const response = await fetch(API_INVITES_URL, { method: 'GET' })
     if (!response.ok) {
-      console.log("Failed to fetch invites,", "status:", response.status);
-      throw new Error("Failed to fetch invites")
+      console.log('Failed to fetch invites,', 'status:', response.status)
+      throw new Error('Failed to fetch invites')
     }
-    return (await response.json()) as Invite[];
+    return (await response.json()) as Invite[]
   } catch (err) {
-    return { error: (err as Error).message } as ApiError;
+    return { error: (err as Error).message } as ApiError
   }
 }
 
 // Add a new invite
-export async function createInvite(data: AddInvite): Promise<{ message: string }> {
-  const parsedData = addInviteSchema.parse(data);
-  const response = await fetch(API_INVITES_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(parsedData),
-  });
-  if (!response.ok) {
-    const error: ApiError = await response.json();
-    throw new Error(error.error || "Failed to create invite");
+export async function createInvite(data: CreateInviteForm) {
+  try {
+    const currentUserSession = await auth()
+    let currentUserEmail = ''
+    if (!currentUserSession?.user?.email) {
+      currentUserEmail = 'mnkesu1998@gmail.com'
+      // throw new Error("User not authenticated");
+    } else {
+      currentUserEmail = currentUserSession?.user?.email
+    }
+    const dateExpires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+
+    const parsedData = createInviteFormSchema.parse(data)
+    const allParsedData = createInviteSchema.parse({
+      ...parsedData,
+      expires: new Date(dateExpires).toISOString(), // 7 days from now
+      invitedBy: currentUserEmail,
+    })
+    console.log('Creating invite: ', allParsedData)
+    const response = await fetch(API_INVITES_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(allParsedData),
+    })
+    if (!response.ok) {
+      const error: ApiError = await response.json()
+      console.log('Failed to create invite: ', error)
+      throw new Error('Failed to create invite')
+    }
+    return (await response.json()) as ApiResponseMessage
+  } catch (err) {
+    return { error: (err as Error).message } as ApiError
   }
-  return await response.json();
 }
 
 // Update an invite
-export async function updateInvite(data: UpdateInvite): Promise<{ message: string }> {
-  const parsedData = updateInviteSchema.parse(data);
-  const response = await fetch(API_INVITES_URL, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(parsedData),
-  });
-  if (!response.ok) {
-    const error: ApiError = await response.json();
-    throw new Error(error.error || "Failed to update invite");
+export async function updateInvite(data: UpdateInvite) {
+  try {
+    const parsedData = updateInviteSchema.parse(data)
+    const response = await fetch(API_INVITES_URL, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(parsedData),
+    })
+    if (!response.ok) {
+      const error: ApiError = await response.json()
+      throw new Error(error.error || 'Failed to update invite')
+    }
+    return (await response.json()) as ApiResponseMessage
+  } catch (err) {
+    return { error: (err as Error).message } as ApiError
   }
-  return await response.json();
 }
 
 // Delete an invite
-export async function deleteInvite(data: DeleteInvite): Promise<{ message: string }> {
-  const parsedData = deleteInviteSchema.parse(data);
-  const response = await fetch(API_INVITES_URL, {
-    method: "DELETE",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(parsedData),
-  });
-  if (!response.ok) {
-    const error: ApiError = await response.json();
-    throw new Error(error.error || "Failed to delete invite");
+export async function deleteInvite(id: string) {
+  try {
+    const parsedData = deleteInviteSchema.parse({ id })
+    const response = await fetch(API_INVITES_URL, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(parsedData),
+    })
+    if (!response.ok) {
+      const error: ApiError = await response.json()
+      throw new Error(error.error || 'Failed to delete invite')
+    }
+    return (await response.json()) as ApiResponseMessage
+  } catch (err) {
+    return { error: (err as Error).message } as ApiError
   }
-  return await response.json();
 }
 
-
 // ==================================================Users=============================================================//
-const API_USERS_URL = API_BASE_URL + "/users";
+const API_USERS_URL = API_BASE_URL + '/users'
 // Fetch all Users
 export async function fetchAllUsers() {
-  try{
-  const response = await fetch(API_USERS_URL, { method: "GET" });
+  try {
+    const response = await fetch(API_USERS_URL, { method: 'GET' })
     if (!response.ok) {
-      const error= { error: "Failed to fetch users", status: response.status };
+      const error = { error: 'Failed to fetch users', status: response.status }
       console.log(error)
-      return error as ApiError;
+      return error as ApiError
     }
-    return (await response.json()) as User[];
+    return (await response.json()) as User[]
   } catch (err) {
-    return { error: (err as Error).message } as ApiError;
+    return { error: (err as Error).message } as ApiError
+  }
+}
+
+// Delete an user
+export async function deleteUser(id: string) {
+  try {
+    const parsedData = deleteUserSchema.parse({ id })
+    const response = await fetch(API_USERS_URL, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(parsedData),
+    })
+    if (!response.ok) {
+      const error: ApiError = await response.json()
+      throw new Error(error.error || 'Failed to delete user')
+    }
+    return (await response.json()) as ApiResponseMessage
+  } catch (err) {
+    return { error: (err as Error).message } as ApiError
   }
 }

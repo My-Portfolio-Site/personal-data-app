@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 
 export default async function Home() {
   const session = await auth()
+  if (!session) return <div>No session</div>
   if (!session?.user) redirect('/login')
   return (
     <section className='flex flex-col items-center justify-center min-h-screen p-4'>
