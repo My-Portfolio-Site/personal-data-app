@@ -15,7 +15,7 @@ async function getCurrentUserId(): Promise<string> {
 }
 
 // Get all experiences
-export async function GET(req: Request, res: Response) {
+export async function GET(req: Request) {
   try {
     const userId = await getCurrentUserId();
 
