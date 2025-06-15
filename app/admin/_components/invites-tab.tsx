@@ -41,7 +41,7 @@ export default function InvitesTab() {
           size='icon'
           onClick={loadInvites}
           disabled={isLoading}
-          className='hover:bg-muted-foreground'
+          className='hover:bg-secondary-hover'
         >
           {isLoading ? <RefreshCw className='animate-spin' /> : <RefreshCw />}
         </Button>

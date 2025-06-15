@@ -77,7 +77,7 @@ export default function InviteForm({ isLoading, triggerRefresh }: { isLoading: b
           variant='secondary'
           size='icon'
           disabled={isLoading}
-          className='hover:bg-muted-foreground'
+          className='hover:bg-secondary-hover'
         >
           <MailPlus />
         </Button>

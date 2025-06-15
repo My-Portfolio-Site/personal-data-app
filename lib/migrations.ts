@@ -41,7 +41,7 @@ export const upSQLStatements = [
     "expires" datetime NOT NULL DEFAULT NULL, 
     PRIMARY KEY (token)
 );`,
-`CREATE TABLE IF NOT EXISTS "invites" (
+  `CREATE TABLE IF NOT EXISTS "invites" (
     "id" text NOT NULL,
     "email" text NOT NULL,
     "role" text NOT NULL DEFAULT 'user',
@@ -51,16 +51,31 @@ export const upSQLStatements = [
     "updatedAt" datetime DEFAULT NULL,
     "createdAt" datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id)
-    );`
-  ]
-  
-  // FOREIGN KEY (invitedBy) REFERENCES "users" (id) ON DELETE CASCADE
+);`,
+  `CREATE TABLE "experiences" (
+    "id" text NOT NULL,
+    "userId" text NOT NULL,
+    "company" text NOT NULL,
+    "location" text NOT NULL, 
+    "position" text NOT NULL,
+    "startDate" date NOT NULL,
+    "endDate" date DEFAULT NULL,
+    "description" text DEFAULT NULL,
+    "achievements" text NOT NULL,
+    "technologies" text NOT NULL,
+    FOREIGN KEY (userId) REFERENCES "users" (id) ON DELETE CASCADE
+  );`
+]
+
+// FOREIGN KEY (invitedBy) REFERENCES "users" (id) ON DELETE CASCADE
 
 export const downSQLStatements = [
   `DROP TABLE IF EXISTS "accounts";`,
   `DROP TABLE IF EXISTS "sessions";`,
   `DROP TABLE IF EXISTS "users";`,
   `DROP TABLE IF EXISTS "verification_tokens";`,
+  `DROP TABLE IF EXISTS "invites";`,
+  `DROP TABLE IF EXISTS "experiences";`
 ]
 
 async function up(db: D1Database) {

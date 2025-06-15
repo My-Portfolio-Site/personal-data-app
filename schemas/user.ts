@@ -11,6 +11,16 @@ export const userSchema = z.object({
   userVerified: z.boolean(),
 });
 
+
+export const currentUserSchema = z.object({
+  id: z.string().nonempty(),
+  name: z.string(),
+  email: z.email(),
+  image: z.url(),
+  role: z.enum(["user", "admin"]),
+  initials: z.string(),
+})
+
 // Schema for adding a new user
 export const addUserSchema = z.object({
   name: z.string().nonempty(),
@@ -48,3 +58,5 @@ export type AddUser = z.infer<typeof addUserSchema>;
 export type DeleteUser = z.infer<typeof deleteUserSchema>;
 export type GetUser = z.infer<typeof getUserSchema>;
 export type UpdateUser = z.infer<typeof updateUserSchema>;
+
+export type CurrentUser = z.infer<typeof currentUserSchema>;

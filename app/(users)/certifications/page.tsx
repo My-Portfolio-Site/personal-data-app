@@ -6,17 +6,17 @@ import { Separator } from '@/components/ui/separator'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Education Page',
+  title: 'Certifications Page',
   description: 'App and API for personal data management',
 }
 
-import { EducationSection } from './_components/education-section'
-export default function Education() {
+import { CertificationsSection } from './_components/certifications-section'
+export default function Certifications() {
   return (
     <div id='experiance' className="flex flex-1 flex-col gap-4 p-6">
-      <SectionHeader title='Education' description=''/>
+      <SectionHeader title='Certifications' description=''/>
        <Separator />
-      <EducationSection />
+      <CertificationsSection />
     </div>
   )
 }
@@ -30,7 +30,7 @@ function SectionHeader({title, description}: {title: string, description: string
       </div>
       <Button>
         <Plus className='w-4 h-4 mr-2' />
-        Add Education
+        Add Certification
       </Button>
     </div>
   )

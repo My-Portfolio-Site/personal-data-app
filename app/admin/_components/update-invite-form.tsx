@@ -90,7 +90,7 @@ export default function UpdateInviteForm({
           disabled={isLoading}
           variant='secondary'
           size='icon'
-          className='size-7 mr-2'
+          className='size-7 mr-2 hover:bg-secondary-hover'
         >
           <SquarePen size={16} color='#0887e7' strokeWidth={3} />
         </Button>

@@ -42,13 +42,13 @@ const [isLoading, setIsLoading] = useState(false)
                   {user.name}
                 </CardTitle>
                 <CardAction>
-                  <Button disabled={isLoading} variant='secondary' size='icon' className='size-7 mr-2'>
+                  <Button disabled={true} variant='secondary' size='icon' className='size-7 mr-2 hover:bg-secondary-hover'>
                     <UserRoundPen size={16} color='#0887e7' strokeWidth={3} />
                   </Button>
                   <Button
                     variant='secondary'
                     size='icon'
-                    className='size-7 mr-2'
+                    className='size-7 mr-2 hover:bg-secondary-hover'
                     disabled={isLoading}
                     onClick={() => handleDelete(user.id)}
                   >

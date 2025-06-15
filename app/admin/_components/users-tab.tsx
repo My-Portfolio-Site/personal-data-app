@@ -40,7 +40,7 @@ export default function UsersTab() {
           size='icon'
           onClick={loadUsers}
           disabled={isLoading}
-          className='hover:bg-muted-foreground'
+          className='hover:bg-secondary-hover'
         >
           {isLoading ? <RefreshCw className='animate-spin' /> : <RefreshCw />}
         </Button>
