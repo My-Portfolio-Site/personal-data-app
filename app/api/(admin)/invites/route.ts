@@ -5,7 +5,7 @@ import { db } from "@/lib/db";
 import { createInviteSchema, acceptInviteSchema, updateInviteSchema, Invite } from "@/schemas/invite";
 
 // Get all invites
-export async function GET(req: Request, res: Response) {
+export async function GET(req: Request) {
   try {
     const url = new URL(req.url);
     if (url.searchParams.toString()) {
