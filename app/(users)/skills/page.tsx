@@ -30,7 +30,7 @@ function SectionHeader({title, description}: {title: string, description: string
       </div>
       <Button>
         <Plus className='w-4 h-4 mr-2' />
-        Add Certification
+        Add Skill
       </Button>
     </div>
   )

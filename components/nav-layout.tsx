@@ -1,4 +1,5 @@
 'use client'
+import { handleSignOut } from '@/app/login/actions'
 import { ThemeToggle } from '@/components/theme-toggle'
 import type * as React from 'react'
 import { usePathname } from 'next/navigation'
@@ -14,6 +15,8 @@ import {
   FileText,
   Settings,
   LogOut,
+  ShieldUser,
+  MailPlus,
 } from 'lucide-react'
 
 import {
@@ -53,7 +56,7 @@ import {
 } from '@/components/ui/sidebar'
 import { CurrentUser } from '@/schemas/user'
 
-const resumeSections = [
+const userSections = [
   {
     title: 'About Me',
     url: '/aboutme',
@@ -91,6 +94,20 @@ const resumeSections = [
   },
 ]
 
+const adminSections = [
+  {
+    title: 'Users',
+    url: '/admin/users',
+    icon: ShieldUser,
+  },
+  {
+    title: 'Invites',
+    url: '/admin/invites',
+    icon: MailPlus,
+  },
+]
+const publicURLs = ['/acceptinvite', '/login']
+
 export function NavLayoutWrapper({
   children,
   currentUser,
@@ -99,10 +116,18 @@ export function NavLayoutWrapper({
   currentUser: CurrentUser
 }) {
   const pathname = usePathname()
+  if (publicURLs.includes(pathname)) {
+    return <div className='max-w-4xl'>{children}</div>
+  }
+
+  const isAdmin = currentUser.role === 'admin'
 
   const currentSection =
-    resumeSections.find((section) => section.url === pathname) ||
-    resumeSections[0]
+    userSections.find((section) => section.url === pathname) ||
+    adminSections.find((section) => section.url === pathname) ||
+    userSections[0]
+
+  const isAdminSection = adminSections.some((section) => section.url === pathname)
 
   return (
     <SidebarProvider>
@@ -131,7 +156,7 @@ export function NavLayoutWrapper({
             <SidebarGroupLabel>Resume Sections</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                {resumeSections.map((section) => (
+                {userSections.map((section) => (
                   <SidebarMenuItem key={section.title}>
                     <SidebarMenuButton
                       asChild
@@ -150,6 +175,31 @@ export function NavLayoutWrapper({
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
+          {isAdmin && (
+            <SidebarGroup>
+              <SidebarGroupLabel>User Management</SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {adminSections.map((section) => (
+                    <SidebarMenuItem key={section.title}>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={pathname === section.url}
+                      >
+                        <Link
+                          href={section.url}
+                          className='flex items-center gap-2'
+                        >
+                          <section.icon className='size-4' />
+                          <span>{section.title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          )}
         </SidebarContent>
         <Separator />
         <CurrentUserOptions currentUser={currentUser} />
@@ -162,8 +212,16 @@ export function NavLayoutWrapper({
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink href='/'>Resume</BreadcrumbLink>
+                <BreadcrumbLink href='/'></BreadcrumbLink>
               </BreadcrumbItem>
+              {isAdmin && isAdminSection && (
+                <>
+                  <BreadcrumbSeparator />
+                  <BreadcrumbItem>
+                    <BreadcrumbPage>Admin</BreadcrumbPage>
+                  </BreadcrumbItem>
+                </>
+              )}
               {pathname !== '/' && (
                 <>
                   <BreadcrumbSeparator />
@@ -179,7 +237,11 @@ export function NavLayoutWrapper({
           </div>
           <ThemeToggle />
         </header>
-        <div className='flex-1'>{children}</div>
+        <div className='flex-1 flex justify-center'>
+          <div className='mx-0 md:mx-10 lg:mx-16 w-full'>
+            {children}
+          </div>
+        </div>
       </SidebarInset>
     </SidebarProvider>
   )
@@ -192,7 +254,6 @@ function CurrentUserOptions({
   currentUser: CurrentUser
   minimal?: boolean
 }) {
-
   return (
     <SidebarFooter>
       <SidebarMenu>
@@ -254,7 +315,7 @@ function CurrentUserOptions({
                 <Settings className='mr-2 h-4 w-4' />
                 Account Settings
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleSignOut()}>
                 <LogOut className='mr-2 h-4 w-4' />
                 Log out
               </DropdownMenuItem>

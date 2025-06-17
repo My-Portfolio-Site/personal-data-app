@@ -2,20 +2,20 @@ import { Metadata } from 'next'
 
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { Plus } from 'lucide-react'
-import {ProjectsSection} from './_components/projects-section'
+import { Plus, RefreshCw } from 'lucide-react'
+import InvitesSection from './_components/invites-section'
 
 export const metadata: Metadata = {
-  title: 'Projects Page',
+  title: 'Invites',
   description: 'App and API for personal data management',
 }
 
-export default function Projects() {
+export default function Invites() {
   return (
     <div id='experiance' className="flex flex-1 flex-col gap-4 p-6">
-      <SectionHeader title='Projects' description='Projects section' />
+      <SectionHeader title='Invites' description='Invites section' />
       <Separator />
-      <ProjectsSection />
+      <InvitesSection />
     </div>
   )
 }
@@ -29,7 +29,7 @@ function SectionHeader({title, description}: {title: string, description: string
       </div>
       <Button>
         <Plus className='w-4 h-4 mr-2' />
-        Add Project
+        Add Invite
       </Button>
     </div>
   )

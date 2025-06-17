@@ -6,14 +6,14 @@ import { Plus } from 'lucide-react'
 import {ReferencesSection} from './_components/references-section'
 
 export const metadata: Metadata = {
-  title: 'Experiance Page',
+  title: 'References Page',
   description: 'App and API for personal data management',
 }
 
 export default function Experience() {
   return (
     <div id='experiance' className="flex flex-1 flex-col gap-4 p-6">
-      <SectionHeader title='Experiance' description='Experience section' />
+      <SectionHeader title='References' description='References section' />
       <Separator />
       <ReferencesSection />
     </div>
@@ -29,7 +29,7 @@ function SectionHeader({title, description}: {title: string, description: string
       </div>
       <Button>
         <Plus className='w-4 h-4 mr-2' />
-        Add Experience
+        Add Reference
       </Button>
     </div>
   )

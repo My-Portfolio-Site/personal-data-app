@@ -19,14 +19,32 @@ export async function GET(req: Request) {
   try {
     const userId = await getCurrentUserId();
 
+    const url = new URL(req.url);
+    const experienceId = url.searchParams.get("experienceId");
+
     if (!userId) {
-      console.log("Missing userId in query parameters");
+      console.log("Not authenticated.");
       return NextResponse.json(
-        { error: "userId is required in query parameters" },
+        { error: "Not authenticated." },
         { status: 400 }
       );
     }
-
+    if (experienceId) {
+      // Fetch a single
+      console.log(`Fetching experiences for userId: ${userId} and experienceId: ${experienceId}`);
+      const query = `SELECT * FROM "experiences" WHERE "id" = ? AND "userId" = ?;`;
+      const result = await db.prepare(query).bind(experienceId, userId).first();
+      if (!result) {
+        return NextResponse.json({ error: "Experience not found" }, { status: 404 });
+      }
+      const experience = {
+        ...(result as any),
+        technologies: JSON.parse(result?.technologies as string || "[]"),
+        achievements: JSON.parse(result?.achievements as string || "[]")
+      } as Experience;
+  
+      return NextResponse.json(experience, { status: 200 });
+    }
     // Fetch experiences for the given userId
     console.log(`Fetching experiences for userId: ${userId}`);
     const query = `SELECT * FROM "experiences" WHERE "userId" = ?;`;

@@ -1,5 +1,5 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -118,11 +118,41 @@
   --success: oklch(0.646 0.222 141.116);
 }
 
+/* add the code bellow */
+@layer utilities {
+
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
+  }
+
+  .dark .rdp-caption_label {
+    @apply text-white bg-transparent;
+  }
+
+  .dark .rdp-dropdown {
+    @apply text-white bg-muted;
+  }
+
+  .dark .rdp-nav_button {
+    @apply text-white hover:bg-gray-700;
   }
 }

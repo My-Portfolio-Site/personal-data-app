@@ -1,12 +1,21 @@
 import { LoginForm } from "@/app/login/_components/login-form";
 import { Metadata } from "next";
+import { auth } from '@/lib/auth'
+import { redirect } from 'next/navigation'
 
 export const metadata: Metadata = {
   title: 'Login',
   description: 'App and API for personal data management',
 }
 
-export default function LoginPage() {
+export default async function LoginPage() {
+
+  const session = await auth()
+
+  if (session?.user) {
+    redirect('/')
+  }
+
   return (
     <div className="flex items-center justify-center h-screen bg-background">
       <div className="bg-muted py-8 px-10 rounded-lg shadow-md w-full max-w-sm">

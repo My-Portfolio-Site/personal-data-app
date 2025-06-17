@@ -1,4 +1,5 @@
 import { z } from "zod/v4";
+import { id } from "zod/v4/locales";
 
 export const ExperienceSchema = z.object({
   id: z.string().nonempty(),
@@ -6,14 +7,26 @@ export const ExperienceSchema = z.object({
   company: z.string(),
   location: z.string(),
   position: z.string(),
-  startDate: z.string(),
-  endDate: z.string().nullable(),
+  startDate: z.iso.date(),
+  endDate: z.iso.date().nullable(),
   achievements: z.array(z.string()),
   technologies: z.array(z.string()),
   description: z.string().nullable(),
 });
 
 export const createExperienceSchema = z.object({
+  company: z.string(),
+  location: z.string(),
+  position: z.string(),
+  startDate: z.iso.date(),
+  endDate: z.iso.date().nullable(),
+  achievements: z.array(z.string()),
+  technologies: z.array(z.string()),
+  description: z.string().nullable(),
+})
+
+export const ExperienceFormSchema = z.object({
+  id: z.string().optional(),
   company: z.string(),
   location: z.string(),
   position: z.string(),
@@ -58,3 +71,4 @@ export type CreateExperience = z.infer<typeof createExperienceSchema>;
 export type UpdateExperience = z.infer<typeof updateExperienceSchema>;
 export type DeleteExperience = z.infer<typeof deleteExperienceSchema>;
 // export type CreateExperienceForm = z.infer<typeof createExperienceFormSchema>;
+export type ExperienceFormData = z.infer<typeof ExperienceFormSchema>;

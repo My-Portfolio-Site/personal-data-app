@@ -19,7 +19,7 @@ const API_EXPERIENCE_URL = API_BASE_URL + '/experience'
 // Fetch all experience
 export async function fetchAllExperience() {
   try {
-    console.log('Fetching experience...', API_EXPERIENCE_URL)
+    console.log('Fetching all experience...', API_EXPERIENCE_URL)
 
     const response = await fetch(API_EXPERIENCE_URL, { method: 'GET' })
     if (!response.ok) {
@@ -29,6 +29,23 @@ export async function fetchAllExperience() {
     return (await response.json()) as Experience[]
   } catch (err) {
     return { error: (err as Error).message } as ApiError
+  }
+}
+
+export async function fetchExperienceById(id: string){
+  try {
+    console.log('Fetching experience by id:', id)
+    const response = await fetch(`${API_EXPERIENCE_URL}?experienceId=${id}`, { method: 'GET' })
+    if (!response.ok) {
+      console.log('Failed to fetch experience,', 'status:', response.status)
+      throw new Error('Failed to fetch experience')
+    }
+    const responseData = await response.json()
+    console.log('Fetched experience from DB:', responseData)
+    return responseData as Experience
+  } catch (err) {
+    console.log('Error fetching experience:', err)
+    return { error: (err as Error).message, status: 400 } as ApiError
   }
 }
 

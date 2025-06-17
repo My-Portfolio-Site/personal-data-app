@@ -12,9 +12,8 @@ export const metadata: Metadata = {
 
 export default function AboutMe() {
   return (
-    <div id='experiance' className="flex flex-1 flex-col gap-4 p-6">
+    <div id='experiance' className="flex flex-1 flex-col gap-4 px-6 py-2">
       <SectionHeader title='About Me' description='AboutMe section' />
-      <Separator />
       <AboutMeSection />
     </div>
   )
