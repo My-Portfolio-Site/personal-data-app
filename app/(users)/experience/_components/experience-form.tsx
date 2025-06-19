@@ -12,6 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Building, X, Plus, Save, CalendarIcon } from "lucide-react"
 import { Experience } from "@/schemas/experience"
 import { DatePicker } from "@/components/date-picker"
+import Skills from "../../skills/page"
 
 
 interface ExperienceFormProps {
@@ -31,7 +32,7 @@ export function ExperienceForm({
   isLoading = false,
   showCancel = false,
 }: ExperienceFormProps) {
-
+  
   const [formData, setFormData] = useState<Experience>({
     id: initialData.id || "",
     userId: initialData.userId || "",
@@ -39,12 +40,13 @@ export function ExperienceForm({
     position: initialData.position || "",
     location: initialData.location || "",
     startDate: initialData.startDate || "",
-    endDate: initialData.endDate || "",
+    endDate: initialData.endDate || null,
     description: initialData.description || "",
     achievements: initialData.achievements || [""],
     technologies: initialData.technologies || [],
   })
-  const [isCurrentRole, setIsCurrentRole] = useState(formData.endDate?.length === 0)
+
+  const [isCurrentRole, setIsCurrentRole] = useState(formData.endDate === null)
 
   const [newTechnology, setNewTechnology] = useState("")
 
@@ -95,6 +97,8 @@ export function ExperienceForm({
     const cleanedData = {
       ...formData,
       achievements: formData.achievements.filter((achievement) => achievement.trim() !== ""),
+      technologies: formData.technologies.filter((tech) => tech.trim() !== ""),
+      endDate: isCurrentRole ? null : formData.endDate
     }
     onSave(cleanedData)
   }
@@ -162,7 +166,7 @@ export function ExperienceForm({
                 onChange={(e) => updateField("startDate", e.target.value)}
               /> */}
               <DatePicker
-                label="Start Date"
+                label="Start Date *"
                 date={formData.startDate ? new Date(formData.startDate) : undefined}
                 onDateChange={(newDate) => {
                   updateField("startDate", newDate ? newDate.toISOString().split("T")[0] : "")

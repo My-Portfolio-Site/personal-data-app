@@ -1,4 +1,5 @@
 'use client'
+import { Suspense } from 'react';
 import { handleSignOut } from '@/app/login/actions'
 import { ThemeToggle } from '@/components/theme-toggle'
 import type * as React from 'react'
@@ -321,6 +322,30 @@ function CurrentUserOptions({
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    </SidebarFooter>
+  )
+}
+
+
+function CurrentUserOptionsSkeleton({ minimal = false }: { minimal?: boolean }) {
+  return (
+    <SidebarFooter>
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <SidebarMenuButton
+            size='lg'
+            className='h-10 p-0 animate-pulse bg-muted rounded-lg'
+          >
+            <div className='size-10 rounded-lg bg-muted border'></div>
+            {!minimal && (
+              <div className='grid flex-1 text-left text-sm leading-tight ml-2'>
+                <span className='h-4 w-24 bg-muted rounded'></span>
+                <span className='h-3 w-32 bg-muted rounded mt-1'></span>
+              </div>
+            )}
+          </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>
     </SidebarFooter>

@@ -45,7 +45,6 @@ export function DatePicker({ label = "Select Date", date, onDateChange, disabled
     setValue(formatDate(date))
     setMonth(date)
   }, [date])
-  console.log(date);
   
 
   return (

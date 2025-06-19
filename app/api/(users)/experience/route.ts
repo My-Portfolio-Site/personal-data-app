@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from "uuid";
 import { NextResponse } from "next/server";
 
 import { db } from "@/lib/db";
-import { createExperienceSchema, updateExperienceSchema, deleteExperienceSchema, Experience } from "@/schemas/experience";
+import { ExperienceFormSchema, ExperienceSchema, deleteExperienceSchema, Experience } from "@/schemas/experience";
 import { auth } from '@/lib/auth'
 
 async function getCurrentUserId(): Promise<string> {
@@ -68,17 +68,17 @@ export async function POST(req: Request) {
     const userId = await getCurrentUserId();
 
     if (!userId) {
-      console.log("Missing userId in query parameters");
+      console.log("Not authenticated.");
       return NextResponse.json(
-        { error: "userId is required in query parameters" },
+        { error: "Not authenticated." },
         { status: 400 }
       );
     }
     const body = await req.json();
     console.log("API request received:", body);
 
-    // Validate the request body using the createExperienceSchema
-    const { company, location, position, achievements, technologies, description, startDate, endDate } = createExperienceSchema.parse(body);
+    // Validate the request body using the ExperienceFormSchema
+    const { company, location, position, achievements, technologies, description, startDate, endDate } = ExperienceFormSchema.parse(body);
 
     // Generate a unique ID for the experience
     const experienceId = uuidv4();
@@ -98,37 +98,57 @@ export async function POST(req: Request) {
   }
 }
 
-// // Update an invite
-// export async function PUT(req: Request) {
-//   try {
-//     // Handle normal invite update
-//     const { id, email, role } = updateInviteSchema.parse(await req.json());
-//     const query = `
-//         UPDATE "invites"
-//         SET 
-//           "email" = COALESCE(?, "email"),
-//           "role" = COALESCE(?, "role"),
-//           "updatedAt" = COALESCE(?, "updatedAt")
-//         WHERE "id" = ?;
-//       `;
-//     const updatedAt = new Date().toISOString();
-//     await db.prepare(query).bind(email, role, updatedAt, id).run();
-//     return NextResponse.json({ message: "Invite updated successfully" }, { status: 200 });
-//   } catch (error: any) {
-//     console.error("Error updating invite:", error.message);
-//     return NextResponse.json({ error: "Failed to update invite" }, { status: 500 });
-//   }
-// }
+// Update existing experience
+export async function PUT(req: Request) {
+  try {
+    const currentUserId = await getCurrentUserId();
+    const { id, userId, company, location, position, achievements, technologies, description, startDate, endDate } = ExperienceSchema.parse(await req.json());
 
-// Delete an invite by ID
+    if (!currentUserId) {
+      console.log("Not authenticated.");
+      return NextResponse.json(
+        { error: "Not authenticated." },
+        { status: 400 }
+      );
+    }
+    if (currentUserId !== userId) {
+      console.log("Not authorized. User ID mismatch.");
+      return NextResponse.json(
+        { error: "Not authorized. User ID mismatch." },
+        { status: 403 }
+      );
+    }
+
+    const query = `
+      UPDATE "experiences"
+      SET
+        "company" = COALESCE(?, "company"),
+        "location" = COALESCE(?, "location"),
+        "position" = COALESCE(?, "position"),
+        "achievements" = COALESCE(?, "achievements"),
+        "technologies" = COALESCE(?, "technologies"),
+        "description" = COALESCE(?, "description"),
+        "startDate" = COALESCE(?, "startDate"),
+        "endDate" = COALESCE(?, "endDate")
+      WHERE "id" = ? AND "userId" = ?;
+    `;
+    await db.prepare(query).bind(company, location, position, JSON.stringify(achievements), JSON.stringify(technologies), description, startDate, endDate, id, userId).run();
+    return NextResponse.json({ message: "Experience updated successfully" }, { status: 200 });
+  } catch (error: any) {
+    console.error("Error updating experience:", error.message);
+    return NextResponse.json({ error: "Failed to update experience" }, { status: 500 });
+  }
+}
+
+// Delete an experience by ID
 export async function DELETE(req: Request) {
   try {
     const { id } = deleteExperienceSchema.pick({ id: true }).parse(await req.json());
-    const query = `DELETE FROM "invites" WHERE "id" = ?;`;
+    const query = `DELETE FROM "experiences" WHERE "id" = ?;`;
     await db.prepare(query).bind(id).run();
-    return NextResponse.json({ message: "Invite deleted successfully" }, { status: 200 });
+    return NextResponse.json({ message: "Experience deleted successfully" }, { status: 200 });
   } catch (error: any) {
-    console.error("Error deleting invite:", error.message);
-    return NextResponse.json({ error: "Failed to delete invite" }, { status: 500 });
+    console.error("Error deleting experience:", error.message);
+    return NextResponse.json({ error: "Failed to delete experience" }, { status: 500 });
   }
 }

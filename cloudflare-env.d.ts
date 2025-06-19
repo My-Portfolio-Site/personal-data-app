@@ -9,6 +9,7 @@ declare namespace Cloudflare {
         AUTH_GITHUB_SECRET: string;
 		ASSETS: Fetcher;
         TEST_VAR: string;
+        API_URL: string;
         DB: D1Database;
 	}
 }

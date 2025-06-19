@@ -7,6 +7,8 @@ import { ExperienceFormData } from "@/schemas/experience"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
+import { createExperience } from "./actions"
+import { toast } from "sonner"
 
 export default function AddExperiencePage() {
   const router = useRouter()
@@ -14,18 +16,20 @@ export default function AddExperiencePage() {
 
   const handleSaveExperience = async (data: ExperienceFormData) => {
     setIsLoading(true)
-
+    console.log("Saving experience data:", data)
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500))
-
-      // In real app, you would make an API call here
-      console.log("Saving experience:", data)
-
-      // Redirect back to experience list
-      router.push("/experience")
+      const result = await createExperience(data)
+      if ("error" in result) {
+        console.log("Error creating experience:", result)
+        toast.error(result.error)
+      } else {
+        toast.success("Experience created successfully")
+        console.log("Experience created successfully:", result)
+        router.push("/experience")
+      }
     } catch (error) {
-      console.error("Error saving experience:", error)
+      console.error("Error creating experience:", error)
+    } finally {
       setIsLoading(false)
     }
   }
