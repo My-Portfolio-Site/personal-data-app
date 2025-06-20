@@ -14,15 +14,15 @@ export const inviteSchema = z.object({
 
 // Schema for adding a new invite
 export const createInviteFormSchema = z.object({
-  email: z.email({error: 'Email id is required'}).nonempty(),
+  email: z.email({ error: 'Email id is required' }).nonempty(),
   role: z.enum(["user", "admin"]),
 });
 
 export const createInviteSchema = z.object({
-  email: z.email({error: 'Email id is required'}).nonempty(),
+  email: z.email({ error: 'Email id is required' }).nonempty(),
   role: z.enum(["user", "admin"]),
+  expires: z.coerce.date(),
   invitedBy: z.string().nonempty(),
-  expires: z.string().nonempty()
 });
 
 // Schema for accepting an invite

@@ -19,7 +19,7 @@ export default function InvitesTab() {
     setIsLoading(true)
     const result = await fetchAllInvites()
     if ('error' in result) {
-      toast.error(error)
+      toast.error(result.error)
       setError(result.error)
     } else {
       setInvites(result)

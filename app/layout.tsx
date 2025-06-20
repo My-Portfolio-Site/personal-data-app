@@ -41,7 +41,7 @@ export default async function RootLayout({
       email: 'john.smith@email.com',
       image: '',
       initials: 'JS',
-      role: 'user',
+      role: 'admin',
     } as CurrentUser
   } else {
     const initials =

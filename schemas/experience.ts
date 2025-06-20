@@ -48,13 +48,14 @@ export const ExperienceFormSchema = z.object({
 //   description: z.string().nullable(),
 // })
 
+
 export const updateExperienceSchema = z.object({
   id: z.string().nonempty(),
   company: z.string(),
   location: z.string(),
   position: z.string(),
-  startDate: z.string(), // ISO date string
-  endDate: z.string().nullable(), // Nullable for ongoing positions
+  startDate: z.iso.date(),
+  endDate: z.iso.date().nullable(),
   achievements: z.array(z.string()),
   technologies: z.array(z.string()),
   description: z.string().nullable(),
