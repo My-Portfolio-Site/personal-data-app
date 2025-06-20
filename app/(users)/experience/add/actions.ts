@@ -1,21 +1,14 @@
 'use server'
+import { getCurrentUrl } from '@/lib/helpers'
+import { headers } from 'next/headers'
 import {ExperienceFormSchema, ExperienceFormData} from '@/schemas/experience'
-import { getCloudflareContext } from "@opennextjs/cloudflare";
 
-type ApiError = {
-  error: string
-  status?: number
-}
-type ApiResponseMessage = {
-  message: string
-  status?: number
-}
+
 // Add a new experience
 export async function createExperience(data: ExperienceFormData) {
   try {
-    const {env} = await getCloudflareContext({ async: true })
-    const API_BASE_URL = env.API_URL
-    const API_EXPERIENCE_URL = API_BASE_URL + '/experience'
+    const API_BASE_URL = getCurrentUrl(await headers())
+    const API_EXPERIENCE_URL = API_BASE_URL + '/api/experience'
 
     const parsedData = ExperienceFormSchema.parse(data)
 

@@ -7,30 +7,18 @@ import {
   Invite,
   CreateInviteForm,
   UpdateInvite,
-  DeleteInvite,
   createInviteSchema,
 } from '@/schemas/invite'
 import { auth } from '@/lib/auth'
-// Error type for API responses
-type ApiError = {
-  error: string
-  status?: number
-}
-type ApiResponseMessage = {
-  message: string
-  status?: number
-}
-// Base URL for the API
-import { getCloudflareContext } from "@opennextjs/cloudflare";
-const {env} = await getCloudflareContext({ async: true })
-const API_BASE_URL = env.API_URL
 
-
+import { getCurrentUrl } from '@/lib/helpers'
+import { headers } from 'next/headers'
 //==============================Invites=====================================//
-const API_INVITES_URL = API_BASE_URL + '/invites'
 // Fetch all invites
 export async function fetchAllInvites() {
   try {
+    const API_BASE_URL = getCurrentUrl(await headers())
+    const API_INVITES_URL = API_BASE_URL + '/api/invites'
     console.log('Fetching invites...', API_INVITES_URL)
 
     const response = await fetch(API_INVITES_URL, { method: 'GET' })
@@ -47,6 +35,9 @@ export async function fetchAllInvites() {
 // Add a new invite
 export async function createInvite(data: CreateInviteForm) {
   try {
+    const API_BASE_URL = getCurrentUrl(await headers())
+    const API_INVITES_URL = API_BASE_URL + '/api/invites'
+
     const currentUserSession = await auth()
     let currentUserEmail = ''
     if (!currentUserSession?.user?.email) {
@@ -83,6 +74,9 @@ export async function createInvite(data: CreateInviteForm) {
 // Update an invite
 export async function updateInvite(data: UpdateInvite) {
   try {
+    const API_BASE_URL = getCurrentUrl(await headers())
+    const API_INVITES_URL = API_BASE_URL + '/api/invites'
+
     const parsedData = updateInviteSchema.parse(data)
     const response = await fetch(API_INVITES_URL, {
       method: 'PUT',
@@ -102,6 +96,9 @@ export async function updateInvite(data: UpdateInvite) {
 // Delete an invite
 export async function deleteInvite(id: string) {
   try {
+    const API_BASE_URL = getCurrentUrl(await headers())
+    const API_INVITES_URL = API_BASE_URL + '/api/invites'
+
     const parsedData = deleteInviteSchema.parse({ id })
     const response = await fetch(API_INVITES_URL, {
       method: 'DELETE',

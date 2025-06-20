@@ -1,25 +1,17 @@
 'use server'
 
+import { getCurrentUrl } from '@/lib/helpers'
+import { headers } from 'next/headers'
 import { deleteExperienceSchema, Experience} from '@/schemas/experience'
 
-type ApiError = {
-  error: string
-  status?: number
-}
-type ApiResponseMessage = {
-  message: string
-  status?: number
-}
-// Base URL for the API
-import { getCloudflareContext } from "@opennextjs/cloudflare";
-const {env} = await getCloudflareContext({ async: true })
-const API_BASE_URL = env.API_URL
 
 //==============================Experience=====================================//
-const API_EXPERIENCE_URL = API_BASE_URL + '/experience'
 // Fetch all experience
 export async function fetchAllExperience() {
   try {
+    const API_BASE_URL = getCurrentUrl(await headers())
+    const API_EXPERIENCE_URL = API_BASE_URL + '/api/experience'
+    
     console.log('Fetching all experience...', API_EXPERIENCE_URL)
 
     const response = await fetch(API_EXPERIENCE_URL, { method: 'GET' })
@@ -35,6 +27,8 @@ export async function fetchAllExperience() {
 
 export async function fetchExperienceById(id: string){
   try {
+    const API_BASE_URL = getCurrentUrl(await headers())
+    const API_EXPERIENCE_URL = API_BASE_URL + '/api/experience'
     console.log('Fetching experience by id:', id)
     const response = await fetch(`${API_EXPERIENCE_URL}?experienceId=${id}`, { method: 'GET' })
     if (!response.ok) {
@@ -54,6 +48,9 @@ export async function fetchExperienceById(id: string){
 // Delete an invite
 export async function deleteExperience(id: string) {
   try {
+    const API_BASE_URL = getCurrentUrl(await headers())
+    const API_EXPERIENCE_URL = API_BASE_URL + '/api/experience'
+
     const parsedData = deleteExperienceSchema.parse({ id })
     const response = await fetch(API_EXPERIENCE_URL, {
       method: 'DELETE',

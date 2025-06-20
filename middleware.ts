@@ -1,6 +1,5 @@
 
 import { auth } from "@/lib/auth"
-import { User } from "@/schemas/user";
 
 export default auth((req) => {
   const publicPaths = ['/api/auth', '/login', '/api/acceptinvite']
@@ -8,6 +7,7 @@ export default auth((req) => {
   const session = req.auth
   console.log('Request url:', req.nextUrl.pathname);
   const reqUrl = req.nextUrl.pathname;
+  // req.headers.set('x-forwarded-proto', 'https')
   if (publicPaths.includes(reqUrl) || reqUrl.startsWith('/api/auth')) {
     return;
   }

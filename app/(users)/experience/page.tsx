@@ -76,14 +76,8 @@ export default function ExperiencePage() {
     loadExperience()
   }, [])
 
-  if(isLoading){
+  if (isLoading) {
     return <ExperienceLoading />
-  }
-
-  if (error) {
-    return (
-      <ShowError error={error} />
-    )
   }
 
   return (
@@ -102,13 +96,17 @@ export default function ExperiencePage() {
         </Button>
       </div>
 
-      <ExperienceSection
-        experiences={experiences}
-        onDelete={handleDeleteExperience}
-        onDuplicate={handleDuplicateExperience}
-        onBulkDelete={handleBulkDelete}
-        isLoading={isLoading}
-      />
+      {error ? (
+        <ShowError error={error} mainpage={true} />
+      ) : (
+        <ExperienceSection
+          experiences={experiences}
+          onDelete={handleDeleteExperience}
+          onDuplicate={handleDuplicateExperience}
+          onBulkDelete={handleBulkDelete}
+          isLoading={isLoading}
+        />
+      )}
     </div>
   )
 }

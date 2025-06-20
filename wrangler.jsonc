@@ -18,8 +18,6 @@
     }
   ],
   "vars": {
-    "TEST_VAR": "test_value",
-    "API_URL": "http://localhost:3000/api"
   },
   "d1_databases": [
     {

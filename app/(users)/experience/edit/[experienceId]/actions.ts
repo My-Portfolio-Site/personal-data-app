@@ -1,22 +1,14 @@
 'use server'
+import { getCurrentUrl } from '@/lib/helpers'
+import { headers } from 'next/headers'
 import { ExperienceSchema, Experience } from '@/schemas/experience'
-import { getCloudflareContext } from "@opennextjs/cloudflare";
 
-type ApiError = {
-  error: string
-  status?: number
-}
-type ApiResponseMessage = {
-  message: string
-  status?: number
-}
 
 // Update an invite
 export async function updateExperience(data: Experience) {
   try {
-    const { env } = await getCloudflareContext({ async: true })
-    const API_BASE_URL = env.API_URL
-    const API_EXPERIENCE_URL = API_BASE_URL + '/experience'
+    const API_BASE_URL = getCurrentUrl(await headers())
+    const API_EXPERIENCE_URL = API_BASE_URL + '/api/experience'
 
     const parsedData = ExperienceSchema.parse(data)
     const response = await fetch(API_EXPERIENCE_URL, {
