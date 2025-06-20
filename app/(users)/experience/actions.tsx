@@ -1,6 +1,6 @@
 'use server'
 
-import {updateExperienceSchema, deleteExperienceSchema, Experience, UpdateExperience} from '@/schemas/experience'
+import { deleteExperienceSchema, Experience} from '@/schemas/experience'
 
 type ApiError = {
   error: string

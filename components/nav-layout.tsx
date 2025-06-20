@@ -116,6 +116,7 @@ export function NavLayoutWrapper({
   children: React.ReactNode
   currentUser: CurrentUser
 }) {
+
   const pathname = usePathname()
   if (publicURLs.includes(pathname)) {
     return <div className='max-w-4xl'>{children}</div>
@@ -142,7 +143,7 @@ export function NavLayoutWrapper({
                     <FileText className='size-4' />
                   </div>
                   <div className='flex flex-col gap-0.5 leading-none'>
-                    <span className='font-semibold'>Resume Builder</span>
+                    <span className='font-semibold'>Personal Data App</span>
                     <span className='text-xs text-muted-foreground'>
                       Professional CV Editor
                     </span>

@@ -4,54 +4,17 @@ import Link from "next/link"
 import { ExperienceSection } from "./_components/experience-section"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
-// import type { ExperienceFormData } from "@/app/(users)/experience/_components/experience-form"
 import { Experience } from "@/schemas/experience"
 
 import { useIsMobile } from "@/hooks/use-mobile"
 import { fetchAllExperience } from './actions'
 import ExperienceLoading from "./loading"
+import ShowError from "./_components/experiance-show-error"
 
-// Mock data - in real app this would come from API/database
-// const initialExperiences: ExperienceFormData[] = [
-//   {
-//     id: "1",
-//     company: "TechCorp Inc.",
-//     position: "Senior Software Engineer",
-//     location: "San Francisco, CA",
-//     startDate: "2021-01",
-//     endDate: null,
-//     description:
-//       "Lead development of microservices architecture serving 10M+ users. Mentored 5 junior developers and improved deployment efficiency by 40%.",
-//     achievements: [
-//       "Architected and implemented scalable microservices handling 10M+ daily requests",
-//       "Led migration from monolith to microservices, reducing deployment time by 60%",
-//       "Mentored 5 junior developers, with 3 receiving promotions within 18 months",
-//       "Implemented CI/CD pipelines reducing bug reports by 35%",
-//     ],
-//     technologies: ["React", "Node.js", "AWS", "Docker", "Kubernetes"],
-//   },
-//   {
-//     id: "2",
-//     company: "StartupXYZ",
-//     position: "Full Stack Developer",
-//     location: "Remote",
-//     startDate: "2019-03",
-//     endDate: "2020-12",
-//     description:
-//       "Built core platform features for B2B SaaS product. Collaborated with design and product teams to deliver user-centric solutions.",
-//     achievements: [
-//       "Developed responsive web application serving 50,000+ active users",
-//       "Integrated payment processing system increasing revenue by 25%",
-//       "Optimized database queries reducing page load times by 45%",
-//       "Collaborated with UX team to improve user retention by 30%",
-//     ],
-//     technologies: ["Vue.js", "Python", "PostgreSQL", "Redis", "Stripe API"],
-//   },
-// ]
 
 export default function ExperiencePage() {
   const [experiences, setExperiences] = useState<Experience[]>([])
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const isMobile = useIsMobile()
 
@@ -115,6 +78,12 @@ export default function ExperiencePage() {
 
   if(isLoading){
     return <ExperienceLoading />
+  }
+
+  if (error) {
+    return (
+      <ShowError error={error} />
+    )
   }
 
   return (

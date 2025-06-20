@@ -38,7 +38,7 @@ import { Input } from '@/components/ui/input'
 import { toast } from 'sonner'
 
 import { createInviteFormSchema } from '@/schemas/invite'
-import { createInvite } from '../actions'
+import { createInvite } from '@/app/admin/invites/actions'
 
 export default function InviteForm({ isLoading, triggerRefresh }: { isLoading: boolean,  triggerRefresh: () => void }) {
   const [open, setOpen] = useState(false)

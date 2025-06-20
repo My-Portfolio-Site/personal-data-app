@@ -2,17 +2,16 @@
 
 import { useState, useEffect } from "react"
 import { useRouter, useParams } from "next/navigation"
-import { ExperienceForm } from "@/app/(users)/experience/_components/experience-form"
-import { Experience } from "@/schemas/experience"
-
-import { Button } from "@/components/ui/button"
+import { toast } from "sonner"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
-import { Card, CardContent } from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
+import { Experience } from "@/schemas/experience"
+import { Button } from "@/components/ui/button"
+
+import { ExperienceForm } from "@/app/(users)/experience/_components/experience-form"
+import ShowError from "@/app/(users)/experience/_components/experiance-show-error"
 import { FormSkeleton } from "@/components/form-skeleton"
 import { fetchExperienceById } from "../../actions"
-import { toast } from "sonner"
 import { updateExperience } from "./actions"
 
 export default function EditExperiencePage() {
@@ -20,8 +19,7 @@ export default function EditExperiencePage() {
 
   const router = useRouter()
   const [experience, setExperience] = useState<Experience | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
-  const [isLoadingData, setIsLoadingData] = useState(true)
+  const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   // Load experience data
@@ -45,7 +43,7 @@ export default function EditExperiencePage() {
       } catch (err) {
         setError("Failed to load experience")
       } finally {
-        setIsLoadingData(false)
+        setIsLoading(false)
       }
     }
     console.log(experienceId);
@@ -79,7 +77,7 @@ export default function EditExperiencePage() {
   }
 
   // Loading state
-  if (isLoadingData) {
+  if (isLoading) {
     return (<FormSkeleton />)
   }
 
@@ -116,29 +114,5 @@ export default function EditExperiencePage() {
       </div>
     </div>
 
-  )
-}
-
-function ShowError({ error }: { error: string }) {
-  return (
-    <div className="p-6 space-y-6">
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="sm" asChild>
-          <Link href="/experience">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Experience
-          </Link>
-        </Button>
-      </div>
-      <Card>
-        <CardContent className="p-6 text-center">
-          <h2 className="text-lg font-semibold text-destructive mb-2">Error</h2>
-          <p className="text-muted-foreground mb-4">{error}</p>
-          <Button asChild>
-            <Link href="/experience">Return to Experience List</Link>
-          </Button>
-        </CardContent>
-      </Card>
-    </div>
   )
 }
