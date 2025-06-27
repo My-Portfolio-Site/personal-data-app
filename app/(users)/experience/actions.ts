@@ -44,6 +44,20 @@ export async function fetchExperienceById(id: string){
   }
 }
 
+// Get total experience in years
+// export async function getTotalExperience() {
+//   try {
+//     const experiences = await fetchAllExperience()
+//     if ('error' in experiences) {
+//       throw new Error(experiences.error)
+//     }
+//     const totalExperience = experiences.reduce((total, exp) => total + (exp.years || 0), 0)
+
+//     return totalExperience
+//   } catch (err) {
+//     return { error: (err as Error).message } as ApiError
+//   }
+// }
 
 // Delete an invite
 export async function deleteExperience(id: string) {

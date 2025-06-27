@@ -41,12 +41,7 @@ export function ExperienceSection({
   onDuplicate,
   isLoading = false,
 }: ExperienceSectionProps) {
-  const formatDate = (dateString: string) => {
-    if (!dateString) return 'Present'
-    const [year, month] = dateString.split('-')
-    const date = new Date(Number.parseInt(year), Number.parseInt(month) - 1)
-    return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
-  }
+  // Format date function
 
   return (
     <div className='space-y-4'>
@@ -70,8 +65,8 @@ export function ExperienceSection({
                       </span>
                       <span className='flex items-center gap-1'>
                         <Calendar className='w-4 h-4' />
-                        {formatDate(exp.startDate)} -{' '}
-                        {exp.endDate ? formatDate(exp.endDate) : 'Present'}
+                        {exp.startDate} -{' '}
+                        {exp.endDate ? exp.endDate : 'Present'}
                       </span>
                     </div>
                   </div>

@@ -8,7 +8,7 @@ import { Experience } from "@/schemas/experience"
 
 import { useIsMobile } from "@/hooks/use-mobile"
 import { fetchAllExperience } from './actions'
-import ExperienceLoading from "./loading"
+import Loading from "./loading"
 import ShowError from "./_components/experiance-show-error"
 
 
@@ -17,7 +17,6 @@ export default function ExperiencePage() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const isMobile = useIsMobile()
-
 
   // Delete experience
   const handleDeleteExperience = async (id: string) => {
@@ -55,8 +54,6 @@ export default function ExperiencePage() {
         // Simulate API call
         console.log("Loading experiences");
 
-        await new Promise((resolve) => setTimeout(resolve, 1000))
-
         const result = await fetchAllExperience()
         if (!result || "error" in result) {
           setError("Experience not found")
@@ -77,7 +74,7 @@ export default function ExperiencePage() {
   }, [])
 
   if (isLoading) {
-    return <ExperienceLoading />
+    return <Loading />
   }
 
   return (

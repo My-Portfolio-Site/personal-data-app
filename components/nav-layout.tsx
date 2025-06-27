@@ -111,10 +111,10 @@ const publicURLs = ['/acceptinvite', '/login']
 
 export function NavLayoutWrapper({
   children,
-  currentUser,
+  currentUser
 }: {
   children: React.ReactNode
-  currentUser: CurrentUser
+  currentUser: CurrentUser | null
 }) {
 
   const pathname = usePathname()
@@ -122,7 +122,7 @@ export function NavLayoutWrapper({
     return <div className='max-w-4xl'>{children}</div>
   }
 
-  const isAdmin = currentUser.role === 'admin'
+  const isAdmin = currentUser?.role === 'admin'
 
   const currentSection =
     userSections.find((section) => section.url === pathname) ||
@@ -250,12 +250,13 @@ export function NavLayoutWrapper({
 }
 
 function CurrentUserOptions({
-  currentUser,
   minimal = false,
+  currentUser,
 }: {
-  currentUser: CurrentUser
   minimal?: boolean
+  currentUser: CurrentUser | null
 }) {
+  if(!currentUser) return null;
   return (
     <SidebarFooter>
       <SidebarMenu>

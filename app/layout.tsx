@@ -35,14 +35,7 @@ export default async function RootLayout({
   let currentUser
 
   if (!session?.user) {
-    currentUser = {
-      id: 'jabjawi8w8992',
-      name: 'John Smith',
-      email: 'john.smith@email.com',
-      image: '',
-      initials: 'JS',
-      role: 'admin',
-    } as CurrentUser
+    currentUser = null
   } else {
     const initials =
       (session?.user?.name ?? "Not Available")

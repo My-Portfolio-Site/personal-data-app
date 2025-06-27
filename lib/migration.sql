@@ -88,3 +88,31 @@ CREATE TABLE "experiences" (
 CREATE INDEX idx_experiences_userId ON "experiences" (userId);
 CREATE INDEX idx_experiences_id ON "experiences" (id);
 CREATE INDEX idx_experiences_userId_id ON "experiences" (userId, id);
+
+
+
+CREATE TABLE IF NOT EXISTS "profiles" (
+  "id" TEXT NOT NULL,
+  "userId" TEXT NOT NULL,
+  "firstName" TEXT DEFAULT NULL,
+  "lastName" TEXT DEFAULT NULL,
+  "title" TEXT DEFAULT NULL,
+  "email" TEXT DEFAULT NULL,
+  "phone" TEXT DEFAULT NULL,
+  "location" TEXT DEFAULT NULL,
+  "website" TEXT DEFAULT NULL,
+  "linkedin" TEXT DEFAULT NULL,
+  "github" TEXT DEFAULT NULL,
+  "avatar" TEXT DEFAULT NULL,
+  "summary" TEXT DEFAULT NULL,
+  "yearsOfExperience" REAL DEFAULT 0.0,
+  "projectsDone" INTEGER DEFAULT 0,
+  "totalSkills" INTEGER DEFAULT 0,
+  "certificationCompleted" INTEGER DEFAULT 0,
+  PRIMARY KEY ("id"),
+  FOREIGN KEY ("userId") REFERENCES "users" ("id") ON DELETE CASCADE
+);
+
+CREATE INDEX idx_profiles_userId ON "profiles" ("userId");
+CREATE INDEX idx_profiles_id ON "profiles" ("id");
+CREATE INDEX idx_profiles_userId_id ON "profiles" ("userId", "id");

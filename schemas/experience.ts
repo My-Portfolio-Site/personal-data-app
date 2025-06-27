@@ -51,14 +51,15 @@ export const ExperienceFormSchema = z.object({
 
 export const updateExperienceSchema = z.object({
   id: z.string().nonempty(),
-  company: z.string(),
-  location: z.string(),
-  position: z.string(),
-  startDate: z.iso.date(),
-  endDate: z.iso.date().nullable(),
-  achievements: z.array(z.string()),
-  technologies: z.array(z.string()),
-  description: z.string().nullable(),
+  userId: z.string().nonempty(),
+  company: z.string().nullable().default(null),
+  location: z.string().nullable().default(null),
+  position: z.string().nullable().default(null),
+  startDate: z.iso.date().nullable().default(null),
+  endDate: z.iso.date().nullable().default(null),
+  achievements: z.array(z.string()).nullable().default(null),
+  technologies: z.array(z.string()).nullable().default(null),
+  description: z.string().nullable().default(null),
 });
 
 // Schema for deleting a Experience (requires only the ID)

@@ -5,11 +5,11 @@ import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from 'next/navigation';
 
-export default function ShowError({ error, mainpage = false }: { error: string, mainpage?: boolean }) {
+export default function ShowError({ error, mainpage = true }: { error: string, mainpage?: boolean }) {
   const router = useRouter();
 
   const handleRefresh = () => {
-    router.push('/experience'); // Adjust the path as needed to trigger a refresh
+    router.push('/aboutme'); // Adjust the path as needed to trigger a refresh
   };
 
   if (mainpage) {

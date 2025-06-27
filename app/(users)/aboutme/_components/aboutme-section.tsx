@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { ProfileSchema, Profile } from '@/schemas/profile'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -14,6 +15,7 @@ import { Separator } from '@/components/ui/separator'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { toast } from 'sonner'
 import {
   MapPin,
   Mail,
@@ -26,44 +28,17 @@ import {
   Save,
   X,
 } from 'lucide-react'
-
-// Mock personal data
-const initialPersonalData = {
-  firstName: 'John',
-  lastName: 'Smith',
-  title: 'Senior Software Engineer',
-  email: 'john.smith@email.com',
-  phone: '+1 (555) 123-4567',
-  location: 'San Francisco, CA',
-  website: 'https://johnsmith.dev',
-  linkedin: 'https://linkedin.com/in/johnsmith',
-  github: 'https://github.com/johnsmith',
-  avatar: '',
-  summary:
-    'Experienced software engineer with 8+ years of expertise in full-stack development, cloud architecture, and team leadership. Proven track record of delivering scalable solutions and mentoring junior developers. Passionate about clean code, performance optimization, and emerging technologies.',
-}
-
-interface PersonalData {
-  firstName: string
-  lastName: string
-  title: string
-  email: string
-  phone: string
-  location: string
-  website: string
-  linkedin: string
-  github: string
-  avatar: string
-  summary: string
-}
+import { fetchProfile, updateProfile } from '../actions'
+import Loading from '../loading'
+import ShowError from './aboutme-show-error'
 
 // Profile Header Component
 function ProfileHeader({
   data,
   onUpdate,
 }: {
-  data: PersonalData
-  onUpdate: (updates: Partial<PersonalData>) => void
+  data: Profile
+  onUpdate: (updates: Partial<Profile>) => void
 }) {
   const [isEditingBasic, setIsEditingBasic] = useState(false)
   const [isEditingContact, setIsEditingContact] = useState(false)
@@ -107,14 +82,14 @@ function ProfileHeader({
     setIsEditingContact(false)
   }
 
-  const updateTempData = (field: keyof PersonalData, value: string) => {
+  const updateTempData = (field: keyof Profile, value: string) => {
     setTempData((prev) => ({ ...prev, [field]: value }))
   }
 
   return (
     <Card>
-      <CardContent className='p-4 sm:p-6'>
-        <div className='flex flex-col items-center sm:items-start lg:flex-row gap-4 sm:gap-6'>
+      <CardContent className=''>
+        <div className='flex flex-col items-center sm:items-start md:flex-row gap-4 sm:gap-6'>
           {/* Avatar Section */}
           <div className='flex flex-col items-center space-y-3 sm:space-y-4'>
             <div className='relative'>
@@ -346,7 +321,7 @@ function ProfessionalSummary({
 
   return (
     <Card>
-      <CardHeader className='pb-3 sm:pb-6'>
+      <CardHeader className=''>
         <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2'>
           <div className='space-y-1'>
             <CardTitle className='text-base sm:text-lg'>
@@ -401,9 +376,9 @@ function OnlinePresence({
   data,
   onUpdate,
 }: {
-  data: Pick<PersonalData, 'website' | 'linkedin' | 'github'>
+  data: Pick<Profile, 'website' | 'linkedin' | 'github'>
   onUpdate: (
-    updates: Pick<PersonalData, 'website' | 'linkedin' | 'github'>
+    updates: Pick<Profile, 'website' | 'linkedin' | 'github'>
   ) => void
 }) {
   const [isEditing, setIsEditing] = useState(false)
@@ -430,7 +405,7 @@ function OnlinePresence({
 
   return (
     <Card>
-      <CardHeader className='pb-3 sm:pb-6'>
+      <CardHeader className=''>
         <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2'>
           <div className='space-y-1'>
             <CardTitle className='text-base sm:text-lg'>
@@ -548,13 +523,23 @@ function OnlinePresence({
 }
 
 // Quick Stats Component
-function QuickStats() {
+function QuickStats({
+  yearsOfExperience,
+  projectsDone,
+  totalSkills,
+  certificationCompleted,
+}: {
+  yearsOfExperience: number,
+  projectsDone: number,
+  totalSkills: number,
+  certificationCompleted: number
+}) {
   return (
     <div className='grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4'>
       <Card>
         <CardContent className='p-3 sm:p-4 text-center'>
           <div className='text-lg sm:text-xl lg:text-2xl font-bold text-primary'>
-            8+
+            {yearsOfExperience}+
           </div>
           <p className='text-xs sm:text-sm text-muted-foreground leading-tight'>
             Years Experience
@@ -564,7 +549,7 @@ function QuickStats() {
       <Card>
         <CardContent className='p-3 sm:p-4 text-center'>
           <div className='text-lg sm:text-xl lg:text-2xl font-bold text-primary'>
-            15+
+            {projectsDone}+
           </div>
           <p className='text-xs sm:text-sm text-muted-foreground leading-tight'>
             Projects Completed
@@ -574,17 +559,18 @@ function QuickStats() {
       <Card>
         <CardContent className='p-3 sm:p-4 text-center'>
           <div className='text-lg sm:text-xl lg:text-2xl font-bold text-primary'>
-            5
+            {totalSkills}+
+
           </div>
           <p className='text-xs sm:text-sm text-muted-foreground leading-tight'>
-            Team Members Led
+            Total Skills
           </p>
         </CardContent>
       </Card>
       <Card>
         <CardContent className='p-3 sm:p-4 text-center'>
           <div className='text-lg sm:text-xl lg:text-2xl font-bold text-primary'>
-            3
+            {certificationCompleted}+
           </div>
           <p className='text-xs sm:text-sm text-muted-foreground leading-tight'>
             Certifications
@@ -597,39 +583,139 @@ function QuickStats() {
 
 // Main Personal Info Section Component
 export function AboutMeSection() {
-  const [personalData, setPersonalData] =
-    useState<PersonalData>(initialPersonalData)
+  const [profileData, setProfileData] = useState<Profile>({
+    id: '',
+    userId: '',
+    firstName: '',
+    lastName: '',
+    title: '',
+    email: '',
+    phone: '',
+    location: '',
+    website: '',
+    linkedin: '',
+    github: '',
+    avatar: '',
+    summary: '',
+    yearsOfExperience: 0,
+    projectsDone: 0,
+    totalSkills: 0,
+    certificationCompleted: 0,
+  })
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  const updatePersonalData = (updates: Partial<PersonalData>) => {
-    setPersonalData((prev) => ({ ...prev, ...updates }))
+  // Handle Profile Update
+  const handleProfileUpdate = async (updates: Partial<Profile>) => {
+    try {
+      setIsLoading(true)
+      const updateFormData = {
+        id: profileData.id,
+        userId: profileData.userId,
+        firstName: updates.firstName ?? profileData.firstName ?? null,
+        lastName: updates.lastName ?? profileData.lastName ?? null,
+        title: updates.title ?? profileData.title ?? null,
+        email: updates.email ?? profileData.email ?? null,
+        phone: updates.phone ?? profileData.phone ?? null,
+        location: updates.location ?? profileData.location ?? null,
+        website: updates.website ?? profileData.website ?? null,
+        linkedin: updates.linkedin ?? profileData.linkedin ?? null,
+        github: updates.github ?? profileData.github ?? null,
+        summary: updates.summary ?? profileData.summary ?? null,
+        avatar: updates.avatar ?? profileData.avatar ?? null,
+      }
+
+      console.log("Updating profile with:", updateFormData);
+      const result = await updateProfile(updateFormData)
+      if (!result || "error" in result) {
+        setError(result.error)
+      } else {
+        setProfileData((prev) => ({ ...prev, ...updates }))
+        console.log("Profile updated successfully:", result);
+        setError(null)
+      }
+    } catch (err) {
+      setError("Failed to update profile")
+      toast.error(error || "An error occurred while updating your profile.")
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  if (error) {
+    toast.error(error)
+  }
+
+  const updatePersonalData = (updates: Partial<Profile>) => {
+    handleProfileUpdate(updates)
   }
 
   const updateSummary = (summary: string) => {
-    setPersonalData((prev) => ({ ...prev, summary }))
+    handleProfileUpdate({ summary })
   }
 
   const updateOnlinePresence = (
-    updates: Pick<PersonalData, 'website' | 'linkedin' | 'github'>
+    updates: Pick<Profile, 'website' | 'linkedin' | 'github'>
   ) => {
-    setPersonalData((prev) => ({ ...prev, ...updates }))
+    handleProfileUpdate(updates)
   }
 
+  // Load experience data
+  useEffect(() => {
+    const loadExperience = async () => {
+      try {
+        setIsLoading(true)
+        // Simulate API call
+        console.log("Loading experiences");
+
+        await new Promise((resolve) => setTimeout(resolve, 1000))
+
+        const result = await fetchProfile()
+        if (!result || "error" in result) {
+          setError("Experience not found")
+          return
+        } else {
+          setProfileData(result)
+        }
+        console.log("Loaded experience:", result)
+
+      } catch (err) {
+        setError("Failed to load experience")
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadExperience()
+  }, [])
+
+  if (isLoading) {
+    return <Loading />
+  }
+  if (error) {
+    return <ShowError error={error}/>
+  }
   return (
     <div className='space-y-4 md:space-y-6'>
-      <ProfileHeader data={personalData} onUpdate={updatePersonalData} />
+      <ProfileHeader data={profileData} onUpdate={updatePersonalData} />
       <ProfessionalSummary
-        summary={personalData.summary}
+        summary={profileData.summary}
         onUpdate={updateSummary}
       />
       <OnlinePresence
         data={{
-          website: personalData.website,
-          linkedin: personalData.linkedin,
-          github: personalData.github,
+          website: profileData.website,
+          linkedin: profileData.linkedin,
+          github: profileData.github,
         }}
         onUpdate={updateOnlinePresence}
       />
-      <QuickStats />
+      <QuickStats
+        yearsOfExperience={profileData.yearsOfExperience}
+        projectsDone={profileData.projectsDone}
+        totalSkills={profileData.totalSkills}
+        certificationCompleted={profileData.certificationCompleted}
+      />
     </div>
   )
 }
