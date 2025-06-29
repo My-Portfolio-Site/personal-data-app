@@ -6,9 +6,9 @@ export default function Loading() {
   return (
     <div className="px-6 py-2 space-y-6">
       <div className="flex items-center justify-between gap-2">
-        <div className="flex flex-col gap-2">
-          <Skeleton className="h-8 w-40 md:w-30" />
-          <Skeleton className="h-3 w-60" />
+        <div>
+          <h1 className="text-xl md:text-2xl font-bold tracking-tight">Experience</h1>
+          <p className="text-muted-foreground text-sm md:text-base">Manage your work history and achievements</p>
         </div>
         <Skeleton className="h-8 w-8 md:w-48 rounded-md">
         </Skeleton>

@@ -666,21 +666,19 @@ export function AboutMeSection() {
       try {
         setIsLoading(true)
         // Simulate API call
-        console.log("Loading experiences");
-
-        await new Promise((resolve) => setTimeout(resolve, 1000))
+        console.log("Loading profile");
 
         const result = await fetchProfile()
         if (!result || "error" in result) {
-          setError("Experience not found")
+          setError(result.error || "Failed to load profile")
           return
         } else {
           setProfileData(result)
         }
-        console.log("Loaded experience:", result)
+        console.log("Loaded profile:", result)
 
       } catch (err) {
-        setError("Failed to load experience")
+        setError(err instanceof Error ? err.message : "Failed to load profile")
       } finally {
         setIsLoading(false)
       }
@@ -694,6 +692,10 @@ export function AboutMeSection() {
   }
   if (error) {
     return <ShowError error={error}/>
+  }
+  console.log("PD:",profileData);
+  if(!profileData || Object.keys(profileData).length === 0) {
+    return <ShowError error="Profile data is empty or not loaded." />
   }
   return (
     <div className='space-y-4 md:space-y-6'>

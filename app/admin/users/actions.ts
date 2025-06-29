@@ -4,14 +4,16 @@ import { User, deleteUserSchema } from '@/schemas/user'
 import { auth } from '@/lib/auth'
 
 import { getCurrentUrl } from '@/lib/helpers'
-import { headers } from 'next/headers'
+import { headers, cookies } from 'next/headers'
 // ==================================================Users=============================================================//
 // Fetch all Users
 export async function fetchAllUsers() {
   try {
+    const cookieStore = cookies()
+    const cookieHeader = cookieStore.toString()
     const API_BASE_URL = getCurrentUrl(await headers())
     const API_USERS_URL = API_BASE_URL + '/api/users'
-    const response = await fetch(API_USERS_URL, { method: 'GET' })
+    const response = await fetch(API_USERS_URL, { method: 'GET', headers: { 'Cookie': cookieHeader } })
     if (!response.ok) {
       const error = { error: 'Failed to fetch users', status: response.status }
       console.log(error)
@@ -26,13 +28,15 @@ export async function fetchAllUsers() {
 // Delete an user
 export async function deleteUser(id: string) {
   try {
+    const cookieStore = cookies()
+    const cookieHeader = cookieStore.toString()
     const API_BASE_URL = getCurrentUrl(await headers())
     const API_USERS_URL = API_BASE_URL + '/api/users'
     
     const parsedData = deleteUserSchema.parse({ id })
     const response = await fetch(API_USERS_URL, {
       method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Cookie': cookieHeader },
       body: JSON.stringify(parsedData),
     })
     if (!response.ok) {

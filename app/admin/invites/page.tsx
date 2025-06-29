@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Plus, RefreshCw } from 'lucide-react'
 import InvitesSection from './_components/invites-section'
+import CreateInviteForm from '@/app/admin/invites/_components/create-invite-form'
 
 export const metadata: Metadata = {
   title: 'Invites',
@@ -12,9 +13,8 @@ export const metadata: Metadata = {
 
 export default function Invites() {
   return (
-    <div id='experiance' className="flex flex-1 flex-col gap-4 p-6">
+    <div id='invites' className="px-6 py-2 space-y-6">
       <SectionHeader title='Invites' description='Invites section' />
-      <Separator />
       <InvitesSection />
     </div>
   )
@@ -27,10 +27,8 @@ function SectionHeader({title, description}: {title: string, description: string
         <h1 className='text-2xl font-bold tracking-tight'>{title}</h1>
         <p className='text-muted-foreground'>{description}</p>
       </div>
-      <Button>
-        <Plus className='w-4 h-4 mr-2' />
-        Add Invite
-      </Button>
+
+      <CreateInviteForm />
     </div>
   )
 }

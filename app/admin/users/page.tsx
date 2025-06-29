@@ -10,11 +10,10 @@ export const metadata: Metadata = {
   description: 'App and API for personal data management',
 }
 
-export default function Experience() {
+export default function Users() {
   return (
-    <div id='experiance' className="flex flex-1 flex-col gap-4 p-6">
+    <div id='users' className="px-6 py-2 space-y-6">
       <SectionHeader title='Users' description='Users section' />
-      <Separator />
       <UsersSection />
     </div>
   )

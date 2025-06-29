@@ -8,7 +8,7 @@ import { ExperienceFormSchema, ExperienceSchema, deleteExperienceSchema, updateE
 // Get all experiences
 export async function GET(req: Request) {
   try {
-    const currentUserId = await getCurrentUserId();
+    const {currentUserId, currentUserEmail }= await getCurrentUserId();
 
     const url = new URL(req.url);
     const experienceId = url.searchParams.get("experienceId");
@@ -71,7 +71,7 @@ export async function GET(req: Request) {
 // Add a new experience
 export async function POST(req: Request) {
   try {
-    const currentUserId = await getCurrentUserId();
+    const {currentUserId} = await getCurrentUserId();
 
     if (!currentUserId) {
       console.log("Not authenticated.");
@@ -107,7 +107,7 @@ export async function POST(req: Request) {
 // Update existing experience
 export async function PUT(req: Request) {
   try {
-    const currentUserId = await getCurrentUserId();
+    const {currentUserId} = await getCurrentUserId();
     const { id, userId, company, location, position, achievements, technologies, description, startDate, endDate } = updateExperienceSchema.parse(await req.json());
 
     if (!currentUserId) {

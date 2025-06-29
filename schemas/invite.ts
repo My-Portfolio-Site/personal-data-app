@@ -21,7 +21,7 @@ export const createInviteFormSchema = z.object({
 export const createInviteSchema = z.object({
   email: z.email({ error: 'Email id is required' }).nonempty(),
   role: z.enum(["user", "admin"]),
-  expires: z.coerce.date(),
+  expires: z.coerce.date().transform((date) => date.toISOString()),
   invitedBy: z.string().nonempty(),
 });
 

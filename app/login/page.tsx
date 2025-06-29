@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   description: 'App and API for personal data management',
 }
 
-export default async function LoginPage() {
+export default async function LoginPage({error}: {error?: string}) {
 
   const session = await auth()
 
@@ -19,7 +19,8 @@ export default async function LoginPage() {
   return (
     <div className="flex items-center justify-center h-screen bg-background">
       <div className="bg-muted py-8 px-10 rounded-lg shadow-md w-full max-w-sm">
-        <h1 className="text-2xl font-bold mb-5 text-center">Login</h1>
+        <h1 className="text-2xl font-bold text-center">Login</h1>
+        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
         <LoginForm />
         <p className="text-center mt-4 text-sm text-muted-foreground">Only invited users can login.</p>
       </div>

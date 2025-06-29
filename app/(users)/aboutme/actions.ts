@@ -3,18 +3,25 @@
 import { getCurrentUrl } from '@/lib/helpers'
 import { headers } from 'next/headers'
 import { ProfileSchema, Profile, ProfileUpdateData, ProfileUpdateSchema, ProfileStatsUpdateData } from '@/schemas/profile'
-
+import { cookies } from 'next/headers'
 
 //==============================Profile=====================================//
 // Fetch profile
 export async function fetchProfile() {
   try {
+
+    const cookieStore = cookies()
+    const cookieHeader = cookieStore.toString()
+
     const API_BASE_URL = getCurrentUrl(await headers())
     const API_PROFILE_URL = API_BASE_URL + '/api/profile'
 
     console.log('Fetching profile...', API_PROFILE_URL)
 
-    const response = await fetch(API_PROFILE_URL, { method: 'GET' })
+    const response = await fetch(API_PROFILE_URL, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json', 'Cookie': cookieHeader }
+    })
     if (!response.ok) {
       console.log('Failed to fetch profile,', 'status:', response.status)
       throw new Error('Failed to fetch profile')

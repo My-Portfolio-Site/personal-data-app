@@ -9,13 +9,13 @@ export function getCurrentUrl(headers: Headers) {
   return `${protocol}://${host}`;
 }
 
-export async function getCurrentUserId(): Promise<string> {
+export async function getCurrentUserId(): Promise<{ currentUserId: string; currentUserEmail: string }> {
   const currentUserSession = await auth();
-  if (!currentUserSession?.user?.id) {
+  if (!currentUserSession?.user?.id && !currentUserSession?.user?.email) {
     console.warn("User not authenticated, using default id: ", "b1612ca5-1403-45ee-9cef-c5af8a909c81");
-    return 'b1612ca5-1403-45ee-9cef-c5af8a909c81'; // Default email for unauthenticated users
+    return {currentUserId: 'b1612ca5-1403-45ee-9cef-c5af8a909c81', currentUserEmail: 'mnkesu1998@gmail.com'}; // Default currentUserEmail for unauthenticated users
   }
-  return currentUserSession.user.id;
+  return { currentUserId: currentUserSession?.user?.id || "", currentUserEmail: currentUserSession?.user?.email || "" };
 }
 
 export async function getCurrentUser(): Promise<User | null> {

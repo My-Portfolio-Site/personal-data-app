@@ -8,23 +8,25 @@ import { Profile, ProfileStatsUpdateSchema, ProfileUpdateSchema } from "@/schema
 // Get profile for current user
 export async function GET(req: Request) {
   try {
-    const userId = await getCurrentUserId();
-    if (!userId) {
+    const {currentUserEmail, currentUserId} = await getCurrentUserId();
+    if (!currentUserId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     const query = `
       SELECT * FROM "profiles" WHERE "userId" = ?;
     `;
-    const result = await db.prepare(query).bind(userId).first();
+    const result = await db.prepare(query).bind(currentUserId).first();
     if (!result) {
-      return NextResponse.json({ error: "Profile not found" }, { status: 404 });
+      console.warn("Profile not found for userId:", currentUserId);
+      // return NextResponse.json({ error: "Profile not found" }, { status: 404 });
+      return NextResponse.json({}, { status: 200 }); // Return null if no profile found
     }
     const profile = {
       ...result,
-      yearsOfExperience: result.yearsOfExperience ?? 0.0,
-      projectsDone: result.projectsDone ?? 0,
-      totalSkills: result.totalSkills ?? 0,
-      certificationCompleted: result.certificationCompleted ?? 0,
+      yearsOfExperience: result?.yearsOfExperience ?? 0.0,
+      projectsDone: result?.projectsDone ?? 0,
+      totalSkills: result?.totalSkills ?? 0,
+      certificationCompleted: result?.certificationCompleted ?? 0,
     } as Profile;
 
     return NextResponse.json(profile, { status: 200 });
@@ -89,8 +91,8 @@ export async function PUT(req: Request) {
 // Update profile stats for the current user
 export async function PATCH(req: Request) {
   try {
-    const userId = await getCurrentUserId();
-    if (!userId) {
+    const {currentUserEmail,currentUserId} = await getCurrentUserId();
+    if (!currentUserId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -117,7 +119,7 @@ export async function PATCH(req: Request) {
       projectsDone ?? null,
       totalSkills ?? null,
       certificationCompleted ?? null,
-      userId
+      currentUserId
     ).run();
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error: any) {

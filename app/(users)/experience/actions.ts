@@ -1,24 +1,26 @@
 'use server'
 
 import { getCurrentUrl } from '@/lib/helpers'
-import { headers } from 'next/headers'
+import { headers, cookies } from 'next/headers'
 import { deleteExperienceSchema, Experience} from '@/schemas/experience'
 
 
 //==============================Experience=====================================//
 // Fetch all experience
-export async function fetchAllExperience() {
+export async function fetchAllUserExperience() {
   try {
+    const cookieStore = cookies()
+    const cookieHeader = cookieStore.toString()
     const API_BASE_URL = getCurrentUrl(await headers())
     const API_EXPERIENCE_URL = API_BASE_URL + '/api/experience'
     
     console.log('Fetching all experience...', API_EXPERIENCE_URL)
 
-    const response = await fetch(API_EXPERIENCE_URL, { method: 'GET' })
-    if (!response.ok) {
-      console.log('Failed to fetch experience,', 'status:', response.status)
-      throw new Error('Failed to fetch experience')
-    }
+    const response = await fetch(API_EXPERIENCE_URL, { method: 'GET', headers: { 'Cookie': cookieHeader } })
+    // if (!response.ok) {
+    //   console.log(response?.error', 'status:', response.status)
+    //   throw new Error('Failed to fetch experience')
+    // }
     return (await response.json()) as Experience[]
   } catch (err) {
     return { error: (err as Error).message } as ApiError
@@ -60,7 +62,7 @@ export async function fetchExperienceById(id: string){
 // }
 
 // Delete an invite
-export async function deleteExperience(id: string) {
+export async function deleteExperienceById(id: string) {
   try {
     const API_BASE_URL = getCurrentUrl(await headers())
     const API_EXPERIENCE_URL = API_BASE_URL + '/api/experience'

@@ -7,7 +7,7 @@ import { Plus } from "lucide-react"
 import { Experience } from "@/schemas/experience"
 
 import { useIsMobile } from "@/hooks/use-mobile"
-import { fetchAllExperience } from './actions'
+import { fetchAllUserExperience } from './actions'
 import Loading from "./loading"
 import ShowError from "./_components/experiance-show-error"
 
@@ -54,15 +54,13 @@ export default function ExperiencePage() {
         // Simulate API call
         console.log("Loading experiences");
 
-        const result = await fetchAllExperience()
+        const result = await fetchAllUserExperience()
         if (!result || "error" in result) {
-          setError("Experience not found")
+          setError(result.error || "Failed to load experiences")
           return
         } else {
           setExperiences(result)
         }
-        console.log("Loaded experience:", result)
-
       } catch (err) {
         setError("Failed to load experience")
       } finally {

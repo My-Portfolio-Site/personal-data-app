@@ -12,7 +12,7 @@ export async function GET() {
     const users = (result.results || []) as User[];
     return NextResponse.json( users , { status: 200 });
   } catch (error: any) {
-    console.error("Error fetching users:", error.message);
+    console.error("API: Error fetching users:", error.message);
     return NextResponse.json({ error: "Failed to fetch users" }, { status: 500 });
   }
 }

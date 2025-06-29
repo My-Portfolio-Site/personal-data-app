@@ -1,9 +1,8 @@
 'use server'
 import { signIn, signOut } from '@/lib/auth'
-import { redirect } from 'next/navigation'
 
-const handleSignIn = async (provider: string) => {
-  await signIn(provider, { redirectTo: '/' })
+const handleSignIn = async (provider: string, callbackUrl: string) => {
+  await signIn(provider, { redirectTo: callbackUrl })
   return true
 }
 

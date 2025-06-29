@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default function AboutMe() {
   return (
     <div className="px-6 py-2 space-y-6">
-      <SectionHeader title='About Me' description='AboutMe section' />
+      {/* <SectionHeader title='About Me' description='AboutMe section' /> */}
       <AboutMeSection />
     </div>
   )

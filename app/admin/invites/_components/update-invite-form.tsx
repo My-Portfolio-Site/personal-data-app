@@ -36,17 +36,17 @@ import {
 import { Input } from '@/components/ui/input'
 import { toast } from 'sonner'
 
-import { updateInviteSchema } from '@/schemas/invite'
+import { updateInviteSchema, UpdateInvite } from '@/schemas/invite'
 import { updateInvite } from '../actions'
 
 export default function UpdateInviteForm({
   isLoading,
-  triggerRefresh,
   inviteData,
+  handleUpdateInvite
 }: {
-  isLoading: boolean
-  triggerRefresh: () => void
+  isLoading: boolean,
   inviteData: { id: string; email: string; role: string }
+  handleUpdateInvite: (data: UpdateInvite) => Promise<string | void>
 }) {
   const [open, setOpen] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -67,20 +67,16 @@ export default function UpdateInviteForm({
   async function onSubmit(data: z.infer<typeof updateInviteSchema>) {
     setIsSubmitting(true)
     setError(null)
-    const result = await updateInvite(data)
-    if ('error' in result) {
-      console.log(result.error)
-      setError(result.error)
-      toast.error(result.error)
+    const result = await handleUpdateInvite(data)
+    if (result) {
+      console.log(result)
+      setError(result)
       setIsSubmitting(false)
       return
     }
-    toast.success('Invite updated successfully')
     form.reset()
     setIsSubmitting(false)
     setOpen(false)
-    triggerRefresh()
-    return
   }
 
   return (
@@ -95,7 +91,7 @@ export default function UpdateInviteForm({
           <SquarePen size={16} color='#0887e7' strokeWidth={3} />
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className='bg-card'>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
             <DialogHeader>

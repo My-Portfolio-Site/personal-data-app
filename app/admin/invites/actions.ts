@@ -12,16 +12,19 @@ import {
 import { auth } from '@/lib/auth'
 
 import { getCurrentUrl } from '@/lib/helpers'
-import { headers } from 'next/headers'
+import { headers, cookies } from 'next/headers'
 //==============================Invites=====================================//
 // Fetch all invites
 export async function fetchAllInvites() {
   try {
+    const cookieStore = cookies()
+    const cookieHeader = cookieStore.toString()
+
     const API_BASE_URL = getCurrentUrl(await headers())
     const API_INVITES_URL = API_BASE_URL + '/api/invites'
     console.log('Fetching invites...', API_INVITES_URL)
 
-    const response = await fetch(API_INVITES_URL, { method: 'GET' })
+    const response = await fetch(API_INVITES_URL, { method: 'GET', headers: { 'Cookie': cookieHeader } })
     if (!response.ok) {
       console.log('Failed to fetch invites,', 'status:', response.status)
       throw new Error('Failed to fetch invites')
@@ -35,6 +38,9 @@ export async function fetchAllInvites() {
 // Add a new invite
 export async function createInvite(data: CreateInviteForm) {
   try {
+    const cookieStore = cookies()
+    const cookieHeader = cookieStore.toString()
+
     const API_BASE_URL = getCurrentUrl(await headers())
     const API_INVITES_URL = API_BASE_URL + '/api/invites'
 
@@ -57,7 +63,7 @@ export async function createInvite(data: CreateInviteForm) {
     console.log('Creating invite: ', allParsedData)
     const response = await fetch(API_INVITES_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Cookie': cookieHeader },
       body: JSON.stringify(allParsedData),
     })
     if (!response.ok) {
@@ -74,13 +80,16 @@ export async function createInvite(data: CreateInviteForm) {
 // Update an invite
 export async function updateInvite(data: UpdateInvite) {
   try {
+    const cookieStore = cookies()
+    const cookieHeader = cookieStore.toString()
+
     const API_BASE_URL = getCurrentUrl(await headers())
     const API_INVITES_URL = API_BASE_URL + '/api/invites'
 
     const parsedData = updateInviteSchema.parse(data)
     const response = await fetch(API_INVITES_URL, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Cookie': cookieHeader },
       body: JSON.stringify(parsedData),
     })
     if (!response.ok) {
@@ -96,13 +105,16 @@ export async function updateInvite(data: UpdateInvite) {
 // Delete an invite
 export async function deleteInvite(id: string) {
   try {
+    const cookieStore = cookies()
+    const cookieHeader = cookieStore.toString()
+
     const API_BASE_URL = getCurrentUrl(await headers())
     const API_INVITES_URL = API_BASE_URL + '/api/invites'
 
     const parsedData = deleteInviteSchema.parse({ id })
     const response = await fetch(API_INVITES_URL, {
       method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Cookie': cookieHeader },
       body: JSON.stringify(parsedData),
     })
     if (!response.ok) {

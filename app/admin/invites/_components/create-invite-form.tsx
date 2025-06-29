@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod/v4'
-import { MailPlus, Check, ChevronsUpDown } from 'lucide-react'
+import { MailPlus, Check, ChevronsUpDown, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -41,7 +41,7 @@ import { createInviteFormSchema } from '@/schemas/invite'
 // import { createInvite } from '@/app/admin/invites/actions';
 import { createInvite } from '../actions';
 
-export default function InviteForm({ isLoading, triggerRefresh }: { isLoading: boolean,  triggerRefresh: () => void }) {
+export default function InviteForm() {
   const [open, setOpen] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
@@ -68,22 +68,17 @@ export default function InviteForm({ isLoading, triggerRefresh }: { isLoading: b
     form.reset()
     setIsSubmitting(false)
     setOpen(false)
-    triggerRefresh()
-    return
   }
+  
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={setOpen} >
       <DialogTrigger asChild>
-        <Button
-          variant='secondary'
-          size='icon'
-          disabled={isLoading}
-          className='hover:bg-secondary-hover'
-        >
-          <MailPlus />
+        <Button>
+          <Plus className='w-4 h-4 mr-2' />
+          Add Invite
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className='bg-card'>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
             <DialogHeader>
@@ -103,7 +98,7 @@ export default function InviteForm({ isLoading, triggerRefresh }: { isLoading: b
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input placeholder='email' {...field} />
+                    <Input placeholder='Enter email id' {...field} />
                   </FormControl>
                   {/* <FormDescription>Email id of the user.</FormDescription> */}
                   <FormMessage />

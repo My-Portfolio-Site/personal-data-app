@@ -119,7 +119,13 @@ export function NavLayoutWrapper({
 
   const pathname = usePathname()
   if (publicURLs.includes(pathname)) {
-    return <div className='max-w-4xl'>{children}</div>
+    return (
+      <div>
+        <div className='absolute right-0'>
+          <ThemeToggle />
+        </div>
+        {children}
+      </div>)
   }
 
   const isAdmin = currentUser?.role === 'admin'
@@ -256,7 +262,7 @@ function CurrentUserOptions({
   minimal?: boolean
   currentUser: CurrentUser | null
 }) {
-  if(!currentUser) return null;
+  if (!currentUser) return null;
   return (
     <SidebarFooter>
       <SidebarMenu>

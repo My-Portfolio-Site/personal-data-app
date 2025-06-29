@@ -138,7 +138,7 @@ export function ExperienceSection({
 
       {/* Empty State */}
       {experiences.length === 0 && (
-        <Card className='border-dashed'>
+        <Card className='border-dashed bg-card/50'>
           <CardHeader className='text-center'>
             <CardTitle>No Experience Added</CardTitle>
             <CardDescription>
