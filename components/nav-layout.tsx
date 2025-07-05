@@ -1,12 +1,11 @@
 'use client'
-import { Suspense } from 'react';
 import { handleSignOut } from '@/app/login/actions'
 import { ThemeToggle } from '@/components/theme-toggle'
 import type * as React from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import {
-  User,
+  User as UserIcon,
   Briefcase,
   GraduationCap,
   Code,
@@ -55,13 +54,13 @@ import {
   SidebarRail,
   SidebarTrigger,
 } from '@/components/ui/sidebar'
-import { CurrentUser } from '@/schemas/user'
+import { CurrentUser, User } from '@/schemas/user'
 
 const userSections = [
   {
     title: 'About Me',
     url: '/aboutme',
-    icon: User,
+    icon: UserIcon,
   },
   {
     title: 'Experience',
@@ -114,7 +113,7 @@ export function NavLayoutWrapper({
   currentUser
 }: {
   children: React.ReactNode
-  currentUser: CurrentUser | null
+  currentUser: User | null
 }) {
 
   const pathname = usePathname()
@@ -125,7 +124,18 @@ export function NavLayoutWrapper({
           <ThemeToggle />
         </div>
         {children}
-      </div>)
+      </div>
+    )
+  }
+
+  if (!currentUser) {
+    return (
+      <div className='flex items-center justify-center h-screen'>
+        <Button asChild>
+          <Link href={`/login?callbackUrl=${pathname}`}>Login</Link>
+        </Button>
+      </div>
+    )
   }
 
   const isAdmin = currentUser?.role === 'admin'
@@ -260,9 +270,14 @@ function CurrentUserOptions({
   currentUser,
 }: {
   minimal?: boolean
-  currentUser: CurrentUser | null
+  currentUser: User
 }) {
-  if (!currentUser) return null;
+  const userNameInitials = currentUser?.name
+    .split(' ')
+    .map((name) => name[0])
+    .join('')
+    .toUpperCase()
+
   return (
     <SidebarFooter>
       <SidebarMenu>
@@ -276,7 +291,7 @@ function CurrentUserOptions({
                 <Avatar className='size-10 rounded-lg border'>
                   <AvatarImage src={currentUser.image} alt={currentUser.name} />
                   <AvatarFallback className='rounded-lg border'>
-                    {currentUser.initials}
+                    {userNameInitials}
                   </AvatarFallback>
                 </Avatar>
                 {!minimal && (
@@ -305,7 +320,7 @@ function CurrentUserOptions({
                       alt={currentUser.name}
                     />
                     <AvatarFallback className='rounded-lg'>
-                      {currentUser.initials}
+                      {userNameInitials}
                     </AvatarFallback>
                   </Avatar>
 

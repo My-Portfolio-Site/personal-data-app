@@ -2,14 +2,11 @@ import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
 
-import { ThemeProvider } from '@/providers/theme-provider'
+import Provider from '@/providers/theme-provider'
 import { Toaster } from '@/components/ui/sonner'
 import { NavLayoutWrapper } from '@/components/nav-layout'
-import { CurrentUser } from '@/schemas/user'
 
-import { auth } from '@/lib/auth'
-import { redirect } from 'next/navigation'
-import { usePathname } from 'next/navigation'
+import { getUser } from '@/lib/dal'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -31,37 +28,18 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const session = await auth()
-  let currentUser
-
-  if (!session?.user) {
-    currentUser = null
-  } else {
-    const initials =
-      (session?.user?.name ?? "Not Available")
-        .split(' ')
-        .map((name) => name[0])
-        .join('')
-        .toUpperCase()
-
-    currentUser = { ...session?.user, initials } as CurrentUser
-  }
+  const currentUser = await getUser()
 
   return (
     <html lang='en' suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider
-          attribute='class'
-          defaultTheme='dark'
-          enableSystem
-          disableTransitionOnChange
-        >
+        <Provider>
           <NavLayoutWrapper currentUser={currentUser}>
             {children}
           </NavLayoutWrapper>
-        </ThemeProvider>
+        </Provider>
         <Toaster richColors position='bottom-center' />
       </body>
     </html>

@@ -12,7 +12,6 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Building, X, Plus, Save, CalendarIcon } from "lucide-react"
 import { Experience } from "@/schemas/experience"
 import { DatePicker } from "@/components/date-picker"
-import Skills from "../../skills/page"
 
 
 interface ExperienceFormProps {

@@ -3,8 +3,8 @@ import { auth } from "@/lib/auth"
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 
 export default auth(async (req) => {
-  const publicPaths = ['/api/auth', '/login', '/api/acceptinvite']
-  const adminPaths = ['/admin']
+  const publicRoutes = ['/api/auth', '/login', '/api/acceptinvite']
+  const rotectedAdminRoutes = ['/admin']
   const session = req.auth
   const ctx = await getCloudflareContext({ async: true });
   const reqUrl = req.nextUrl.pathname;
@@ -18,7 +18,7 @@ export default auth(async (req) => {
     console.log('Headers:', Object.fromEntries(req.headers.entries()));
     console.log('========================');
   }
-  if (publicPaths.includes(reqUrl) || reqUrl.startsWith('/api/auth')) {
+  if (publicRoutes.includes(reqUrl) || reqUrl.startsWith('/api/auth')) {
     return;
   }
 

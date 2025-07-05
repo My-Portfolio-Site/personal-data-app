@@ -8,12 +8,23 @@ export const metadata: Metadata = {
   description: 'App and API for personal data management',
 }
 
-export default async function LoginPage({error}: {error?: string}) {
 
+import { cookies } from 'next/headers';
+
+export default async function LoginPage() {
   const session = await auth()
-
   if (session?.user) {
     redirect('/')
+  }
+
+  // Get error from query string (e.g., ?error=some error)
+  const cookieStore = await cookies();
+  const url = cookieStore.get('next-url')?.value || '';
+  let error = '';
+  if (typeof window === 'undefined') {
+    // On server, parse error from search params
+    const searchParams = new URLSearchParams(url.split('?')[1] || '');
+    error = searchParams.get('error') || '';
   }
 
   return (
