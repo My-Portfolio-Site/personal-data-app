@@ -36,6 +36,20 @@ export const ProfileUpdateSchema = z.object({
   summary: z.string().nullable().default(null),
 })
 
+export const ProfileCreateSchema = z.object({
+  email: z.email(),
+  avatar: z.string(),
+  firstName: z.string(),
+  lastName: z.string(),
+  title: z.string(),
+  phone: z.string(),
+  location: z.string(),
+  website: z.string(),
+  linkedin: z.string(),
+  github: z.string(),
+  summary: z.string(),
+})
+
 export const ProfileStatsUpdateSchema = z.object({
   yearsOfExperience: z.number().min(0).multipleOf(0.1).optional(),
   projectsDone: z.number().min(0).optional(),
@@ -44,5 +58,6 @@ export const ProfileStatsUpdateSchema = z.object({
 });
 
 export type Profile = z.infer<typeof ProfileSchema>;
+export type ProfileCreateData = z.infer<typeof ProfileCreateSchema>;
 export type ProfileUpdateData = z.infer<typeof ProfileUpdateSchema>;
 export type ProfileStatsUpdateData = z.infer<typeof ProfileStatsUpdateSchema>;

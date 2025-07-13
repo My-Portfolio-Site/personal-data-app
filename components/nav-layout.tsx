@@ -1,6 +1,7 @@
 'use client'
 import { handleSignOut } from '@/app/login/actions'
 import { ThemeToggle } from '@/components/theme-toggle'
+import UserNotVerified from '@/components/user-not-verified'
 import type * as React from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
@@ -100,11 +101,11 @@ const adminSections = [
     url: '/admin/users',
     icon: ShieldUser,
   },
-  {
-    title: 'Invites',
-    url: '/admin/invites',
-    icon: MailPlus,
-  },
+  // {
+  //   title: 'Invites',
+  //   url: '/admin/invites',
+  //   icon: MailPlus,
+  // },
 ]
 const publicURLs = ['/acceptinvite', '/login']
 
@@ -129,14 +130,21 @@ export function NavLayoutWrapper({
   }
 
   if (!currentUser) {
+    return null;
+  }
+
+  if (!currentUser.userVerified) {
     return (
-      <div className='flex items-center justify-center h-screen'>
-        <Button asChild>
-          <Link href={`/login?callbackUrl=${pathname}`}>Login</Link>
-        </Button>
+      <div className=''>
+        <div className='absolute right-0 flex m-3'>
+          <ThemeToggle />
+          <CurrentUserOptions currentUser={currentUser} />
+        </div>
+        <UserNotVerified />
       </div>
     )
   }
+
 
   const isAdmin = currentUser?.role === 'admin'
 
@@ -219,9 +227,6 @@ export function NavLayoutWrapper({
             </SidebarGroup>
           )}
         </SidebarContent>
-        <Separator />
-        <CurrentUserOptions currentUser={currentUser} />
-        <SidebarRail />
       </Sidebar>
       <SidebarInset>
         <header className='flex h-16 shrink-0 items-center gap-2 border-b px-4'>
@@ -251,7 +256,7 @@ export function NavLayoutWrapper({
             </BreadcrumbList>
           </Breadcrumb>
           <div className='ml-auto'>
-            <CurrentUserOptions currentUser={currentUser} minimal />
+            <CurrentUserOptions currentUser={currentUser} />
           </div>
           <ThemeToggle />
         </header>
@@ -265,11 +270,9 @@ export function NavLayoutWrapper({
   )
 }
 
-function CurrentUserOptions({
-  minimal = false,
+export function CurrentUserOptions({
   currentUser,
 }: {
-  minimal?: boolean
   currentUser: User
 }) {
   const userNameInitials = currentUser?.name
@@ -279,98 +282,60 @@ function CurrentUserOptions({
     .toUpperCase()
 
   return (
-    <SidebarFooter>
-      <SidebarMenu>
-        <SidebarMenuItem>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <SidebarMenuButton
-                size='lg'
-                className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground h-10 p-0'
-              >
-                <Avatar className='size-10 rounded-lg border'>
-                  <AvatarImage src={currentUser.image} alt={currentUser.name} />
-                  <AvatarFallback className='rounded-lg border'>
-                    {userNameInitials}
-                  </AvatarFallback>
-                </Avatar>
-                {!minimal && (
-                  <div className='grid flex-1 text-left text-sm leading-tight'>
-                    <span className='truncate font-semibold'>
-                      {currentUser.name}
-                    </span>
-                    <span className='truncate text-xs text-muted-foreground'>
-                      {currentUser.email}
-                    </span>
-                  </div>
-                )}
-              </SidebarMenuButton>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              className='w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg'
-              side='bottom'
-              align='end'
-              sideOffset={4}
-            >
-              <DropdownMenuLabel className='p-0 font-normal'>
-                <div className='flex items-center gap-2 px-1 py-1.5 text-left text-sm'>
-                  <Avatar className='h-8 w-8 rounded-lg'>
-                    <AvatarImage
-                      src={currentUser.image}
-                      alt={currentUser.name}
-                    />
-                    <AvatarFallback className='rounded-lg'>
-                      {userNameInitials}
-                    </AvatarFallback>
-                  </Avatar>
-
-                  <div className='grid flex-1 text-left text-sm leading-tight'>
-                    <span className='truncate font-semibold'>
-                      {currentUser.name}
-                    </span>
-                    <span className='truncate text-xs text-muted-foreground'>
-                      {currentUser.email}
-                    </span>
-                  </div>
-                </div>
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <Settings className='mr-2 h-4 w-4' />
-                Account Settings
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleSignOut()}>
-                <LogOut className='mr-2 h-4 w-4' />
-                Log out
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </SidebarMenuItem>
-      </SidebarMenu>
-    </SidebarFooter>
-  )
-}
-
-
-function CurrentUserOptionsSkeleton({ minimal = false }: { minimal?: boolean }) {
-  return (
-    <SidebarFooter>
-      <SidebarMenu>
-        <SidebarMenuItem>
-          <SidebarMenuButton
+    <div>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
             size='lg'
-            className='h-10 p-0 animate-pulse bg-muted rounded-lg'
+            className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground h-10 p-0'
           >
-            <div className='size-10 rounded-lg bg-muted border'></div>
-            {!minimal && (
-              <div className='grid flex-1 text-left text-sm leading-tight ml-2'>
-                <span className='h-4 w-24 bg-muted rounded'></span>
-                <span className='h-3 w-32 bg-muted rounded mt-1'></span>
+            <Avatar className='size-10 rounded-lg border'>
+              <AvatarImage src={currentUser.image} alt={currentUser.name} />
+              <AvatarFallback className='rounded-lg border'>
+                {userNameInitials}
+              </AvatarFallback>
+            </Avatar>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          className='w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg'
+          side='bottom'
+          align='end'
+          sideOffset={4}
+        >
+          <DropdownMenuLabel className='p-0 font-normal'>
+            <div className='flex items-center gap-2 px-1 py-1.5 text-left text-sm'>
+              <Avatar className='h-8 w-8 rounded-lg'>
+                <AvatarImage
+                  src={currentUser.image}
+                  alt={currentUser.name}
+                />
+                <AvatarFallback className='rounded-lg'>
+                  {userNameInitials}
+                </AvatarFallback>
+              </Avatar>
+
+              <div className='grid flex-1 text-left text-sm leading-tight'>
+                <span className='truncate font-semibold'>
+                  {currentUser.name}
+                </span>
+                <span className='truncate text-xs text-muted-foreground'>
+                  {currentUser.email}
+                </span>
               </div>
-            )}
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-      </SidebarMenu>
-    </SidebarFooter>
+            </div>
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          {/* <DropdownMenuItem>
+            <Settings className='mr-2 h-4 w-4' />
+            Account Settings
+          </DropdownMenuItem> */}
+          <DropdownMenuItem onClick={() => handleSignOut()}>
+            <LogOut className='mr-2 h-4 w-4' />
+            Log out
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
   )
 }

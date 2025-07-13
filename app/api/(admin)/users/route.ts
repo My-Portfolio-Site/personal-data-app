@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { NextResponse } from "next/server";
 
 import { db } from "@/lib/db";
-import { User, deleteUserSchema, updateUserSchema, addUserSchema } from "@/schemas/user";
+import { User, deleteUserSchema, updateUserFormSchema, addUserSchema } from "@/schemas/user";
 
 // Get all users
 export async function GET() {
@@ -44,7 +44,7 @@ export async function DELETE(req: Request) {
 // Update a user by ID
 export async function PUT(req: Request) {
   try {
-    const { id, name, role, userVerified } = updateUserSchema.parse(await req.json());
+    const { id, role, userVerified } = updateUserFormSchema.parse(await req.json());
     if (!id) {
       return NextResponse.json({ error: "User ID is required" }, { status: 400 });
     }
@@ -54,16 +54,15 @@ export async function PUT(req: Request) {
       console.log("User not found with ID:", id);
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
-    console.log("Updating user:", id, name, role, userVerified);
+    console.log("Updating user:", id,role, userVerified);
     const query = `
       UPDATE "users" 
-      SET 
-        "name" = COALESCE(?, "name"),
+      SET
         "role" = COALESCE(?, "role"),
         "userVerified" = COALESCE(?, "userVerified")
       WHERE "id" = ?;
     `;
-    await db.prepare(query).bind(name, role, userVerified, id).run();
+    await db.prepare(query).bind( role, userVerified, id).run();
     return NextResponse.json({ message: "User updated successfully" }, {status: 200});
   } catch (error: any) {
     console.error("Error updating user:", error.message);

@@ -99,8 +99,8 @@ function ProfileHeader({
                   alt={`${data.firstName} ${data.lastName}`}
                 />
                 <AvatarFallback className='text-lg sm:text-xl lg:text-2xl'>
-                  {data.firstName[0]}
-                  {data.lastName[0]}
+    
+                  {data.firstName ? (data.firstName[0] + data.lastName[0]) : "NA"}
                 </AvatarFallback>
               </Avatar>
               <Button
@@ -582,26 +582,7 @@ function QuickStats({
 }
 
 // Main Personal Info Section Component
-export function AboutMeSection() {
-  const [profileData, setProfileData] = useState<Profile>({
-    id: '',
-    userId: '',
-    firstName: '',
-    lastName: '',
-    title: '',
-    email: '',
-    phone: '',
-    location: '',
-    website: '',
-    linkedin: '',
-    github: '',
-    avatar: '',
-    summary: '',
-    yearsOfExperience: 0,
-    projectsDone: 0,
-    totalSkills: 0,
-    certificationCompleted: 0,
-  })
+export function AboutMeSection({profileData}: {profileData: Profile}) {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -628,9 +609,8 @@ export function AboutMeSection() {
       console.log("Updating profile with:", updateFormData);
       const result = await updateProfile(updateFormData)
       if (!result || "error" in result) {
-        setError(result.error)
+        setError(result?.error)
       } else {
-        setProfileData((prev) => ({ ...prev, ...updates }))
         console.log("Profile updated successfully:", result);
         setError(null)
       }
@@ -660,43 +640,10 @@ export function AboutMeSection() {
     handleProfileUpdate(updates)
   }
 
-  // Load experience data
-  useEffect(() => {
-    const loadExperience = async () => {
-      try {
-        setIsLoading(true)
-        // Simulate API call
-        console.log("Loading profile");
-
-        const result = await fetchProfile()
-        if (!result || "error" in result) {
-          setError(result.error || "Failed to load profile")
-          return
-        } else {
-          setProfileData(result)
-        }
-        console.log("Loaded profile:", result)
-
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load profile")
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    loadExperience()
-  }, [])
-
-  if (isLoading) {
-    return <Loading />
-  }
-  if (error) {
-    return <ShowError error={error}/>
-  }
   console.log("PD:",profileData);
-  if(!profileData || Object.keys(profileData).length === 0) {
-    return <ShowError error="Profile data is empty or not loaded." />
-  }
+  // if(!profileData || Object.keys(profileData).length === 0) {
+  //   return <ShowError error="Profile data is empty or not loaded." />
+  // }
   return (
     <div className='space-y-4 md:space-y-6'>
       <ProfileHeader data={profileData} onUpdate={updatePersonalData} />

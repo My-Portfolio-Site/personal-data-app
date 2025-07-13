@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 import { db } from "@/lib/db";
 import { getCurrentUserId } from "@/lib/helpers";
-import { Profile, ProfileStatsUpdateSchema, ProfileUpdateSchema } from "@/schemas/profile";
+import { Profile, ProfileStatsUpdateSchema, ProfileCreateSchema, ProfileUpdateSchema } from "@/schemas/profile";
 
 // Get profile for current user
 export async function GET(req: Request) {
@@ -35,6 +35,43 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "Failed to fetch profile" }, { status: 500 });
   }
 }
+// Create profile for the current user
+export async function POST(req: Request) {
+  try {
+    const currentUserId = await getCurrentUserId();
+    
+
+    const { firstName, lastName, title, email, phone, location, website, linkedin, github, summary, avatar } = ProfileCreateSchema.parse(await req.json());
+    const profileId = uuidv4();
+
+    const  query = `
+      INSERT INTO "profiles" ("id", "userId", "firstName", "lastName", "title", "email", "phone", "location", "website", "linkedin", "github", "summary", "avatar")
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+    `;
+
+    await db.prepare(query).bind(
+      profileId,
+      currentUserId,
+      firstName,
+      lastName,
+      title,
+      email,
+      phone,
+      location,
+      website,
+      linkedin,
+      github,
+      summary,
+      avatar
+    ).run();
+
+    console.log("Profile created successfully:", profileId);
+    return NextResponse.json({ success: "Profile created successfully" }, { status: 200 });
+  } catch (error: any) {
+    console.error("Error updating profile:", error.message);
+    return NextResponse.json({ error: "Failed to update profile" }, { status: 500 });
+  }
+}
 
 // Update profile for the current user
 export async function PUT(req: Request) {
@@ -48,8 +85,7 @@ export async function PUT(req: Request) {
     console.log("API Update Profile Request:", id);
 
     const updateQuery = `
-      UPDATE "profiles"
-        SET
+      UPDATE "profiles"SET
         "firstName" = COALESCE(?, "firstName"),
         "lastName" = COALESCE(?, "lastName"),
         "title" = COALESCE(?, "title"),

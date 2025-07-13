@@ -42,13 +42,10 @@ export const getUserSchema = z.object({
 });
 
 // Schema for updating a user
-export const updateUserSchema = z.object({
+export const updateUserFormSchema = z.object({
   id: z.string().nonempty(),
-  name: z.string().optional().transform((val) => val ?? null),
-  emailVerified: z.date().optional().transform((val) => val ?? null),
-  image: z.url().optional().transform((val) => val ?? null),
-  role: z.enum(["user", "admin"]).optional().transform((val) => val ?? null),
-  userVerified: z.boolean().optional().transform((val) => val ?? null),
+  role: z.enum(["user", "admin"]),
+  userVerified: z.boolean(),
 });
 
 
@@ -57,6 +54,6 @@ export type User = z.infer<typeof userSchema>;
 export type AddUser = z.infer<typeof addUserSchema>;
 export type DeleteUser = z.infer<typeof deleteUserSchema>;
 export type GetUser = z.infer<typeof getUserSchema>;
-export type UpdateUser = z.infer<typeof updateUserSchema>;
+export type UpdateUserData = z.infer<typeof updateUserFormSchema>;
 
 export type CurrentUser = z.infer<typeof currentUserSchema>;

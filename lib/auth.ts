@@ -1,28 +1,18 @@
 import NextAuth from "next-auth"
 
 import authConfig from "@/lib/auth.config";
+import { checkInvitation } from "@/lib/helpers";
+import { User } from "@/schemas/user";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   ...authConfig,
   callbacks: {
     async session({ session, user }) {
-      // console.log('auth session:', session);
-      // console.log('user:', user);
       return session;
     },
-    async signIn({ user, account, profile }) {
-      // You can add custom logic here if needed\
-      // console.log('User:', user);
-      // console.log('Account:', account);
-      // console.log('Profile:', profile);
-
+    async signIn({ user }) {
       return true;
     },
-
   },
-  trustHost: true,
-  pages: {
-    signIn: '/login',
-  }
 })
 

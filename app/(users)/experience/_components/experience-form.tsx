@@ -12,26 +12,23 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Building, X, Plus, Save, CalendarIcon } from "lucide-react"
 import { Experience } from "@/schemas/experience"
 import { DatePicker } from "@/components/date-picker"
-
+import { createExperience, updateExperience } from "@/app/(users)/experience/actions"
+import { toast } from "sonner"
+import { useRouter } from "next/navigation"
 
 interface ExperienceFormProps {
   initialData?: Partial<Experience>
-  onSave: (data: Experience) => void
-  onCancel?: () => void
   mode?: "add" | "edit"
-  isLoading?: boolean
   showCancel?: boolean
 }
 
 export function ExperienceForm({
   initialData = {},
-  onSave,
-  onCancel,
   mode = "add",
-  isLoading = false,
-  showCancel = false,
+  showCancel = true,
 }: ExperienceFormProps) {
-  
+  const [isLoading, setIsLoading] = useState(false)
+
   const [formData, setFormData] = useState<Experience>({
     id: initialData.id || "",
     userId: initialData.userId || "",
@@ -48,6 +45,37 @@ export function ExperienceForm({
   const [isCurrentRole, setIsCurrentRole] = useState(formData.endDate === null)
 
   const [newTechnology, setNewTechnology] = useState("")
+  
+  const router = useRouter()
+  const handleCancel = () => {
+    router.push("/experience")
+  }
+
+  const handleSaveExperience = async (data: Experience) => {
+    setIsLoading(true)
+    console.log("Updating experience data:", data)
+    try {
+      let result
+      if (mode === "add") {
+        result = await createExperience(data)
+      } else {
+        result = await updateExperience(data)
+      }
+      if ("error" in result) {
+        console.log("Error updating experience:", result)
+        toast.error(result.error)
+      } else {
+        toast.success("Experience updated successfully")
+        console.log("Experience updated successfully:", result)
+      }
+      router.push("/experience")
+    } catch (error) {
+      console.error("Error updating experience:", error)
+    } finally {
+      setIsLoading(false)
+    }
+    return
+  }
 
   const updateField = (field: keyof Experience, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
@@ -99,7 +127,7 @@ export function ExperienceForm({
       technologies: formData.technologies.filter((tech) => tech.trim() !== ""),
       endDate: isCurrentRole ? null : formData.endDate
     }
-    onSave(cleanedData)
+    handleSaveExperience(cleanedData)
   }
 
   const isFormValid = formData.company && formData.position && formData.startDate
@@ -315,8 +343,8 @@ export function ExperienceForm({
             <Save className="w-4 h-4 mr-2" />
             {isLoading ? "Saving..." : mode === "add" ? "Add Experience" : "Update Experience"}
           </Button>
-          {showCancel && onCancel && (
-            <Button variant="outline" onClick={onCancel} disabled={isLoading} className="flex-1 sm:flex-none">
+          {showCancel && handleCancel && (
+            <Button variant="outline" onClick={handleCancel} disabled={isLoading} className="flex-1 sm:flex-none">
               Cancel
             </Button>
           )}

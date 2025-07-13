@@ -4,13 +4,19 @@ import { Skeleton } from "@/components/ui/skeleton"
 
 export default function Loading() {
   return (
-    <div className="flex flex-wrap gap-5">
+    <div className="px-6 py-2 space-y-6">
+      <div className='flex items-center justify-between'>
+        <div>
+          <h1 className='text-2xl font-bold tracking-tight'>Users</h1>
+          <p className='text-muted-foreground'>Users section</p>
+        </div>
+      </div>
       {[1, 2].map((i) => (
         <Card key={i} className="w-sm w-max-64">
           <CardHeader>
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-2">
-                <Skeleton className="h-6 w-40" />
+                <Skeleton className="h-6 w-50" />
               </div>
               <div className="flex gap-2">
                 <Skeleton className="h-8 w-8" />

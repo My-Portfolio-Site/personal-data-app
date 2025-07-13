@@ -1,31 +1,35 @@
 import { Metadata } from 'next'
 
-import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
 import { Plus } from 'lucide-react'
-import {AboutMeSection} from './_components/aboutme-section'
+import { AboutMeSection } from '@/app/(users)/aboutme/_components/aboutme-section'
+import { fetchProfile } from '@/app/(users)/aboutme/actions'
+import { Profile } from '@/schemas/profile'
+import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 export const metadata: Metadata = {
   title: 'About Me Page',
   description: 'App and API for personal data management',
 }
 
-export default function AboutMe() {
+export default async function AboutMe() {
+  const profileData = await fetchProfile() as Profile
+  console.log("AboutMe Page - Profile Data:", profileData);
+
+  if (Object.entries(profileData).length === 0) {
+    return (
+      <Card className='border-dashed bg-card/50 mt-2'>
+        <CardHeader className='text-center'>
+          <CardTitle>Profile data not found</CardTitle>
+          <CardDescription>
+            Click "Add" to get started with your profile
+          </CardDescription>
+        </CardHeader>
+      </Card>
+    )
+  }
   return (
     <div className="px-6 py-2 space-y-6">
-      {/* <SectionHeader title='About Me' description='AboutMe section' /> */}
-      <AboutMeSection />
-    </div>
-  )
-}
-
-function SectionHeader({title, description}: {title: string, description: string}) {
-  return (
-    <div className='flex items-center justify-between'>
-      <div>
-        <h1 className='text-2xl font-bold tracking-tight'>{title}</h1>
-        <p className='text-muted-foreground'>{description}</p>
-      </div>
+      <AboutMeSection profileData={profileData} />
     </div>
   )
 }

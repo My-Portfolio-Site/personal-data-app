@@ -2,7 +2,7 @@
 import { Invite, UpdateInvite } from '@/schemas/invite'
 import { useEffect, useState } from 'react'
 import { RefreshCw, MailPlus, SquarePen, Trash2 } from 'lucide-react'
-import { fetchAllInvites, deleteInvite, updateInvite, createInvite } from '@/app/admin/invites/actions'
+import { deleteInvite, updateInvite, createInvite } from '@/app/admin/invites/actions'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import UpdateInviteForm from '@/app/admin/invites/_components/update-invite-form'
@@ -18,8 +18,7 @@ import {
   CardAction,
 } from '@/components/ui/card'
 
-export default function InvitesTab() {
-  const [invites, setInvites] = useState<Invite[]>([])
+export default function InvitesTab({invites}: { invites: Invite[] }) {
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
@@ -33,11 +32,6 @@ export default function InvitesTab() {
       setIsLoading(false)
       return result.error
     }
-    setInvites((prev) =>
-      prev.map((invite) =>
-        invite.id === data.id ? { ...invite, ...data } : invite 
-      )
-    )
     toast.success('Invite updated successfully')
     setIsLoading(false)
   } 
@@ -51,25 +45,10 @@ export default function InvitesTab() {
       setIsLoading(false)
       return
     }
-    setInvites(invites.filter((invite) => invite.id !== id))
     toast.success('Invite deleted successfully')
     setIsLoading(false)
   }
-  async function loadInvites() {
-    setIsLoading(true)
-    const result = await fetchAllInvites()
-    if ('error' in result) {
-      toast.error(result.error)
-      setError(result.error)
-    } else {
-      setInvites(result)
-    }
-    setIsLoading(false)
-  }
 
-  useEffect(() => {
-    loadInvites()
-  }, [])
   if (isLoading) {
     return <Loading />;
   }

@@ -1,11 +1,11 @@
 'use client'
-import { deleteUser, fetchAllUsers } from '../actions'
+import { deleteUser } from '@/app/admin/users/actions'
 import { User } from '@/schemas/user'
-import { useEffect, useState } from 'react'
 import { Trash2, UserRoundPen } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
-import Loading from '@/app/admin/users/loading'
+import { EditUserForm } from '@/app/admin/users/_components/edit-user-form'
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import {
   Card,
   CardHeader,
@@ -15,75 +15,52 @@ import {
   CardAction,
 } from '@/components/ui/card'
 
-export default function UsersSection() {
-  const [users, setusers] = useState<User[]>([])
-  const [error, setError] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState<boolean>(false)
+export default function UsersSection({ users, currentUserId }: { users: User[], currentUserId: string}) {
 
   async function handleDelete(id: string) {
-    setIsLoading(true)
     const result = await deleteUser(id)
     if ('error' in result) {
-      console.log(result.error)
       toast.error(result.error)
-      setIsLoading(false)
-      return
-    }
-    toast.success('User deleted successfully')
-    setIsLoading(false)
-    setusers(users.filter((user) => user.id !== id))
-    return
-  }
-
-  async function loadUsers() {
-    setIsLoading(true)
-    const result = await fetchAllUsers()
-    if ('error' in result) {
-      toast.error(error)
-      setError(result.error)
     } else {
-      setusers(result)
+      toast.success('User deleted successfully')
     }
-    setIsLoading(false)
-    return
   }
 
-  useEffect(() => {
-    loadUsers()
-  }, [])
-
-  if (isLoading) {
-    return <Loading />;
-  }
   return (
-    <div className='flex flex-wrap gap-5'>
+    <div className='flex flex-col gap-5'>
       {users.map((user) => {
         const color = user.userVerified ? 'border-success' : 'border-warning'
         return (
-          <Card key={user.id} className={`border-1 ${color} w-fit max-w-md grow-2`}>
-            <CardHeader>
-              <CardTitle className='text-lg font-semibold'>
-                {user.name}
-              </CardTitle>
-              <CardAction>
-                <Button disabled={true} variant='secondary' size='icon' className='size-7 mr-2 hover:bg-secondary-hover'>
-                  <UserRoundPen size={16} color='#0887e7' strokeWidth={3} />
-                </Button>
-                <Button
-                  variant='secondary'
-                  size='icon'
-                  className='size-7 mr-2 hover:bg-secondary-hover'
-                  disabled={isLoading}
-                  onClick={() => handleDelete(user.id)}
-                >
-                  <Trash2 color='#ff7070' size={16} strokeWidth={3} />
-                </Button>
-              </CardAction>
+          <Card key={user.id} className={`border-2 ${color} max-w-full grow-2`}>
+            <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle className='text-lg font-semibold'>
+                  {user.name}
+                </CardTitle>
+                <CardAction>
+                  <EditUserForm initialData={user} />
+                  <Button
+                    variant='secondary'
+                    disabled= {user.id === currentUserId}
+                    size='icon'
+                    className='size-7 mr-2 hover:bg-secondary-hover'
+                    onClick={() => handleDelete(user.id)}
+                  >
+                    <Trash2 color='#ff7070' size={16} strokeWidth={3} />
+                  </Button>
+                </CardAction>
+              
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex flex-row items-center justify-between">
+              <div>
+
               <p className='font-medium text-primary'>{user.email}</p>
               <p className='capitalize'>Role: {user.role}</p>
               <p>User Verified: {user.userVerified ? 'Yes' : 'No'}</p>
+              </div>
+              <Avatar className={`ml-4 size-15 border-2 ${color}`}>
+                <AvatarImage src={user.image} alt={user.name} />
+                <AvatarFallback>{user.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : '?'}</AvatarFallback>
+              </Avatar>
             </CardContent>
           </Card>
         )

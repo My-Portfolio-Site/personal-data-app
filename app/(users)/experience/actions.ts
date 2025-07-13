@@ -2,15 +2,17 @@
 
 import { getCurrentUrl } from '@/lib/helpers'
 import { headers, cookies } from 'next/headers'
-import { deleteExperienceSchema, Experience} from '@/schemas/experience'
+import { deleteExperienceSchema, Experience, ExperienceFormSchema, ExperienceFormData, ExperienceSchema } from '@/schemas/experience'
+import { revalidatePath } from 'next/cache'
 
 
 //==============================Experience=====================================//
 // Fetch all experience
 export async function fetchAllUserExperience() {
   try {
-    const cookieStore = cookies()
+    const cookieStore = await cookies()
     const cookieHeader = cookieStore.toString()
+
     const API_BASE_URL = getCurrentUrl(await headers())
     const API_EXPERIENCE_URL = API_BASE_URL + '/api/experience'
     
@@ -29,10 +31,14 @@ export async function fetchAllUserExperience() {
 
 export async function fetchExperienceById(id: string){
   try {
+    const cookieStore = await cookies()
+    const cookieHeader = cookieStore.toString()
+
     const API_BASE_URL = getCurrentUrl(await headers())
     const API_EXPERIENCE_URL = API_BASE_URL + '/api/experience'
+
     console.log('Fetching experience by id:', id)
-    const response = await fetch(`${API_EXPERIENCE_URL}?experienceId=${id}`, { method: 'GET' })
+    const response = await fetch(`${API_EXPERIENCE_URL}?experienceId=${id}`, { method: 'GET', headers: { 'Cookie': cookieHeader } })
     if (!response.ok) {
       console.log('Failed to fetch experience,', 'status:', response.status)
       throw new Error('Failed to fetch experience')
@@ -46,36 +52,78 @@ export async function fetchExperienceById(id: string){
   }
 }
 
-// Get total experience in years
-// export async function getTotalExperience() {
-//   try {
-//     const experiences = await fetchAllExperience()
-//     if ('error' in experiences) {
-//       throw new Error(experiences.error)
-//     }
-//     const totalExperience = experiences.reduce((total, exp) => total + (exp.years || 0), 0)
-
-//     return totalExperience
-//   } catch (err) {
-//     return { error: (err as Error).message } as ApiError
-//   }
-// }
-
 // Delete an invite
 export async function deleteExperienceById(id: string) {
   try {
+    const cookieStore = await cookies()
+    const cookieHeader = cookieStore.toString()
+
     const API_BASE_URL = getCurrentUrl(await headers())
     const API_EXPERIENCE_URL = API_BASE_URL + '/api/experience'
 
     const parsedData = deleteExperienceSchema.parse({ id })
     const response = await fetch(API_EXPERIENCE_URL, {
       method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Cookie': cookieHeader },
       body: JSON.stringify(parsedData),
     })
     if (!response.ok) {
       const error: ApiError = await response.json()
       throw new Error(error.error || 'Failed to delete invite')
+    }
+    revalidatePath('/experience')
+    return (await response.json()) as ApiResponseMessage
+  } catch (err) {
+    return { error: (err as Error).message } as ApiError
+  }
+}
+
+// Add a new experience
+export async function createExperience(data: ExperienceFormData) {
+  try {
+    const cookieStore = await cookies()
+    const cookieHeader = cookieStore.toString()
+
+    const API_BASE_URL = getCurrentUrl(await headers())
+    const API_EXPERIENCE_URL = API_BASE_URL + '/api/experience'
+
+    const parsedData = ExperienceFormSchema.parse(data)
+
+    console.log('Creating experience: ', parsedData)
+    const response = await fetch(API_EXPERIENCE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Cookie': cookieHeader },
+      body: JSON.stringify(parsedData),
+    })
+    if (!response.ok) {
+      const error: ApiError = await response.json()
+      console.log('Failed to create experience: ', error)
+      throw new Error(error.error || 'Failed to create experience')
+    }
+    revalidatePath('/experience')
+    return (await response.json()) as ApiResponseMessage
+  } catch (err) {
+    return { error: (err as Error).message } as ApiError
+  }
+}
+
+// Update an invite
+export async function updateExperience(data: Experience) {
+  try {
+    const cookieStore = await cookies()
+    const cookieHeader = cookieStore.toString()
+    const API_BASE_URL = getCurrentUrl(await headers())
+    const API_EXPERIENCE_URL = API_BASE_URL + '/api/experience'
+
+    const parsedData = ExperienceSchema.parse(data)
+    const response = await fetch(API_EXPERIENCE_URL, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'Cookie': cookieHeader },
+      body: JSON.stringify(parsedData),
+    })
+    if (!response.ok) {
+      const error: ApiError = await response.json()
+      throw new Error(error.error || 'Failed to update invite')
     }
     return (await response.json()) as ApiResponseMessage
   } catch (err) {

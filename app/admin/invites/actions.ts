@@ -13,6 +13,7 @@ import { auth } from '@/lib/auth'
 
 import { getCurrentUrl } from '@/lib/helpers'
 import { headers, cookies } from 'next/headers'
+import { revalidatePath } from 'next/cache'
 //==============================Invites=====================================//
 // Fetch all invites
 export async function fetchAllInvites() {
@@ -71,6 +72,7 @@ export async function createInvite(data: CreateInviteForm) {
       console.log('Failed to create invite: ', error)
       throw new Error('Failed to create invite')
     }
+    revalidatePath('/admin/invites')
     return (await response.json()) as ApiResponseMessage
   } catch (err) {
     return { error: (err as Error).message } as ApiError
@@ -96,6 +98,7 @@ export async function updateInvite(data: UpdateInvite) {
       const error: ApiError = await response.json()
       throw new Error(error.error || 'Failed to update invite')
     }
+    revalidatePath('/admin/invites')
     return (await response.json()) as ApiResponseMessage
   } catch (err) {
     return { error: (err as Error).message } as ApiError
@@ -121,6 +124,7 @@ export async function deleteInvite(id: string) {
       const error: ApiError = await response.json()
       throw new Error(error.error || 'Failed to delete invite')
     }
+    revalidatePath('/admin/invites')
     return (await response.json()) as ApiResponseMessage
   } catch (err) {
     return { error: (err as Error).message } as ApiError

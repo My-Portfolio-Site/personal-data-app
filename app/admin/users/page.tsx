@@ -1,20 +1,22 @@
 import { Metadata } from 'next'
 
-import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
-import { Plus } from 'lucide-react'
 import UsersSection from './_components/users-section'
+import {fetchAllUsers } from '@/app/admin/users/actions'
+import { User } from '@/schemas/user'
+import { getUser } from '@/lib/dal'
 
 export const metadata: Metadata = {
   title: 'Users',
   description: 'App and API for personal data management',
 }
 
-export default function Users() {
+export default async function Users() {
+  const users = await fetchAllUsers() as User[]
+  const currentUser = await getUser()
   return (
     <div id='users' className="px-6 py-2 space-y-6">
       <SectionHeader title='Users' description='Users section' />
-      <UsersSection />
+      <UsersSection users={users} currentUserId={currentUser?.id || ''} />
     </div>
   )
 }
