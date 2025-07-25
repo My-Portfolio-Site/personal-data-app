@@ -2,14 +2,13 @@ import { v4 as uuidv4 } from "uuid";
 import { NextResponse } from "next/server";
 
 import { db } from "@/lib/db";
-import { getCurrentUserId } from "@/lib/helpers";
-import { ExperienceFormSchema, ExperienceSchema, deleteExperienceSchema, updateExperienceSchema, Experience } from "@/schemas/experience";
-import { revalidatePath } from "next/cache";
+import { getCurrentUserId } from "@/lib/dal";
+import { experienceSchema, ExperienceSchemaType } from "@/schemas/experience";
 
 // Get all experiences
 export async function GET(req: Request) {
   try {
-    const {currentUserId, currentUserEmail }= await getCurrentUserId();
+    const currentUserId = await getCurrentUserId();
 
     const url = new URL(req.url);
     const experienceId = url.searchParams.get("experienceId");
@@ -34,7 +33,7 @@ export async function GET(req: Request) {
         ...(result as any),
         technologies: JSON.parse(result?.technologies as string || "[]"),
         achievements: JSON.parse(result?.achievements as string || "[]")
-      } as Experience;
+      } as ExperienceSchemaType;
 
       return NextResponse.json(experience, { status: 200 });
     }
@@ -47,7 +46,7 @@ export async function GET(req: Request) {
       ...experience,
       technologies: JSON.parse(experience.technologies || "[]"),
       achievements: JSON.parse(experience.achievements || "[]"),
-    })) as Experience[];
+    })) as ExperienceSchemaType[];
 
     if (isTotalYearsOfExperience) {
       // Calculate total years of experience
@@ -72,7 +71,7 @@ export async function GET(req: Request) {
 // Add a new experience
 export async function POST(req: Request) {
   try {
-    const {currentUserId} = await getCurrentUserId();
+    const currentUserId = await getCurrentUserId();
 
     if (!currentUserId) {
       console.log("Not authenticated.");
@@ -84,8 +83,8 @@ export async function POST(req: Request) {
     const body = await req.json();
     console.log("API request received:", body);
 
-    // Validate the request body using the ExperienceFormSchema
-    const { company, location, position, achievements, technologies, description, startDate, endDate } = ExperienceFormSchema.parse(body);
+    // Validate the request body
+    const { company, location, position, achievements, technologies, description, startDate, endDate } = experienceSchema.parse(body);
 
     // Generate a unique ID for the experience
     const experienceId = uuidv4();
@@ -97,7 +96,6 @@ export async function POST(req: Request) {
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
     `;
     await db.prepare(query).bind(experienceId, currentUserId, company, location, position, JSON.stringify(achievements), JSON.stringify(technologies), description, startDate, endDate).run();
-    revalidatePath('/experience')
     return NextResponse.json({ message: "Experience created successfully" }, { status: 201 });
   } catch (error: any) {
     console.error("Error creating experience:", error);
@@ -108,8 +106,8 @@ export async function POST(req: Request) {
 // Update existing experience
 export async function PUT(req: Request) {
   try {
-    const {currentUserId} = await getCurrentUserId();
-    const { id, userId, company, location, position, achievements, technologies, description, startDate, endDate } = updateExperienceSchema.parse(await req.json());
+    const currentUserId = await getCurrentUserId();
+    const { id, userId, company, location, position, achievements, technologies, description, startDate, endDate } = experienceSchema.parse(await req.json());
 
     if (!currentUserId) {
       console.log("Not authenticated.");
@@ -153,8 +151,6 @@ export async function PUT(req: Request) {
       endDate,
       id,
       userId).run();
-
-    revalidatePath('/experience')
     return NextResponse.json({ message: "Experience updated successfully" }, { status: 200 });
   } catch (error: any) {
     console.error("Error updating experience:", error.message);
@@ -165,10 +161,15 @@ export async function PUT(req: Request) {
 // Delete an experience by ID
 export async function DELETE(req: Request) {
   try {
-    const { id } = deleteExperienceSchema.pick({ id: true }).parse(await req.json());
+    const url = new URL(req.url);
+    const experienceId = url.searchParams.get("experienceId");
+
+    if (!experienceId) {
+      return NextResponse.json({ error: "Experience ID is required" }, { status: 400 });
+    }
+
     const query = `DELETE FROM "experiences" WHERE "id" = ?;`;
-    await db.prepare(query).bind(id).run();
-    revalidatePath('/experience')
+    await db.prepare(query).bind(experienceId).run();
     return NextResponse.json({ message: "Experience deleted successfully" }, { status: 200 });
   } catch (error: any) {
     console.error("Error deleting experience:", error.message);

@@ -1,20 +1,20 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
-import ExperienceHeader from "@/app/(users)/experience/_components/experience-header"
+import { AboutmeBackButton } from "@/app/(users)/aboutme/edit/page"
 
 export default function Loading() {
   return (
+      
     <div className="section">
-      <ExperienceHeader />
+    <AboutmeBackButton />
       {[1, 2].map((i) => (
         <Card key={i}>
           <CardHeader>
-            <div className="flex items-start flex-col justify-between">
-                <div className="flex justify-between gap-2 w-full">
-                  <Skeleton className="w-5 h-5 flex-none" />
-                  <Skeleton className="h-6 w-30 flex-grow" />
-                  <Skeleton className="h-8 w-8" />
-                  <Skeleton className="h-8 w-8" />
+            <div className="flex items-start justify-between">
+              <div className="space-y-2 flex-1">
+                <div className="flex items-center gap-2">
+                  <Skeleton className="w-5 h-5" />
+                  <Skeleton className="h-6 w-40 md:w-64" />
                 </div>
                 <div className="space-y-1">
                   <Skeleton className="h-5 w-48" />
@@ -27,6 +27,11 @@ export default function Loading() {
                   </div>
                 </div>
               </div>
+              <div className="flex gap-2">
+                <Skeleton className="h-8 w-8" />
+                <Skeleton className="h-8 w-8" />
+              </div>
+            </div>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">

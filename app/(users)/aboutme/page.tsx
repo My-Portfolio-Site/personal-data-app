@@ -1,10 +1,13 @@
 import { Metadata } from 'next'
-
 import { Plus } from 'lucide-react'
+
+import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { AboutMeSection } from '@/app/(users)/aboutme/_components/aboutme-section'
 import { fetchProfile } from '@/app/(users)/aboutme/actions'
-import { Profile } from '@/schemas/profile'
-import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { ProfileSchemaType } from '@/schemas/profile'
+import { AboutmeForm } from '@/app/(users)/aboutme/_components/aboutme-form'
+import AboutMeHeader from '@/app/(users)/aboutme/_components/aboutme-header'
+import UpdateProfileButton from "@/app/(users)/aboutme/_components/update-profile-button"
 
 export const metadata: Metadata = {
   title: 'About Me Page',
@@ -12,24 +15,33 @@ export const metadata: Metadata = {
 }
 
 export default async function AboutMe() {
-  const profileData = await fetchProfile() as Profile
-  console.log("AboutMe Page - Profile Data:", profileData);
-
+  const response = await fetchProfile()
+  if (!response.success) {
+    // toast.error(response.message || 'Failed to fetch profile data')
+    throw new Error(response.message || 'Failed to fetch profile data')
+  }
+  const profileData = response.data as ProfileSchemaType
   if (Object.entries(profileData).length === 0) {
     return (
-      <Card className='border-dashed bg-card/50 mt-2'>
-        <CardHeader className='text-center'>
-          <CardTitle>Profile data not found</CardTitle>
-          <CardDescription>
-            Click "Add" to get started with your profile
-          </CardDescription>
-        </CardHeader>
-      </Card>
+      <div>
+        <Card className='border-dashed text-center mb-2'>
+          <CardHeader>
+            <CardTitle>Profile data not found</CardTitle>
+            <CardDescription>
+              Enter details below to create your profile
+            </CardDescription>
+          </CardHeader>
+        </Card>
+        <AboutmeForm initialData={profileData} mode="add" />
+      </div>
     )
   }
   return (
-    <div className="px-6 py-2 space-y-6">
-      <AboutMeSection profileData={profileData} />
+    <div className="section">
+      <AboutMeHeader>
+        <UpdateProfileButton />
+      </AboutMeHeader>
+      <AboutMeSection data={profileData} />
     </div>
   )
 }

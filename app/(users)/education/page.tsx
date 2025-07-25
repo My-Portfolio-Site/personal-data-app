@@ -1,7 +1,7 @@
 import React from 'react'
 import { Plus } from 'lucide-react'
 import { Button} from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
+import { EducationSection } from './_components/education-section'
 
 import { Metadata } from 'next'
 
@@ -10,12 +10,10 @@ export const metadata: Metadata = {
   description: 'App and API for personal data management',
 }
 
-import { EducationSection } from './_components/education-section'
 export default function Education() {
   return (
-    <div id='experiance' className="flex flex-1 flex-col gap-4 p-6">
+    <div id='education' className="section">
       <SectionHeader title='Education' description=''/>
-       <Separator />
       <EducationSection />
     </div>
   )

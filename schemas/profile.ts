@@ -1,63 +1,26 @@
-import {z} from "zod/v4";
+import { z } from "zod/v4";
 
-export const ProfileSchema = z.object({
-  id: z.string().nonempty(),
-  userId: z.string().nonempty(),
-  firstName: z.string(),
-  lastName: z.string(),
-  title: z.string(),
-  email: z.email(),
-  phone: z.string(),
-  location: z.string(),
-  website: z.string(),
-  linkedin: z.string(),
-  github: z.string(),
-  avatar: z.string(),
-  summary: z.string(),
-  yearsOfExperience: z.number().min(0).multipleOf(0.1).default(0.0),
-  projectsDone: z.number().min(0).default(0),
-  totalSkills: z.number().min(0).default(0),
-  certificationCompleted: z.number().min(0).default(0),
-});
-
-export const ProfileUpdateSchema = z.object({
-  id: z.string().nonempty(),
-  userId: z.string().nonempty(),
-  firstName: z.string().nullable().default(null),
-  lastName: z.string().nullable().default(null),
-  title: z.string().nullable().default(null),
-  email: z.email().nullable().default(null),
-  phone: z.string().nullable().default(null),
-  location: z.string().nullable().default(null),
-  website: z.string().nullable().default(null),
-  linkedin: z.string().nullable().default(null),
-  github: z.string().nullable().default(null),
-  avatar: z.string().nullable().default(null),
-  summary: z.string().nullable().default(null),
+export const profileSchema = z.object({
+  id: z.string().optional(),
+  userId: z.string().optional(),
+  email: z.union([z.email({ error: "Not a email id." })]),
+  firstName: z.string().nonempty({ error: 'First name is required.' }).trim(),
+  lastName: z.string().nonempty({ error: 'Last name is required.' }).trim(),
+  title: z.string().nonempty({ error: 'Professional title is required.' }).trim(),
+  phone: z.union([z.string().regex(/^\+?\d{1,4}-\d{7,10}$/, { error: 'Invalid phone number.' }), z.string().max(0)]).optional(),
+  location: z.string().nonempty({ error: 'Location is required.' }).trim(),
+  website: z.union([z.url().trim(), z.string().max(0)]).optional(),
+  linkedin: z.union([z.url().trim(), z.string().max(0)]).optional(),
+  github: z.union([z.url().trim(), z.string().max(0)]).optional(),
+  summary: z.string().nonempty({ error: 'Professional summary is required.' }).trim(),
 })
 
-export const ProfileCreateSchema = z.object({
-  email: z.email(),
-  avatar: z.string(),
-  firstName: z.string(),
-  lastName: z.string(),
-  title: z.string(),
-  phone: z.string(),
-  location: z.string(),
-  website: z.string(),
-  linkedin: z.string(),
-  github: z.string(),
-  summary: z.string(),
-})
+export type ProfileSchemaType = z.infer<typeof profileSchema>;
+export type ProfileSchemaErrorType = z.inferFlattenedErrors<typeof profileSchema>;
 
-export const ProfileStatsUpdateSchema = z.object({
-  yearsOfExperience: z.number().min(0).multipleOf(0.1).optional(),
-  projectsDone: z.number().min(0).optional(),
-  totalSkills: z.number().min(0).optional(),
-  certificationCompleted: z.number().min(0).optional(),
-});
 
-export type Profile = z.infer<typeof ProfileSchema>;
-export type ProfileCreateData = z.infer<typeof ProfileCreateSchema>;
-export type ProfileUpdateData = z.infer<typeof ProfileUpdateSchema>;
-export type ProfileStatsUpdateData = z.infer<typeof ProfileStatsUpdateSchema>;
+export type ProfileActionState = {
+  data?: ProfileSchemaType
+  errors: ProfileSchemaErrorType
+  error: string | null
+}

@@ -1,37 +1,32 @@
 import { v4 as uuidv4 } from "uuid";
 import { NextResponse } from "next/server";
+import { z } from "zod/v4";
 
 import { db } from "@/lib/db";
-import { getCurrentUserId } from "@/lib/helpers";
-import { Profile, ProfileStatsUpdateSchema, ProfileCreateSchema, ProfileUpdateSchema } from "@/schemas/profile";
+import { getCurrentUserId } from "@/lib/dal";
+import { profileSchema, ProfileSchemaType } from "@/schemas/profile";
 
 // Get profile for current user
 export async function GET(req: Request) {
   try {
-    const {currentUserEmail, currentUserId} = await getCurrentUserId();
+    const currentUserId = await getCurrentUserId();
     if (!currentUserId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+    console.log("API: Get Profile Request:", currentUserId);
     const query = `
       SELECT * FROM "profiles" WHERE "userId" = ?;
     `;
-    const result = await db.prepare(query).bind(currentUserId).first();
+    const result = await db.prepare(query).bind(currentUserId).first<ProfileSchemaType>();
     if (!result) {
-      console.warn("Profile not found for userId:", currentUserId);
+      console.warn("API: Profile not found for userId:", currentUserId);
       // return NextResponse.json({ error: "Profile not found" }, { status: 404 });
       return NextResponse.json({}, { status: 200 }); // Return null if no profile found
     }
-    const profile = {
-      ...result,
-      yearsOfExperience: result?.yearsOfExperience ?? 0.0,
-      projectsDone: result?.projectsDone ?? 0,
-      totalSkills: result?.totalSkills ?? 0,
-      certificationCompleted: result?.certificationCompleted ?? 0,
-    } as Profile;
 
-    return NextResponse.json(profile, { status: 200 });
+    return NextResponse.json(result, { status: 200 });
   } catch (error: any) {
-    console.error("Error fetching profile:", error.message);
+    console.error("API: Error fetching profile:", error.message);
     return NextResponse.json({ error: "Failed to fetch profile" }, { status: 500 });
   }
 }
@@ -39,14 +34,23 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const currentUserId = await getCurrentUserId();
+    if (!currentUserId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    const validationResult = profileSchema.safeParse(await req.json())
+    if (!validationResult.success) {
+      return {
+        errors: z.flattenError(validationResult.error).fieldErrors
+      }
+    }
+    console.log("API Create Profile Request:", validationResult.data);
     
-
-    const { firstName, lastName, title, email, phone, location, website, linkedin, github, summary, avatar } = ProfileCreateSchema.parse(await req.json());
+    const { firstName, lastName, title, email, phone, location, website, linkedin, github, summary } = validationResult.data;
     const profileId = uuidv4();
 
-    const  query = `
-      INSERT INTO "profiles" ("id", "userId", "firstName", "lastName", "title", "email", "phone", "location", "website", "linkedin", "github", "summary", "avatar")
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+    const query = `
+      INSERT INTO "profiles" ("id", "userId", "firstName", "lastName", "title", "email", "phone", "location", "website", "linkedin", "github", "summary")
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
     `;
 
     await db.prepare(query).bind(
@@ -56,13 +60,12 @@ export async function POST(req: Request) {
       lastName,
       title,
       email,
-      phone,
+      phone || null,
       location,
-      website,
-      linkedin,
-      github,
-      summary,
-      avatar
+      website || null,
+      linkedin || null,
+      github || null,
+      summary
     ).run();
 
     console.log("Profile created successfully:", profileId);
@@ -81,7 +84,7 @@ export async function PUT(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { id, userId, firstName, lastName, title, email, phone, location, website, linkedin, github, summary, avatar } = ProfileUpdateSchema.parse(await req.json());
+    const { id, userId, firstName, lastName, title, email, phone, location, website, linkedin, github, summary } = profileSchema.parse(await req.json());
     console.log("API Update Profile Request:", id);
 
     const updateQuery = `
@@ -95,8 +98,7 @@ export async function PUT(req: Request) {
         "website" = COALESCE(?, "website"),
         "linkedin" = COALESCE(?, "linkedin"),
         "github" = COALESCE(?, "github"),
-        "summary" = COALESCE(?, "summary"),
-        "avatar" = COALESCE(?, "avatar")
+        "summary" = COALESCE(?, "summary")
       WHERE "userId" = ? AND "id" = ?;
     `;
 
@@ -105,61 +107,20 @@ export async function PUT(req: Request) {
       lastName,
       title,
       email,
-      phone,
+      phone || null,
       location,
-      website,
-      linkedin,
-      github,
+      website || null,
+      linkedin || null,
+      github || null,
       summary,
-      avatar,
       userId,
       id
     ).run();
 
     console.log("Profile updated successfully:", { id, userId, firstName, lastName, title, email, phone, location, website, linkedin, github });
-    return NextResponse.json({ success: "Profile "+ id + " Updated successfully" }, { status: 200 });
+    return NextResponse.json({ success: "Profile " + id + " Updated successfully" }, { status: 200 });
   } catch (error: any) {
     console.error("Error updating profile:", error.message);
     return NextResponse.json({ error: "Failed to update profile" }, { status: 500 });
-  }
-}
-
-// Update profile stats for the current user
-export async function PATCH(req: Request) {
-  try {
-    const {currentUserEmail,currentUserId} = await getCurrentUserId();
-    if (!currentUserId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const {
-      yearsOfExperience,
-      projectsDone,
-      totalSkills,
-      certificationCompleted,
-    } = ProfileStatsUpdateSchema.parse(await req.json());
-
-    const updateQuery = `
-      UPDATE "profiles"
-        SET
-        "yearsOfExperience" = COALESCE(?, "yearsOfExperience"),
-        "projectsDone" = COALESCE(?, "projectsDone"),
-        "totalSkills" = COALESCE(?, "totalSkills"),
-        "certificationCompleted" = COALESCE(?, "certificationCompleted")
-      WHERE "userId" = ?;
-    `;
-
-    // Only run update if at least one field is provided
-    await db.prepare(updateQuery).bind(
-      yearsOfExperience ?? null,
-      projectsDone ?? null,
-      totalSkills ?? null,
-      certificationCompleted ?? null,
-      currentUserId
-    ).run();
-    return NextResponse.json({ success: true }, { status: 200 });
-  } catch (error: any) {
-    console.error("Error updating profile stats:", error.message);
-    return NextResponse.json({ error: "Failed to update profile stats" }, { status: 500 });
   }
 }

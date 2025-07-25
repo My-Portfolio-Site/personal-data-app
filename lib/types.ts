@@ -1,7 +1,10 @@
-type ApiError = {
-  error: string
+type ActionResponse<T = any> = {
+  success: boolean
   status?: number
+  message?: string
+  data?: T
 }
+
 type ApiResponseMessage = {
   message: string
   status?: number
@@ -27,6 +30,6 @@ type ActionResponseWithoutData = {
   status?: boolean;
 };
 
-type ActionResponse<T = never> = T extends never
-  ? ActionResponseWithoutData
-  : ActionResponseWithData<T>;
+// type ActionResponse<T = never> = T extends never
+//   ? ActionResponseWithoutData
+//   : ActionResponseWithData<T>;

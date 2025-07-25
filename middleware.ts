@@ -24,8 +24,8 @@ export default auth(async (req) => {
     console.log('Skipping authentication for public route:', reqUrl);
     return;
   }
-
-  console.log('Middleware Session:', session);
+  console.log('URL:', reqUrl);
+  console.log('Middleware Session:', session?.user?.email);
 
 
   if (!session?.user?.id) {

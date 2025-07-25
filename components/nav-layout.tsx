@@ -191,6 +191,7 @@ export function NavLayoutWrapper({
                       <Link
                         href={section.url}
                         className='flex items-center gap-2'
+                        prefetch={false}
                       >
                         <section.icon className='size-4' />
                         <span>{section.title}</span>
@@ -261,7 +262,7 @@ export function NavLayoutWrapper({
           <ThemeToggle />
         </header>
         <div className='flex-1 flex justify-center'>
-          <div className='mx-0 md:mx-10 lg:mx-16 w-full'>
+          <div className='sm:mx-3 my-2 md:mx-6 md:my-4 lg:mx-10 lg:my-5 max-w-[730px] w-full'>
             {children}
           </div>
         </div>
@@ -291,7 +292,7 @@ export function CurrentUserOptions({
           >
             <Avatar className='size-10 rounded-lg border'>
               <AvatarImage src={currentUser.image} alt={currentUser.name} />
-              <AvatarFallback className='rounded-lg border'>
+              <AvatarFallback className='rounded-lg border bg-accent-foreground'>
                 {userNameInitials}
               </AvatarFallback>
             </Avatar>

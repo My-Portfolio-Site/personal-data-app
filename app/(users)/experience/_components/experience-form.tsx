@@ -19,13 +19,11 @@ import { useRouter } from "next/navigation"
 interface ExperienceFormProps {
   initialData?: Partial<Experience>
   mode?: "add" | "edit"
-  showCancel?: boolean
 }
 
 export function ExperienceForm({
   initialData = {},
-  mode = "add",
-  showCancel = true,
+  mode = "add"
 }: ExperienceFormProps) {
   const [isLoading, setIsLoading] = useState(false)
 
@@ -45,8 +43,9 @@ export function ExperienceForm({
   const [isCurrentRole, setIsCurrentRole] = useState(formData.endDate === null)
 
   const [newTechnology, setNewTechnology] = useState("")
-  
+
   const router = useRouter()
+  
   const handleCancel = () => {
     router.push("/experience")
   }
@@ -343,11 +342,9 @@ export function ExperienceForm({
             <Save className="w-4 h-4 mr-2" />
             {isLoading ? "Saving..." : mode === "add" ? "Add Experience" : "Update Experience"}
           </Button>
-          {showCancel && handleCancel && (
-            <Button variant="outline" onClick={handleCancel} disabled={isLoading} className="flex-1 sm:flex-none">
-              Cancel
-            </Button>
-          )}
+          <Button variant="outline" onClick={handleCancel} disabled={isLoading} className="flex-1 sm:flex-none">
+            Cancel
+          </Button>
         </div>
       </CardContent>
     </Card>

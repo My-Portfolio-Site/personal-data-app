@@ -14,7 +14,7 @@ export default function Provider({
       enableSystem
       disableTransitionOnChange
     >
-      <TanstackProvider>{children}</TanstackProvider>
+      {children}
     </ThemeProvider>
   )
 }

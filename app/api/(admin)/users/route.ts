@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 
 import { db } from "@/lib/db";
 import { User, deleteUserSchema, updateUserFormSchema, addUserSchema } from "@/schemas/user";
+import { getCurrentUserId } from "@/lib/dal";
 
 // Get all users
 export async function GET() {
@@ -20,10 +21,16 @@ export async function GET() {
 // Delete a user by ID
 export async function DELETE(req: Request) {
   try {
+    const currentUserId = await getCurrentUserId();
     const { id } = deleteUserSchema.parse(await req.json());
     if (!id) {
       console.log("User ID is required for deletion");
       return NextResponse.json({ error: "User ID is required" }, { status: 400 });
+    }
+
+    if (id === currentUserId) {
+      console.log("User cannot delete themselves");
+      return NextResponse.json({ error: "User cannot delete themselves" }, { status: 403 });
     }
     const checkQuery = `SELECT * FROM "users" WHERE "id" = ?;`;
     const userExists = await db.prepare(checkQuery).bind(id).first();

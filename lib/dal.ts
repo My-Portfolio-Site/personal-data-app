@@ -16,3 +16,11 @@ export const getUser = cache(async () => {
   }
   return currentUserSession.user as User;
 })
+
+export const getCurrentUserId = cache(async () => {
+  const currentUserSession = await auth();
+  if (!currentUserSession?.user?.id) {
+    return null;
+  }
+  return currentUserSession.user.id;
+})

@@ -1,221 +1,266 @@
-"use client"
+'use client'
 
-import { useState } from "react"
+import { useState, useActionState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
 import { Separator } from "@/components/ui/separator"
 import { User } from "lucide-react"
+import { toast } from "sonner"
+import { ValidatedInput, ValidatedTextarea } from "@/components/validated-input"
 
-interface PersonalInfoFormData {
-  summary: string
-  firstName: string
-  lastName: string
-  title: string
-  email: string
-  phone: string
-  location: string
-  website: string
-  linkedin: string
-  github: string
+import { profileSchema, ProfileSchemaType, ProfileActionState } from "@/schemas/profile"
+import type { ProfileSchemaErrorType } from "@/schemas/profile"
+
+import { createProfile, updateProfile } from "@/app/(users)/aboutme/actions"
+import { ZodOptional } from "zod/v4"
+
+interface AboutmeFormProps {
+  initialData: ProfileSchemaType
+  mode: "add" | "edit"
 }
 
-interface PersonalInfoFormProps {
-  initialData?: Partial<PersonalInfoFormData>
-  onSave: (data: PersonalInfoFormData) => void
-  onCancel?: () => void
-  showCancel?: boolean
-}
-
-export function PersonalInfoForm({ initialData = {}, onSave, onCancel, showCancel = false }: PersonalInfoFormProps) {
-  const [formData, setFormData] = useState<PersonalInfoFormData>({
-    summary: initialData.summary || "",
-    firstName: initialData.firstName || "",
-    lastName: initialData.lastName || "",
-    title: initialData.title || "",
-    email: initialData.email || "",
-    phone: initialData.phone || "",
-    location: initialData.location || "",
-    website: initialData.website || "",
-    linkedin: initialData.linkedin || "",
-    github: initialData.github || "",
+export function AboutmeForm({ initialData, mode }: AboutmeFormProps) {
+  const [wasSubmitted, setWasSubmitted] = useState(false)
+  const [state, action, isPending] = useActionState(mode === 'add' ? createProfile : updateProfile, {
+    data: {
+      ...initialData
+    },
+    errors: {fieldErrors: [], formErrors: []} as ProfileSchemaErrorType,
+    error: null as string | null,
   })
 
-  const handleSave = () => {
-    onSave(formData)
-  }
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    setWasSubmitted(true)
 
-  const handleCancel = () => {
-    if (onCancel) {
-      onCancel()
+    const formData = new FormData(event.currentTarget)
+    const data = Object.fromEntries(formData)
+    
+    const validationResult = profileSchema.safeParse(data)
+    if (!validationResult.success) {
+      event.preventDefault()
     }
   }
 
-  const updateField = (field: keyof PersonalInfoFormData, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
+  if(state.error) {
+    toast.error(state.error)
+  }
+
+  if (!state.error && wasSubmitted) {
+    toast.success(mode === 'add' ? "Profile created successfully!" : "Profile updated successfully!")
+    setWasSubmitted(false)
   }
 
   return (
-    <div className="p-3 sm:p-4 md:p-6 space-y-4 md:space-y-6">
+    <div className="space-y-4 md:space-y-6">
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
             <User className="w-5 h-5" />
             <div>
-              <CardTitle>Create Your Profile</CardTitle>
-              <CardDescription>Let's start by adding your basic information and professional summary</CardDescription>
+              <CardTitle>{mode === 'add' ? 'Create' : 'Update'} Your Profile</CardTitle>
+              <CardDescription>
+                {mode === 'add'
+                  ? "Let's start by adding your basic information and professional summary"
+                  : "Update your basic information and professional summary"}
+              </CardDescription>
             </div>
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Basic Information Form */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Basic Information</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <form onSubmit={handleSubmit} action={action} noValidate>
+            <input type="hidden" name="id" value={state.data?.id || ''} />
+            <input type="hidden" name="userId" value={state.data?.userId || ''} />
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Basic Information</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <ValidatedInput
+                    type="text"
+                    id="firstName"
+                    name="firstName"
+                    label="First Name"
+                    isRequired={!(profileSchema.shape.firstName instanceof ZodOptional)}
+                    fieldSchema={profileSchema.shape.firstName}
+                    wasSubmitted={wasSubmitted}
+                    defaultValue={state.data?.firstName}
+                    errors={state.errors?.fieldErrors.firstName}
+                    placeholder="Enter your first name"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <ValidatedInput
+                    type="text"
+                    id="lastName"
+                    name="lastName"
+                    label="Last Name"
+                    isRequired={!(profileSchema.shape.lastName instanceof ZodOptional)}
+                    fieldSchema={profileSchema.shape.lastName}
+                    wasSubmitted={wasSubmitted}
+                    defaultValue={state.data?.lastName}
+                    errors={state.errors?.fieldErrors.lastName}
+                    placeholder="Enter your last name"
+                  />
+                </div>
+              </div>
+
               <div className="space-y-2">
-                <Label htmlFor="firstName">First Name *</Label>
-                <Input
-                  id="firstName"
-                  value={formData.firstName}
-                  onChange={(e) => updateField("firstName", e.target.value)}
-                  placeholder="Enter your first name"
+                <ValidatedInput
+                  id="title"
+                  name="title"
+                  type="text"
+                  label="Professional Title"
+                  isRequired={!(profileSchema.shape.title instanceof ZodOptional)}
+                  fieldSchema={profileSchema.shape.title}
+                  wasSubmitted={wasSubmitted}
+                  defaultValue={state.data?.title}
+                  errors={state.errors?.fieldErrors.title}
+                  placeholder="e.g., Senior Software Engineer, Product Manager"
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="lastName">Last Name *</Label>
-                <Input
-                  id="lastName"
-                  value={formData.lastName}
-                  onChange={(e) => updateField("lastName", e.target.value)}
-                  placeholder="Enter your last name"
-                />
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <ValidatedInput
+                    id="email"
+                    type="email"
+                    name="email"
+                    label="Email"
+                    isRequired={!(profileSchema.shape.email instanceof ZodOptional)}
+                    fieldSchema={profileSchema.shape.email}
+                    wasSubmitted={wasSubmitted}
+                    defaultValue={state.data?.email}
+                    errors={state.errors?.fieldErrors.email}
+                    placeholder="your.email@example.com"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <ValidatedInput
+                    id="phone"
+                    type="tel"
+                    name="phone"
+                    label="Phone"
+                    isRequired={!(profileSchema.shape.phone instanceof ZodOptional)}
+                    fieldSchema={profileSchema.shape.phone}
+                    wasSubmitted={wasSubmitted}
+                    defaultValue={state.data?.phone}
+                    errors={state.errors?.fieldErrors.phone}
+                    placeholder="+977-123456789"
+                  />
+                </div>
               </div>
-            </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="title">Professional Title *</Label>
-              <Input
-                id="title"
-                value={formData.title}
-                onChange={(e) => updateField("title", e.target.value)}
-                placeholder="e.g., Senior Software Engineer, Product Manager"
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="email">Email *</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => updateField("email", e.target.value)}
-                  placeholder="your.email@example.com"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="phone">Phone</Label>
-                <Input
-                  id="phone"
-                  value={formData.phone}
-                  onChange={(e) => updateField("phone", e.target.value)}
-                  placeholder="+1 (555) 123-4567"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="location">Location</Label>
-              <Input
-                id="location"
-                value={formData.location}
-                onChange={(e) => updateField("location", e.target.value)}
-                placeholder="City, State/Country"
-              />
-            </div>
-          </div>
-
-          <Separator />
-
-          {/* Professional Summary Form */}
-          <div className="space-y-4">
-            <div>
-              <h3 className="text-lg font-semibold">Professional Summary</h3>
-              <p className="text-sm text-muted-foreground">
-                Write a brief overview of your professional background, key skills, and career objectives.
-              </p>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="summary">About Me *</Label>
-              <Textarea
-                id="summary"
-                rows={6}
-                value={formData.summary}
-                onChange={(e:any) => updateField("summary", e.target.value)}
-                placeholder="Experienced professional with expertise in... Passionate about... Proven track record of..."
-                className="resize-none"
-              />
-              <p className="text-xs text-muted-foreground">{formData.summary.length}/500 characters recommended</p>
-            </div>
-          </div>
-
-          <Separator />
-
-          {/* Online Presence Form */}
-          <div className="space-y-4">
-            <div>
-              <h3 className="text-lg font-semibold">Online Presence</h3>
-              <p className="text-sm text-muted-foreground">Add your professional links and social media profiles.</p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="website">Portfolio/Website</Label>
-                <Input
-                  id="website"
-                  value={formData.website}
-                  onChange={(e) => updateField("website", e.target.value)}
-                  placeholder="https://yourwebsite.com"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="linkedin">LinkedIn</Label>
-                <Input
-                  id="linkedin"
-                  value={formData.linkedin}
-                  onChange={(e) => updateField("linkedin", e.target.value)}
-                  placeholder="https://linkedin.com/in/yourprofile"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="github">GitHub</Label>
-                <Input
-                  id="github"
-                  value={formData.github}
-                  onChange={(e) => updateField("github", e.target.value)}
-                  placeholder="https://github.com/yourusername"
+                <ValidatedInput
+                  id="location"
+                  name="location"
+                  type="text"
+                  label="Location"
+                  isRequired={!(profileSchema.shape.location instanceof ZodOptional)}
+                  fieldSchema={profileSchema.shape.location}
+                  wasSubmitted={wasSubmitted}
+                  defaultValue={state.data?.location}
+                  errors={state.errors?.fieldErrors.location}
+                  placeholder="City, State/Country"
                 />
               </div>
             </div>
-          </div>
 
-          {/* Form Actions */}
-          <div className="flex flex-col sm:flex-row gap-3 pt-4">
-            <Button onClick={handleSave} className="flex-1 sm:flex-none">
-              Save Profile
-            </Button>
-            {showCancel && (
-              <Button variant="outline" onClick={handleCancel} className="flex-1 sm:flex-none">
-                Cancel
+            <Separator />
+
+            {/* Professional Summary Form */}
+            <div className="space-y-4">
+              <div>
+                <h3 className="text-lg font-semibold">Professional Summary</h3>
+                <p className="text-sm text-muted-foreground">
+                  Write a brief overview of your professional background, key skills, and career objectives.
+                </p>
+              </div>
+              <div className="space-y-2">
+                <ValidatedTextarea
+                  id="summary"
+                  rows={6}
+                  name="summary"
+                  label="About Me"
+                  type='text'
+                  isRequired={!(profileSchema.shape.summary instanceof ZodOptional)}
+                  fieldSchema={profileSchema.shape.summary}
+                  wasSubmitted={wasSubmitted}
+                  defaultValue={state.data?.summary}
+                  errors={state.errors?.fieldErrors.summary}
+                  placeholder="Experienced professional with expertise in... Passionate about... Proven track record of..."
+                  className="resize-none"
+                />
+                <p className="text-xs text-muted-foreground">{state.data?.summary?.toString().length || 0}/500 characters recommended</p>
+              </div>
+            </div>
+
+            <Separator />
+
+            {/* Online Presence Form */}
+            <div className="space-y-4">
+              <div>
+                <h3 className="text-lg font-semibold">Online Presence</h3>
+                <p className="text-sm text-muted-foreground">Add your professional links and social media profiles.</p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <ValidatedInput
+                    id="website"
+                    name="website"
+                    type="url"
+                    label="Website"
+                    isRequired={!(profileSchema.shape.website instanceof ZodOptional)}
+                    fieldSchema={profileSchema.shape.website}
+                    wasSubmitted={wasSubmitted}
+                    defaultValue={state.data?.website}
+                    errors={state.errors?.fieldErrors.website}
+                    placeholder="https://yourwebsite.com"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <ValidatedInput
+                    id="linkedin"
+                    name="linkedin"
+                    type="url"
+                    label="LinkedIn Profile"
+                    isRequired={!(profileSchema.shape.linkedin instanceof ZodOptional)}
+                    fieldSchema={profileSchema.shape.linkedin}
+                    wasSubmitted={wasSubmitted}
+                    defaultValue={state.data?.linkedin}
+                    errors={state.errors?.fieldErrors.linkedin}
+                    placeholder="https://linkedin.com/in/yourprofile"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <ValidatedInput
+                    id="github"
+                    name="github"
+                    type="url"
+                    label="GitHub Profile"
+                    isRequired={!(profileSchema.shape.github instanceof ZodOptional)}
+                    fieldSchema={profileSchema.shape.github}
+                    wasSubmitted={wasSubmitted}
+                    defaultValue={state.data?.github}
+                    errors={state.errors?.fieldErrors.github}
+                    placeholder="https://github.com/yourusername"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Form Actions */}
+            <div className="flex flex-col sm:flex-row gap-3 pt-4">
+              <Button type="submit" disabled={isPending} className="flex-1 sm:flex-none">
+                Save Profile
               </Button>
-            )}
-          </div>
+            </div>
+          </form>
         </CardContent>
       </Card>
 
       {/* Tips Card */}
-      <Card className="bg-muted/50">
+      {/* <Card className="bg-muted/50">
         <CardHeader>
           <CardTitle className="text-base">💡 Tips for a Great Profile</CardTitle>
         </CardHeader>
@@ -225,7 +270,7 @@ export function PersonalInfoForm({ initialData = {}, onSave, onCancel, showCance
           <p>• Mention your career goals or what you're passionate about</p>
           <p>• Use action words and quantify achievements when possible</p>
         </CardContent>
-      </Card>
+      </Card> */}
     </div>
   )
 }

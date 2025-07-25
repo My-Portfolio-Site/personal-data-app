@@ -1,11 +1,14 @@
-'use client'
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
+import AboutmeHeader from "@/app/(users)/aboutme/_components/aboutme-header"
 
 export default function Loading() {
   return (
-
-    <div className="space-y-4">
+      
+    <div className="section">
+    <AboutmeHeader>
+      <Skeleton className="h-8 w-8" />
+    </AboutmeHeader>
       {[1, 2].map((i) => (
         <Card key={i}>
           <CardHeader>
