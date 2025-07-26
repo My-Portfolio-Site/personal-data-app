@@ -1,10 +1,12 @@
 "use client"
-import * as React from "react"
+import { useCallback, useState } from "react"
 import { CalendarIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { ZodType, z } from "zod/v4"
+import { cn } from '@/lib/utils'
 import {
   Popover,
   PopoverContent,
@@ -12,9 +14,7 @@ import {
 } from "@/components/ui/popover"
 
 function formatDate(date: Date | undefined) {
-  if (!date) {
-    return ""
-  }
+  if (!date) return undefined
   return date.toLocaleDateString("en-US", {
     day: "2-digit",
     month: "long",
@@ -22,94 +22,97 @@ function formatDate(date: Date | undefined) {
   })
 }
 
-function isValidDate(date: Date | undefined) {
-  if (!date) {
-    return false
-  }
-  return !isNaN(date.getTime())
-}
-
 interface DatePickerProps {
-  label?: string
-  date: Date | undefined
-  onDateChange: (date: Date | undefined) => void
+  label: string
+  name: string
+  initialDate: string | undefined
+  isRequired: boolean
+  fieldSchema: ZodType
   disabled?: boolean
+  wasSubmitted?: boolean
+  errors?: string[]
+  [key: string]: any
 }
 
-export function DatePicker({ label = "Select Date", date, onDateChange, disabled = false }: DatePickerProps) {
-  const [open, setOpen] = React.useState(false)
-  const [month, setMonth] = React.useState<Date | undefined>(date)
-  const [value, setValue] = React.useState(formatDate(date))
+export function DatePicker({
+  label,
+  name,
+  initialDate,
+  wasSubmitted,
+  isRequired,
+  fieldSchema,
+  errors,
+  disabled = false,
+  ...props
+}: DatePickerProps) {
 
-  React.useEffect(() => {
-    setValue(formatDate(date))
-    setMonth(date)
-  }, [date])
-  
+  const [date, setDate] = useState<string | undefined>(initialDate)
+  const [touched, setTouched] = useState(false)
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(date ? new Date(date) : undefined)
+  console.log('sd:', selectedDate);
+
+  const getErrors = useCallback(() => {
+    // Don't validate on first render (when untouched and not submitted)
+    if (!touched && !wasSubmitted) return [];
+    const validationResult = fieldSchema.safeParse(date)
+    return validationResult.success
+      ? []
+      : z.flattenError(validationResult.error).formErrors
+  }, [fieldSchema, date, touched, wasSubmitted])
+
+  console.log('rd:', date);
+  const fieldErrors = errors || getErrors()
+  const shouldRenderErrors = errors || wasSubmitted || touched
+  // console.log(fieldSchema, fieldErrors)
+
+  const handleBlur = () => setTouched(true)
 
   return (
     <div className="flex flex-col gap-3">
-      <Label htmlFor="date" className="px-1">
-        {label}
-      </Label>
-      <div className="relative flex gap-2">
-        <Input
-          id="date"
-          value={value}
-          placeholder="Select Date"
-          disabled={disabled}
-          className="bg-background pr-10"
-          onChange={(e) => {
-            const newDate = new Date(e.target.value)
-            setValue(e.target.value)
-            if (isValidDate(newDate)) {
-              onDateChange(newDate)
-              setMonth(newDate)
-            }
-          }}
-          onKeyDown={(e) => {
-            if (e.key === "ArrowDown") {
-              e.preventDefault()
-              setOpen(true)
-            }
-          }}
-        />
-        <Popover open={open} onOpenChange={setOpen}>
-          <PopoverTrigger asChild>
-            <Button
-              id="date-picker"
-              variant="ghost"
-              className="absolute top-1/2 right-2 size-6 -translate-y-1/2"
-              disabled={disabled}
-            >
-              <CalendarIcon className="size-3.5" />
-              <span className="sr-only">Select date</span>
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent
-            className="w-auto overflow-hidden p-0"
-            align="end"
-            alignOffset={-8}
-            sideOffset={10}
+      <Label htmlFor="date">{label} {isRequired && <span className="text-red-500">*</span>}</Label>
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button
+            aria-invalid={fieldErrors.length > 0 ? 'true' : 'false'}
+            variant="outline"
+            className={"w-fit justify-start text-left font-normal"}
+            disabled={disabled}
+            {...props}
           >
-            <Calendar
-              mode="single"
-              selected={date}
-              captionLayout="dropdown"
-              month={month}
-              onMonthChange={setMonth}
-              disabled={(date) =>
-                date > new Date() || date < new Date("1900-01-01")
+            <CalendarIcon className="mr-2 h-4 w-4" />
+            {formatDate(selectedDate) || "No date selected"}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent
+        // className="w-auto overflow-hidden p-0"
+        // align="end"
+        // alignOffset={-8}
+        // sideOffset={10}
+        >
+          <Calendar
+            mode="single"
+            selected={selectedDate}
+            captionLayout="dropdown"
+            disabled={(date) =>
+              date > new Date() || date < new Date("1900-01-01")
+            }
+
+            onSelect={(selectedDate) => {
+              console.log("esd",selectedDate);
+              if (selectedDate) {
+                const formattedDate = selectedDate?.getFullYear() + '-' + (selectedDate?.getMonth() + 1).toString().padStart(2, '0') + '-' +
+                  selectedDate.getDate().toString().padStart(2, '0');
+                setSelectedDate(selectedDate);
+                setDate(formattedDate);
+                handleBlur()
               }
-              onSelect={(newDate) => {
-                onDateChange(newDate)
-                setValue(formatDate(newDate))
-                setOpen(false)
-              }}
-            />
-          </PopoverContent>
-        </Popover>
-      </div>
+            }}
+          />
+        </PopoverContent>
+      </Popover>
+      {shouldRenderErrors && (
+        <span className="text-sm text-destructive">{fieldErrors}</span>
+      )}
     </div>
   )
 }

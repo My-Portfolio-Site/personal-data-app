@@ -22,5 +22,5 @@ export type ProfileSchemaErrorType = z.inferFlattenedErrors<typeof profileSchema
 export type ProfileActionState = {
   data?: ProfileSchemaType
   errors: ProfileSchemaErrorType
-  error: string | null
+  message: FormValidationMessage | null
 }

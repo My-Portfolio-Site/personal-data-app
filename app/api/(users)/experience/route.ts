@@ -12,7 +12,6 @@ export async function GET(req: Request) {
 
     const url = new URL(req.url);
     const experienceId = url.searchParams.get("experienceId");
-    const isTotalYearsOfExperience = url.searchParams.get("yearsOfExperience");
 
     if (!currentUserId) {
       console.log("Not authenticated.");
@@ -24,43 +23,22 @@ export async function GET(req: Request) {
     if (experienceId) {
       // Fetch a single
       console.log(`Fetching experiences for currentUserId: ${currentUserId} and experienceId: ${experienceId}`);
+      
       const query = `SELECT * FROM "experiences" WHERE "id" = ? AND "userId" = ?;`;
       const result = await db.prepare(query).bind(experienceId, currentUserId).first();
       if (!result) {
         return NextResponse.json({ error: "Experience not found" }, { status: 404 });
       }
-      const experience = {
-        ...(result as any),
-        technologies: JSON.parse(result?.technologies as string || "[]"),
-        achievements: JSON.parse(result?.achievements as string || "[]")
-      } as ExperienceSchemaType;
 
-      return NextResponse.json(experience, { status: 200 });
+      return NextResponse.json(result, { status: 200 });
     }
 
     // Fetch experiences for the given currentUserId
     console.log(`Fetching experiences for userId: ${currentUserId}`);
     const query = `SELECT * FROM "experiences" WHERE "userId" = ?;`;
-    const result = await db.prepare(query).bind(currentUserId).all();
-    const experiences = (result.results || []).map((experience: any) => ({
-      ...experience,
-      technologies: JSON.parse(experience.technologies || "[]"),
-      achievements: JSON.parse(experience.achievements || "[]"),
-    })) as ExperienceSchemaType[];
+    const {results} = await db.prepare(query).bind(currentUserId).all<ExperienceSchemaType>();
 
-    if (isTotalYearsOfExperience) {
-      // Calculate total years of experience
-      const totalYears = experiences.reduce((total, exp) => {
-        const startDate = new Date(exp.startDate);
-        const endDate = exp.endDate ? new Date(exp.endDate) : new Date();
-        const diffTime = endDate.getTime() - startDate.getTime();
-        const diffYears = diffTime / (1000 * 60 * 60 * 24 * 365.25);
-        return total + (diffYears > 0 ? diffYears : 0.0);
-      }, 0);
-      return NextResponse.json({ totalYearsOfExperience: totalYears.toFixed(1) }, { status: 200 });
-    }
-
-    return NextResponse.json(experiences, { status: 200 });
+    return NextResponse.json(results, { status: 200 });
 
   } catch (error: any) {
     console.error("Error fetching experiences:", error.message);
@@ -95,7 +73,7 @@ export async function POST(req: Request) {
       INSERT INTO "experiences" ("id", "userId", "company", "location", "position", "achievements", "technologies", "description", "startDate", "endDate")
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
     `;
-    await db.prepare(query).bind(experienceId, currentUserId, company, location, position, JSON.stringify(achievements), JSON.stringify(technologies), description, startDate, endDate).run();
+    await db.prepare(query).bind(experienceId, currentUserId, company, location, position, achievements, technologies, description, startDate, endDate).run();
     return NextResponse.json({ message: "Experience created successfully" }, { status: 201 });
   } catch (error: any) {
     console.error("Error creating experience:", error);
@@ -116,6 +94,7 @@ export async function PUT(req: Request) {
         { status: 400 }
       );
     }
+    
     if (currentUserId !== userId) {
       console.log("Not authorized. User ID mismatch.");
       return NextResponse.json(
@@ -124,8 +103,11 @@ export async function PUT(req: Request) {
       );
     }
 
-    console.log("API Update Experience Request:", id, userId, company, location, position, achievements, technologies, description, startDate, endDate);
-    
+    const queryFind = `SELECT * FROM "experiences" WHERE "id" = ? AND "userId" = ?;`;
+    const resultFind = await db.prepare(queryFind).bind(id, currentUserId).first();
+    if (!resultFind) {
+      return NextResponse.json({ error: "Experience not found" }, { status: 404 });
+    }
 
     const query = `
       UPDATE "experiences"
@@ -144,8 +126,8 @@ export async function PUT(req: Request) {
       company,
       location,
       position,
-      JSON.stringify(achievements), 
-      JSON.stringify(technologies),
+      achievements,
+      technologies,
       description,
       startDate,
       endDate,
@@ -161,15 +143,29 @@ export async function PUT(req: Request) {
 // Delete an experience by ID
 export async function DELETE(req: Request) {
   try {
+  const currentUserId = await getCurrentUserId();
+
+  if (!currentUserId) {
+    console.log("Not authenticated.");
+    return NextResponse.json(
+      { error: "Not authenticated." },
+      { status: 400 }
+    );
+  }
     const url = new URL(req.url);
     const experienceId = url.searchParams.get("experienceId");
 
     if (!experienceId) {
       return NextResponse.json({ error: "Experience ID is required" }, { status: 400 });
     }
+    const queryFind = `SELECT * FROM "experiences" WHERE "id" = ? AND "userId" = ?;`;
+    const resultFind = await db.prepare(queryFind).bind(experienceId, currentUserId).first();
+    if (!resultFind) {
+      return NextResponse.json({ error: "Experience not found" }, { status: 404 });
+    }
 
-    const query = `DELETE FROM "experiences" WHERE "id" = ?;`;
-    await db.prepare(query).bind(experienceId).run();
+    const query = `DELETE FROM "experiences" WHERE "id" = ? AND "userId" = ?;`;
+    await db.prepare(query).bind(experienceId, currentUserId).run();
     return NextResponse.json({ message: "Experience deleted successfully" }, { status: 200 });
   } catch (error: any) {
     console.error("Error deleting experience:", error.message);

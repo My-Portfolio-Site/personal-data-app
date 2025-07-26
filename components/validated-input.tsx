@@ -34,6 +34,7 @@ const ValidatedInput = ({
     // Don't validate on first render (when untouched and not submitted)
     if (!touched && !wasSubmitted) return [];
     const validationResult = fieldSchema.safeParse(value)
+    
     return validationResult.success
       ? []
       : z.flattenError(validationResult.error).formErrors
@@ -41,6 +42,7 @@ const ValidatedInput = ({
 
   const fieldErrors = errors || getErrors()
   const shouldRenderErrors = errors || wasSubmitted || touched
+  // console.log(fieldSchema, fieldErrors)
 
   const handleBlur = () => setTouched(true)
   const handleChange = (e: any) => setValue(e.currentTarget.value)

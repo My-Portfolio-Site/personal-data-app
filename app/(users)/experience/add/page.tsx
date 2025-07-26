@@ -1,11 +1,13 @@
 import { ExperienceForm } from "@/app/(users)/experience/_components/experience-form"
 
 import { Button } from "@/components/ui/button"
+import { ExperienceSchemaType } from "@/schemas/experience"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 
 
 export default function AddExperiencePage() {
+  const experience = {} as ExperienceSchemaType
   return (
     <div className="section">
       {/* Header with Back Button */}
@@ -17,7 +19,7 @@ export default function AddExperiencePage() {
       </Button>
 
       {/* Form */}
-      <ExperienceForm mode="add" />
+      <ExperienceForm initialData={experience} mode="add" />
     </div>
   )
 }

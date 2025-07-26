@@ -1,9 +1,10 @@
-import { Experience } from "@/schemas/experience"
-import { ExperienceForm } from "@/app/(users)/experience/_components/experience-form"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { ArrowLeft } from "lucide-react"
 
-import GoBackToExperienceButton from "@/app/(users)/experience/_components/go-back-to-experience-button"
-import ShowError from "@/app/(users)/experience/_components/experiance-show-error"
-import {fetchExperienceById } from '@/app/(users)/experience/actions'
+import type { ExperienceSchemaType } from "@/schemas/experience"
+import { ExperienceForm } from "@/app/(users)/experience/_components/experience-form"
+import { fetchExperienceById } from '@/app/(users)/experience/actions'
 
 interface EditExperiencePageProps {
   params: {
@@ -13,21 +14,31 @@ interface EditExperiencePageProps {
 
 export default async function EditExperiencePage({ params }: EditExperiencePageProps) {
   const { experienceId } = await params
-  console.log("Fetch for: ", experienceId)
-  const experience = await fetchExperienceById(experienceId) as Experience
-  console.log("Fetched experience for edit: ", experience)
+
+  const response = await fetchExperienceById(experienceId)
+  if (!response.success) {
+    // toast.error(response.message || 'Failed to fetch profile data')
+    throw new Error(response.message || 'Failed to fetch profile data')
+  }
+
+  const experience = response.data as ExperienceSchemaType
 
   return (
     <div className="p-6 space-y-6">
       {/* Header with Back Button */}
       <div className="flex items-center gap-4">
-        <GoBackToExperienceButton/>
+        <Button variant="ghost" size="sm" asChild>
+          <Link href="/experience">
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Experience
+          </Link>
+        </Button>
       </div>
 
       {/* Form */}
       <div className="w-full">
         <ExperienceForm
-          initialData={experience!}
+          initialData={experience}
           mode="edit"
         />
       </div>

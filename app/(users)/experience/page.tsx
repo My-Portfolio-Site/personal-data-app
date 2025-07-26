@@ -1,12 +1,20 @@
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Experience } from "@/schemas/experience"
+import type { ExperienceSchemaType } from "@/schemas/experience"
 import ExperienceSection from "@/app/(users)/experience/_components/experience-section"
 import ExperienceHeader from "@/app/(users)/experience/_components/experience-header"
 
-import { fetchAllUserExperience, } from '@/app/(users)/experience/actions'
+import { fetchExperiences } from '@/app/(users)/experience/actions'
 
 export default async function ExperiencePage() {
-  const experiences = await fetchAllUserExperience() as Experience[]
+  const response = await fetchExperiences()
+  if (!response.success) {
+    // toast.error(response.message || 'Failed to fetch profile data')
+    throw new Error(response.message || 'Failed to fetch profile data')
+  }
+  console.log(response.data);
+  
+
+  const experiences = response.data as ExperienceSchemaType[]
 
   return (
     <div className="section">

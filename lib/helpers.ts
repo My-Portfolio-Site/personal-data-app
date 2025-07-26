@@ -24,7 +24,6 @@ export async function fetchApi<T = never>(
   if (!userId) {
     throw new Error("User not authenticated");
   }
-  console.log("In Data:", data);
 
   if (data && method !== 'GET') {
     const body = JSON.stringify(data);

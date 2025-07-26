@@ -1,138 +1,87 @@
 "use client"
 
-import { useState } from "react"
+import { z, ZodOptional } from 'zod/v4'
+import { useState, useActionState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
+import { ValidatedInput, ValidatedTextarea } from "@/components/validated-input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Building, X, Plus, Save, CalendarIcon } from "lucide-react"
-import { Experience } from "@/schemas/experience"
+import { Building, X, Plus, Save, Trash2, CalendarIcon } from "lucide-react"
+import type { ExperienceSchemaType, ExperienceSchemaErrorType } from "@/schemas/experience"
+import { experienceSchema } from "@/schemas/experience"
 import { DatePicker } from "@/components/date-picker"
-import { createExperience, updateExperience } from "@/app/(users)/experience/actions"
+import { ConfirmDialog } from "@/components/confirm-dialog"
+import { addExperience, updateExperience } from "@/app/(users)/experience/actions"
 import { toast } from "sonner"
-import { useRouter } from "next/navigation"
 
 interface ExperienceFormProps {
-  initialData?: Partial<Experience>
-  mode?: "add" | "edit"
+  initialData: ExperienceSchemaType
+  mode: "add" | "edit"
 }
 
 export function ExperienceForm({
-  initialData = {},
-  mode = "add"
+  initialData,
+  mode
 }: ExperienceFormProps) {
-  const [isLoading, setIsLoading] = useState(false)
-
-  const [formData, setFormData] = useState<Experience>({
-    id: initialData.id || "",
-    userId: initialData.userId || "",
-    company: initialData.company || "",
-    position: initialData.position || "",
-    location: initialData.location || "",
-    startDate: initialData.startDate || "",
-    endDate: initialData.endDate || null,
-    description: initialData.description || "",
-    achievements: initialData.achievements || [""],
-    technologies: initialData.technologies || [],
+  console.log(initialData)
+  const [wasSubmitted, setWasSubmitted] = useState(false)
+  const [state, formAction, isPending] = useActionState(mode === 'add' ? addExperience : updateExperience, {
+    data: {
+      ...initialData
+    },
+    errors: { fieldErrors: [], formErrors: [] } as ExperienceSchemaErrorType,
+    message: null
   })
+  // console.log(state.errors)
 
-  const [isCurrentRole, setIsCurrentRole] = useState(formData.endDate === null)
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    setWasSubmitted(true)
 
-  const [newTechnology, setNewTechnology] = useState("")
+    const formData = new FormData(event.currentTarget)
+    const data = Object.fromEntries(formData)
 
-  const router = useRouter()
-  
-  const handleCancel = () => {
-    router.push("/experience")
-  }
-
-  const handleSaveExperience = async (data: Experience) => {
-    setIsLoading(true)
-    console.log("Updating experience data:", data)
-    try {
-      let result
-      if (mode === "add") {
-        result = await createExperience(data)
-      } else {
-        result = await updateExperience(data)
-      }
-      if ("error" in result) {
-        console.log("Error updating experience:", result)
-        toast.error(result.error)
-      } else {
-        toast.success("Experience updated successfully")
-        console.log("Experience updated successfully:", result)
-      }
-      router.push("/experience")
-    } catch (error) {
-      console.error("Error updating experience:", error)
-    } finally {
-      setIsLoading(false)
+    const validationResult = experienceSchema.safeParse(data)
+    if (!validationResult.success) {
+      event.preventDefault()
     }
-    return
   }
 
-  const updateField = (field: keyof Experience, value: any) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
-  }
+  const [isCurrentRole, setIsCurrentRole] = useState(state.data?.endDate === null)
 
-  const addAchievement = () => {
-    setFormData((prev) => ({
-      ...prev,
-      achievements: [...prev.achievements, ""],
-    }))
-  }
-
-  const updateAchievement = (index: number, value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      achievements: prev.achievements.map((item, i) => (i === index ? value : item)),
-    }))
+  // ===============
+  const [achievements, setAchievements] = useState<string[]>(initialData.achievements ? initialData.achievements.split(",") : [])
+  const [newAchievement, setNewAchievement] = useState("")
+  const addAchievement = (achievement: string) => {
+    if (!achievement.trim()) return
+    if (achievements.includes(achievement.trim())) return
+    setAchievements((prev) => [...prev, achievement])
+    setNewAchievement("")
   }
 
   const removeAchievement = (index: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      achievements: prev.achievements.filter((_, i) => i !== index),
-    }))
+    setAchievements(achievements.filter((_, i) => i !== index))
+  }
+  const handleChange = (index: number, value: string) => {
+    const updatedAchievements = [...achievements]
+    updatedAchievements[index] = value
+    setAchievements(updatedAchievements)
   }
 
-  const addTechnology = () => {
-    if (newTechnology.trim() && !formData.technologies.includes(newTechnology.trim())) {
-      setFormData((prev) => ({
-        ...prev,
-        technologies: [...prev.technologies, newTechnology.trim()],
-      }))
-      setNewTechnology("")
-    }
+  if (state.message && !state.message?.success) {
+    toast.error(state.message?.message)
   }
 
-  const removeTechnology = (tech: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      technologies: prev.technologies.filter((t) => t !== tech),
-    }))
+  if (state.message?.success && wasSubmitted) {
+    toast.success(state.message?.message)
+    setWasSubmitted(false)
   }
-
-  const handleSave = () => {
-    // Filter out empty achievements
-    const cleanedData = {
-      ...formData,
-      achievements: formData.achievements.filter((achievement) => achievement.trim() !== ""),
-      technologies: formData.technologies.filter((tech) => tech.trim() !== ""),
-      endDate: isCurrentRole ? null : formData.endDate
-    }
-    handleSaveExperience(cleanedData)
-  }
-
-  const isFormValid = formData.company && formData.position && formData.startDate
 
   return (
-    <Card>
+    <Card className='gap-2'>
       <CardHeader>
         <div className="flex items-center gap-2">
           <Building className="w-5 h-5" />
@@ -146,161 +95,185 @@ export function ExperienceForm({
           </div>
         </div>
       </CardHeader>
-      <CardContent className="space-y-6">
-        {/* Basic Information */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Basic Information</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="company">Company *</Label>
-              <Input
-                id="company"
-                value={formData.company}
-                onChange={(e) => updateField("company", e.target.value)}
-                placeholder="e.g., Google, Microsoft, Startup Inc."
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="position">Position *</Label>
-              <Input
-                id="position"
-                value={formData.position}
-                onChange={(e) => updateField("position", e.target.value)}
-                placeholder="e.g., Senior Software Engineer"
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="location">Location *</Label>
-            <Input
-              id="location"
-              value={formData.location}
-              onChange={(e) => updateField("location", e.target.value)}
-              placeholder="e.g., San Francisco, CA or Remote"
-              required={true}
-            />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              {/* <Label htmlFor="startDate">Start Date *</Label>
-              <Input
-                id="startDate"
-                type="day"
-                value={formData.startDate}
-                onChange={(e) => updateField("startDate", e.target.value)}
-              /> */}
-              <DatePicker
-                label="Start Date *"
-                date={formData.startDate ? new Date(formData.startDate) : undefined}
-                onDateChange={(newDate) => {
-                  updateField("startDate", newDate ? newDate.toISOString().split("T")[0] : "")
-                }}
-              />
-            </div>
-            <div className="space-y-2">
-              {/* <Label htmlFor="endDate">End Date</Label>
-              <Input
-                id="endDate"
-                type="day"
-                value={formData.endDate ? formData.endDate : ""}
-                onChange={(e) => updateField("endDate", e.target.value)}
-                disabled={isCurrentRole}
-              /> */}
-              <DatePicker
-                label="End Date"
-                date={formData.endDate ? new Date(formData.endDate) : undefined}
-                onDateChange={(newDate) => {
-                  updateField("endDate", newDate ? newDate.toISOString().split("T")[0] : "")
-                }}
-                disabled={isCurrentRole}
-              />
-            </div>
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id="isCurrentRole"
-              checked={isCurrentRole}
-              onCheckedChange={(checked) => {
-                // updateField("isCurrentRole", checked)
-                setIsCurrentRole(Boolean(checked))
-                if (checked) {
-                  updateField("endDate", "")
-                }
-              }}
-            />
-            <Label htmlFor="isCurrentRole">I currently work here</Label>
-          </div>
-        </div>
-
-        <Separator />
-
-        {/* Description */}
-        <div className="space-y-4">
-          <div>
-            <h3 className="text-lg font-semibold">Job Description</h3>
-            <p className="text-sm text-muted-foreground">Provide a brief overview of your role and responsibilities.</p>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
-            <Textarea
-              id="description"
-              rows={4}
-              value={formData.description ? formData.description : ""}
-              onChange={(e) => updateField("description", e.target.value)}
-              placeholder="Describe your role, responsibilities, and key contributions..."
-              className="resize-none"
-            />
-          </div>
-        </div>
-
-        <Separator />
-
-        {/* Achievements */}
-        <div className="space-y-4">
-          <div>
-            <h3 className="text-lg font-semibold">Key Achievements</h3>
-            <p className="text-sm text-muted-foreground">List your major accomplishments and impact in this role.</p>
-          </div>
-          <div className="space-y-3">
-            {formData.achievements.map((achievement, index) => (
-              <div key={index} className="flex gap-2">
-                <div className="flex-1">
-                  <Textarea
-                    rows={2}
-                    value={achievement}
-                    onChange={(e) => updateAchievement(index, e.target.value)}
-                    placeholder="e.g., Increased team productivity by 40% through process optimization..."
-                    className="resize-none"
-                  />
-                </div>
-                {formData.achievements.length > 1 && (
-                  <Button type="button" variant="ghost" size="sm" onClick={() => removeAchievement(index)}>
-                    <X className="w-4 h-4" />
-                  </Button>
-                )}
+      <CardContent className="">
+        <form action={formAction} onSubmit={handleSubmit} noValidate className='space-y-6'>
+          <input type="hidden" name="id" value={state.data?.id || ''} />
+          <input type="hidden" name="userId" value={state.data?.userId || ''} />
+          {/* Basic Information */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Basic Information</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <ValidatedInput
+                  id="company"
+                  type='text'
+                  name="company"
+                  label="Company"
+                  isRequired={!(experienceSchema.shape.company instanceof ZodOptional)}
+                  fieldSchema={experienceSchema.shape.company}
+                  wasSubmitted={wasSubmitted}
+                  defaultValue={state.data?.company}
+                  errors={state.errors?.fieldErrors.company}
+                  placeholder="e.g., Google, Microsoft, Startup Inc."
+                />
               </div>
-            ))}
-            <Button type="button" variant="outline" size="sm" onClick={addAchievement} className="w-full">
-              <Plus className="w-4 h-4 mr-2" />
-              Add Achievement
-            </Button>
-          </div>
-        </div>
+              <div className="space-y-2">
+                <ValidatedInput
+                  id="position"
+                  type='text'
+                  name="position"
+                  label="Position"
+                  isRequired={!(experienceSchema.shape.position instanceof ZodOptional)}
+                  fieldSchema={experienceSchema.shape.position}
+                  wasSubmitted={wasSubmitted}
+                  defaultValue={state.data?.position}
+                  errors={state.errors?.fieldErrors.position}
+                  placeholder="e.g., Senior Software Engineer"
+                />
+              </div>
+            </div>
 
-        <Separator />
+            <div className="space-y-2">
+              <ValidatedInput
+                id="location"
+                type='text'
+                name="location"
+                label="Location"
+                isRequired={!(experienceSchema.shape.location instanceof ZodOptional)}
+                fieldSchema={experienceSchema.shape.location}
+                wasSubmitted={wasSubmitted}
+                defaultValue={state.data?.location}
+                errors={state.errors?.fieldErrors.location}
+                placeholder="e.g., San Francisco, CA or Remote"
+              />
+            </div>
 
-        {/* Technologies */}
-        <div className="space-y-4">
-          <div>
-            <h3 className="text-lg font-semibold">Technologies & Skills</h3>
-            <p className="text-sm text-muted-foreground">
-              Add the technologies, tools, and skills you used in this role.
-            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <DatePicker
+                  label="Start Date"
+                  initialDate={state.data?.startDate}
+                  fieldSchema={experienceSchema.shape.startDate}
+                  name="startDate"
+                  isRequired={true}
+                  wasSubmitted={wasSubmitted}
+                  errors={state.errors?.fieldErrors.startDate}
+                />
+              </div>
+              <div className="space-y-2">
+                {/* <DatePicker
+                  label="End Date"
+                  initialDate={state.data?.endDate}
+                  name="endDate"
+                  isRequired={false}
+                  disabled={isCurrentRole}
+
+                /> */}
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="isCurrentRole"
+                checked={isCurrentRole}
+                onCheckedChange={(checked) => {
+                  // updateField("isCurrentRole", checked)
+                  setIsCurrentRole(Boolean(checked))
+                }}
+              />
+              <Label htmlFor="isCurrentRole">I currently work here</Label>
+            </div>
           </div>
-          <div className="space-y-3">
+
+          <Separator />
+
+          {/* Description */}
+          <div className="space-y-4">
+            <div>
+              <h3 className="text-lg font-semibold">Job Description</h3>
+              <p className="text-sm text-muted-foreground">Provide a brief overview of your role and responsibilities.</p>
+            </div>
+            <div className="space-y-2">
+              <ValidatedTextarea
+                name='description'
+                label='Description'
+                type='text'
+                isRequired={!(experienceSchema.shape.description instanceof ZodOptional)}
+                fieldSchema={experienceSchema.shape.description}
+                wasSubmitted={wasSubmitted}
+                defaultValue={state.data?.description}
+                errors={state.errors?.fieldErrors.description}
+                placeholder="e.g., San Francisco, CA or Remote"
+                rows={4}
+                className="resize-none"
+              />
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* Achievements */}
+          <div className="space-y-4">
+            <div>
+              <h3 className="text-lg font-semibold">Key Achievements</h3>
+              <p className="text-sm text-muted-foreground">List your major accomplishments and impact in this role.</p>
+            </div>
+            <input name='achievements' type='hidden' value={achievements} />
+            <div className="space-y-3">
+              <div className="flex gap-2 items-center">
+                <Textarea
+                  value={newAchievement}
+                  onChange={(e) => {
+                    setNewAchievement(e.target.value)
+                  }}
+                  placeholder="Add a new achievement..."
+                  className="flex-1 min-h-[40px] resize-none overflow-hidden"
+                />
+                <Button type="button" size="sm" onClick={() => addAchievement(newAchievement)} className="text-white" disabled={!newAchievement.trim()}>
+                  <Plus className="w-4 h-4" />
+                </Button>
+              </div>
+              <div className='space-y-2'>
+                {achievements.map((achievement, index) => (
+                  <div key={index} className="flex gap-2 items-center">
+                    <Textarea
+                      value={achievement}
+                      onChange={(e) => {
+                        handleChange(index, e.target.value)
+                      }}
+                      className="flex-1 min-h-[40px] resize-none overflow-hidden"
+                    />
+                    <ConfirmDialog
+                      title="Delete Achievement"
+                      description="Are you sure you want to delete this achievement? This action cannot be undone."
+                      confirmText="Delete"
+                      cancelText="Cancel"
+                      onConfirm={() => removeAchievement(index)}
+                      variant="destructive"
+                    >
+                      <Button size="sm" variant="destructive" className="">
+                        <Trash2 className="h-5 w-5" />
+                      </Button>
+                    </ConfirmDialog>
+                  </div>
+
+                ))}
+              </div>
+
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* Technologies */}
+          <div className="space-y-4">
+            <div>
+              <h3 className="text-lg font-semibold">Technologies & Skills</h3>
+              <p className="text-sm text-muted-foreground">
+                Add the technologies, tools, and skills you used in this role.
+              </p>
+            </div>
+            {/* <div className="space-y-3">
             <div className="flex gap-2">
               <Input
                 value={newTechnology}
@@ -333,20 +306,23 @@ export function ExperienceForm({
                 ))}
               </div>
             )}
+          </div> */}
           </div>
-        </div>
-
-        {/* Form Actions */}
-        <div className="flex flex-col sm:flex-row gap-3 pt-4">
-          <Button onClick={handleSave} disabled={!isFormValid || isLoading} className="flex-1 sm:flex-none">
-            <Save className="w-4 h-4 mr-2" />
-            {isLoading ? "Saving..." : mode === "add" ? "Add Experience" : "Update Experience"}
-          </Button>
-          <Button variant="outline" onClick={handleCancel} disabled={isLoading} className="flex-1 sm:flex-none">
-            Cancel
-          </Button>
-        </div>
+          {state.message && !state.message?.success && (
+            <div className={"p-3 rounded-md text-sm bg-red-50 text-red-700 border border-red-200"}>
+              {state.message?.message}
+            </div>
+          )}
+          {/* Form Actions */}
+          <div className="flex flex-col sm:flex-row gap-3 pt-4">
+            <Button disabled={isPending} type='submit' className="flex-1 sm:flex-none text-white">
+              <Save className="w-4 h-4" />
+              {isPending ? "Saving..." : "Save"}
+            </Button>
+          </div>
+        </form>
       </CardContent>
     </Card>
   )
 }
+

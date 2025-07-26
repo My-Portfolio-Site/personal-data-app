@@ -1,11 +1,13 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
-import ExperienceHeader from "@/app/(users)/experience/_components/experience-header"
 
 export default function Loading() {
   return (
     <div className="section">
-      <ExperienceHeader />
+      <div className="flex items-center justify-between mb-4">
+        <Skeleton className="h-10 w-20" />
+        <Skeleton className="h-10 w-10" />
+      </div>
       {[1, 2].map((i) => (
         <Card key={i}>
           <CardHeader>

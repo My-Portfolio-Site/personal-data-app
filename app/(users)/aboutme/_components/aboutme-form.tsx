@@ -8,8 +8,8 @@ import { User } from "lucide-react"
 import { toast } from "sonner"
 import { ValidatedInput, ValidatedTextarea } from "@/components/validated-input"
 
-import { profileSchema, ProfileSchemaType, ProfileActionState } from "@/schemas/profile"
-import type { ProfileSchemaErrorType } from "@/schemas/profile"
+import { profileSchema } from "@/schemas/profile"
+import type { ProfileSchemaErrorType, ProfileSchemaType } from "@/schemas/profile"
 
 import { createProfile, updateProfile } from "@/app/(users)/aboutme/actions"
 import { ZodOptional } from "zod/v4"
@@ -21,12 +21,12 @@ interface AboutmeFormProps {
 
 export function AboutmeForm({ initialData, mode }: AboutmeFormProps) {
   const [wasSubmitted, setWasSubmitted] = useState(false)
-  const [state, action, isPending] = useActionState(mode === 'add' ? createProfile : updateProfile, {
+  const [state, formAction, isPending] = useActionState(mode === 'add' ? createProfile : updateProfile, {
     data: {
       ...initialData
     },
-    errors: {fieldErrors: [], formErrors: []} as ProfileSchemaErrorType,
-    error: null as string | null,
+    errors: { fieldErrors: [], formErrors: [] } as ProfileSchemaErrorType,
+    message: null
   })
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -34,19 +34,19 @@ export function AboutmeForm({ initialData, mode }: AboutmeFormProps) {
 
     const formData = new FormData(event.currentTarget)
     const data = Object.fromEntries(formData)
-    
+
     const validationResult = profileSchema.safeParse(data)
     if (!validationResult.success) {
       event.preventDefault()
     }
   }
 
-  if(state.error) {
-    toast.error(state.error)
+  if (!state.message?.success) {
+    toast.error(state.message?.message)
   }
 
-  if (!state.error && wasSubmitted) {
-    toast.success(mode === 'add' ? "Profile created successfully!" : "Profile updated successfully!")
+  if (state.message?.success && wasSubmitted) {
+    toast.success(state.message?.message)
     setWasSubmitted(false)
   }
 
@@ -68,7 +68,7 @@ export function AboutmeForm({ initialData, mode }: AboutmeFormProps) {
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Basic Information Form */}
-          <form onSubmit={handleSubmit} action={action} noValidate>
+          <form onSubmit={handleSubmit} action={formAction} noValidate>
             <input type="hidden" name="id" value={state.data?.id || ''} />
             <input type="hidden" name="userId" value={state.data?.userId || ''} />
             <div className="space-y-4">
@@ -248,11 +248,15 @@ export function AboutmeForm({ initialData, mode }: AboutmeFormProps) {
                 </div>
               </div>
             </div>
-
+            {!state.message?.success && (
+              <div className={"p-3 rounded-md text-sm bg-red-50 text-red-700 border border-red-200"}>
+                {state.message?.message}
+              </div>
+            )}
             {/* Form Actions */}
             <div className="flex flex-col sm:flex-row gap-3 pt-4">
               <Button type="submit" disabled={isPending} className="flex-1 sm:flex-none">
-                Save Profile
+                {isPending ? mode === "add" ? "Saving..." : 'Updating...' : mode === "add" ? "Save Profile" : "Update Profile"}
               </Button>
             </div>
           </form>

@@ -4,7 +4,7 @@ import Link from "next/link"
 
 export default function UpdateProfileButton() {
   return (
-    <Button asChild>
+    <Button asChild className="text-white">
       <Link href="/aboutme/edit">
         <Edit className="w-4 h-4" />
       </Link>

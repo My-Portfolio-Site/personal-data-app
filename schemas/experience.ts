@@ -3,14 +3,14 @@ import { z } from "zod/v4";
 export const experienceSchema = z.object({
   id: z.string().optional(),
   userId: z.string().optional(),
-  company: z.string(),
-  location: z.string(),
-  position: z.string(),
-  startDate: z.iso.date(),
-  endDate: z.iso.date().nullable(),
-  achievements: z.array(z.string()),
-  technologies: z.array(z.string()),
-  description: z.string().nullable(),
+  company: z.string().nonempty({error: 'Company name required.'}),
+  location: z.string().nonempty({error: 'Location value required.'}),
+  position: z.string().nonempty({error: 'Position value required.'}),
+  startDate: z.iso.date({ error: 'Enter valid date.' }),
+  endDate: z.iso.date().optional(),
+  achievements: z.string(),
+  technologies: z.string(),
+  description: z.string().nonempty({error: 'Description value required.'}),
 });
 
 export type ExperienceSchemaType = z.infer<typeof experienceSchema>;
@@ -20,5 +20,5 @@ export type ExperienceSchemaErrorType = z.inferFlattenedErrors<typeof experience
 export type ExperienceActionState = {
   data?: ExperienceSchemaType
   errors: ExperienceSchemaErrorType
-  error: string | null
+  message: FormValidationMessage | null
 }

@@ -9,12 +9,12 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Building, Calendar, MapPin } from 'lucide-react'
 
-import { Experience } from '@/schemas/experience'
+import type { ExperienceSchemaType } from '@/schemas/experience'
 import DeleteExperienceButton from '@/app/(users)/experience/_components/delete-experience-button'
 import EditExperienceButton from '@/app/(users)/experience/_components/edit-experience-button'
 
 interface ExperienceSectionProps {
-  experience: Experience
+  experience: ExperienceSchemaType
 }
 
 export default function ExperienceSection({
@@ -49,8 +49,11 @@ export default function ExperienceSection({
             </CardDescription>
           </div>
           <div className='flex gap-2'>
-            <EditExperienceButton experienceId={experience.id} />
-            <DeleteExperienceButton experienceId={experience.id} />
+            {experience.id && (
+              <EditExperienceButton experienceId={experience.id} />)}
+            {experience.id && (
+              <DeleteExperienceButton experienceId={experience.id} />)
+            }
           </div>
         </div>
       </CardHeader>
@@ -61,7 +64,7 @@ export default function ExperienceSection({
           <div>
             <h4 className='font-medium mb-2'>Key Achievements:</h4>
             <ul className='space-y-1'>
-              {experience.achievements.map((achievement, index) => (
+              {experience.achievements.split(',').map((achievement, index) => (
                 <li key={index} className='text-sm flex items-start gap-2'>
                   <span className='text-primary mt-1'>•</span>
                   <span>{achievement}</span>
@@ -75,7 +78,7 @@ export default function ExperienceSection({
           <div>
             <h4 className='font-medium mb-2'>Technologies:</h4>
             <div className='flex flex-wrap gap-2'>
-              {experience.technologies.map((tech) => (
+              {experience.technologies.split(',').map((tech) => (
                 <Badge key={tech} variant='secondary'>
                   {tech}
                 </Badge>

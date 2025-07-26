@@ -25,14 +25,14 @@ export async function fetchProfile() {
 }
 
 // Update profile
-export async function updateProfile(_prev: ProfileActionState, formData: FormData) {
+export async function updateProfile(_prev: ProfileActionState, formData: FormData): Promise<ProfileActionState> {
   const data = Object.fromEntries(formData)
   const validationResult = profileSchema.safeParse(data)
   if (!validationResult.success) {
     return {
       data: data as ProfileSchemaType,
       errors: z.flattenError(validationResult.error) as ProfileSchemaErrorType,
-      error: null
+      message: {success: false, message: 'One or more fields are invalid.'}
     }
   }
 
@@ -44,7 +44,7 @@ export async function updateProfile(_prev: ProfileActionState, formData: FormDat
       return {
         data: data as ProfileSchemaType,
         errors: { fieldErrors: [], formErrors: [] } as ProfileSchemaErrorType,
-        error: `Failed to update profile. Status: ${response.status}`
+        message: {success: false, message: `Failed to update profile.`}
       }
     }
 
@@ -52,14 +52,14 @@ export async function updateProfile(_prev: ProfileActionState, formData: FormDat
     return {
       data: data as ProfileSchemaType,
       errors: { fieldErrors: [], formErrors: [] } as ProfileSchemaErrorType,
-      error: null
+      message: {success: true, message: 'Profile updated successfully.'}
     }
   } catch (err) {
     console.error('Error updating profile:', err)
     return {
       data: data as ProfileSchemaType,
       errors: { fieldErrors: [], formErrors: [] } as ProfileSchemaErrorType,
-      error: err instanceof Error ? err.message : 'An unexpected error occurred'
+      message: {success: false, message: err instanceof Error ? err.message : 'An unexpected error occurred'}
     }
   }
 }
@@ -72,7 +72,7 @@ export async function createProfile(_prev: ProfileActionState, formData: FormDat
     return {
       data: data as ProfileSchemaType,
       errors: z.flattenError(validationResult.error) as ProfileSchemaErrorType,
-      error: null
+      message: {success: false, message: 'One or more fields are invalid.'}
     }
   }
 
@@ -83,7 +83,7 @@ export async function createProfile(_prev: ProfileActionState, formData: FormDat
       return {
         data: data as ProfileSchemaType,
         errors: {fieldErrors: [], formErrors: []} as ProfileSchemaErrorType,
-        error: `Failed to create profile. Status: ${response.status}`
+        message: {success: false, message: `Failed to create profile.`}
       }
     }
 
@@ -91,14 +91,14 @@ export async function createProfile(_prev: ProfileActionState, formData: FormDat
     return {
       data: data as ProfileSchemaType,
       errors: {fieldErrors: [], formErrors: []} as ProfileSchemaErrorType,
-      error: null
+      message: {success: true, message: 'Profile created successfully.'}
     }
   } catch (err) {
     console.error('Error creating profile:', err)
     return {
       data: data as ProfileSchemaType,
       errors: {fieldErrors: [], formErrors: []} as ProfileSchemaErrorType,
-      error: err instanceof Error ? err.message : 'An unexpected error occurred'
+      message: {success: false, message: err instanceof Error ? err.message : 'An unexpected error occurred'}
     }
   }
 }

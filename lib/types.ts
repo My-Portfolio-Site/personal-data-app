@@ -5,31 +5,13 @@ type ActionResponse<T = any> = {
   data?: T
 }
 
+// Used for Actions state response message
+type FormValidationMessage = {
+  success: boolean
+  message: string
+}
+
 type ApiResponseMessage = {
   message: string
   status?: number
 }
-
-// type ActionResponse<T> = {
-//   message: string
-//   data?: T;
-//   error?: Record<string, any>
-//   status?: boolean
-// }
-
-type ActionResponseWithData<T> = {
-  message: string;
-  data: T;
-  error?: Record<string, any>;
-  status?: boolean;
-};
-
-type ActionResponseWithoutData = {
-  message: string;
-  error?: Record<string, any>;
-  status?: boolean;
-};
-
-// type ActionResponse<T = never> = T extends never
-//   ? ActionResponseWithoutData
-//   : ActionResponseWithData<T>;
