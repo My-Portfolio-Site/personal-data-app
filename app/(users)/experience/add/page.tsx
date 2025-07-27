@@ -1,10 +1,15 @@
+import { Metadata } from 'next'
+export const metadata: Metadata = {
+  title: 'Experiences | Personal Data App',
+  description: 'App and API for personal data management',
+}
+
 import { ExperienceForm } from "@/app/(users)/experience/_components/experience-form"
 
 import { Button } from "@/components/ui/button"
 import { ExperienceSchemaType } from "@/schemas/experience"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
-
 
 export default function AddExperiencePage() {
   const experience = {} as ExperienceSchemaType

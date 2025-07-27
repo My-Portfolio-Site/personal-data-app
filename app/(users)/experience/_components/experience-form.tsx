@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ValidatedInput, ValidatedTextarea } from "@/components/validated-input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -17,6 +18,7 @@ import { DatePicker } from "@/components/date-picker"
 import { ConfirmDialog } from "@/components/confirm-dialog"
 import { addExperience, updateExperience } from "@/app/(users)/experience/actions"
 import { toast } from "sonner"
+import { redirect } from 'next/navigation'
 
 interface ExperienceFormProps {
   initialData: ExperienceSchemaType
@@ -27,7 +29,6 @@ export function ExperienceForm({
   initialData,
   mode
 }: ExperienceFormProps) {
-  console.log(initialData)
   const [wasSubmitted, setWasSubmitted] = useState(false)
   const [state, formAction, isPending] = useActionState(mode === 'add' ? addExperience : updateExperience, {
     data: {
@@ -52,9 +53,13 @@ export function ExperienceForm({
 
   const [isCurrentRole, setIsCurrentRole] = useState(state.data?.endDate === null)
 
-  // ===============
-  const [achievements, setAchievements] = useState<string[]>(initialData.achievements ? initialData.achievements.split(",") : [])
+  // =============== Achievements
+  const [achievements, setAchievements] = useState<string[]>(initialData.achievements ? JSON.parse(initialData.achievements) : [])
   const [newAchievement, setNewAchievement] = useState("")
+
+
+  
+
   const addAchievement = (achievement: string) => {
     if (!achievement.trim()) return
     if (achievements.includes(achievement.trim())) return
@@ -65,11 +70,27 @@ export function ExperienceForm({
   const removeAchievement = (index: number) => {
     setAchievements(achievements.filter((_, i) => i !== index))
   }
-  const handleChange = (index: number, value: string) => {
+  const updateAhievement = (index: number, value: string) => {
     const updatedAchievements = [...achievements]
     updatedAchievements[index] = value
     setAchievements(updatedAchievements)
   }
+
+  // ==================== Technologies
+  const [technologies, setTechnologies] = useState<string[]>(initialData.technologies ? JSON.parse(initialData.technologies) : [])
+  const [newTechnology, setNewTechnology] = useState("")
+
+  const addTechnology = (technology: string) => {
+    if (!technology.trim()) return
+    if (technologies.includes(technology.trim())) return
+    setTechnologies((prev) => [...prev, technology])
+    setNewTechnology("")
+  }
+
+  const removeTechnology = (index: number) => {
+    setTechnologies(technologies.filter((_, i) => i !== index))
+  }
+
 
   if (state.message && !state.message?.success) {
     toast.error(state.message?.message)
@@ -78,6 +99,7 @@ export function ExperienceForm({
   if (state.message?.success && wasSubmitted) {
     toast.success(state.message?.message)
     setWasSubmitted(false)
+    redirect('/experience')
   }
 
   return (
@@ -150,25 +172,35 @@ export function ExperienceForm({
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <DatePicker
-                  label="Start Date"
-                  initialDate={state.data?.startDate}
-                  fieldSchema={experienceSchema.shape.startDate}
+                <ValidatedInput
+                  id="startDate"
+                  type='date'
                   name="startDate"
-                  isRequired={true}
+                  label="Start Date"
+                  defaultValue={state.data?.startDate}
+                  fieldSchema={experienceSchema.shape.startDate}
                   wasSubmitted={wasSubmitted}
+                  isRequired={true}
                   errors={state.errors?.fieldErrors.startDate}
+                  className="w-fit"
+                // disabled={isCurrentRole}
                 />
+
               </div>
               <div className="space-y-2">
-                {/* <DatePicker
-                  label="End Date"
-                  initialDate={state.data?.endDate}
+                <ValidatedInput
+                  id="endDate"
+                  type='date'
                   name="endDate"
-                  isRequired={false}
+                  label="End Date"
+                  defaultValue={state.data?.endDate}
+                  fieldSchema={experienceSchema.shape.endDate}
+                  wasSubmitted={wasSubmitted}
+                  isRequired={!isCurrentRole}
+                  errors={state.errors?.fieldErrors.endDate}
+                  className="w-fit"
                   disabled={isCurrentRole}
-
-                /> */}
+                />
               </div>
             </div>
 
@@ -218,7 +250,7 @@ export function ExperienceForm({
               <h3 className="text-lg font-semibold">Key Achievements</h3>
               <p className="text-sm text-muted-foreground">List your major accomplishments and impact in this role.</p>
             </div>
-            <input name='achievements' type='hidden' value={achievements} />
+            <input name='achievements' type='hidden' value={JSON.stringify(achievements)} />
             <div className="space-y-3">
               <div className="flex gap-2 items-center">
                 <Textarea
@@ -229,7 +261,7 @@ export function ExperienceForm({
                   placeholder="Add a new achievement..."
                   className="flex-1 min-h-[40px] resize-none overflow-hidden"
                 />
-                <Button type="button" size="sm" onClick={() => addAchievement(newAchievement)} className="text-white" disabled={!newAchievement.trim()}>
+                <Button type="button" size="sm" onClick={() => addAchievement(newAchievement)} disabled={!newAchievement.trim()}>
                   <Plus className="w-4 h-4" />
                 </Button>
               </div>
@@ -239,7 +271,7 @@ export function ExperienceForm({
                     <Textarea
                       value={achievement}
                       onChange={(e) => {
-                        handleChange(index, e.target.value)
+                        updateAhievement(index, e.target.value)
                       }}
                       className="flex-1 min-h-[40px] resize-none overflow-hidden"
                     />
@@ -273,40 +305,44 @@ export function ExperienceForm({
                 Add the technologies, tools, and skills you used in this role.
               </p>
             </div>
-            {/* <div className="space-y-3">
-            <div className="flex gap-2">
-              <Input
-                value={newTechnology}
-                onChange={(e) => setNewTechnology(e.target.value)}
-                placeholder="e.g., React, Node.js, AWS..."
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault()
-                    addTechnology()
-                  }
-                }}
-              />
-              <Button type="button" onClick={addTechnology} disabled={!newTechnology.trim()}>
-                <Plus className="w-4 h-4" />
-              </Button>
-            </div>
-            {formData.technologies.length > 0 && (
+            <div className="space-y-3">
+              <input name='technologies' type='hidden' value={JSON.stringify(technologies)} />
+              <div className="flex gap-2">
+                <Input
+                  value={newTechnology}
+                  onChange={(e) => setNewTechnology(e.target.value)}
+                  placeholder="e.g., React, Node.js, AWS..."
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault()
+                      addTechnology(newTechnology)
+                    }
+                  }}
+                />
+                <Button type="button" onClick={() => addTechnology(newTechnology)} disabled={!newTechnology.trim()}>
+                  <Plus className="w-4 h-4" />
+                </Button>
+              </div>
               <div className="flex flex-wrap gap-2">
-                {formData.technologies.map((tech) => (
-                  <Badge key={tech} variant="secondary" className="flex items-center gap-1">
+                {technologies.map((tech, index) => (
+                  <Badge key={tech} variant="secondary" className="flex items-center gap-1 py-1 pr-1">
                     {tech}
-                    <button
-                      type="button"
-                      onClick={() => removeTechnology(tech)}
-                      className="ml-1 hover:text-destructive"
+                    <ConfirmDialog
+                      title="Remove Technology"
+                      description={`Are you sure you want to remove "${tech}" technology? This action cannot be undone.`}
+                      confirmText="Remove"
+                      cancelText="Cancel"
+                      onConfirm={() => removeTechnology(index)}
+                      variant="destructive"
                     >
-                      <X className="w-3 h-3" />
-                    </button>
+                      <Button variant="ghost" size="icon" className="size-5 text-destructive hover:text-destructive">
+                        <X className="w-3 h-3" />
+                      </Button>
+                    </ConfirmDialog>
                   </Badge>
                 ))}
               </div>
-            )}
-          </div> */}
+            </div>
           </div>
           {state.message && !state.message?.success && (
             <div className={"p-3 rounded-md text-sm bg-red-50 text-red-700 border border-red-200"}>

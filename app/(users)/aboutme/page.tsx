@@ -1,17 +1,20 @@
 import { Metadata } from 'next'
-import { Plus } from 'lucide-react'
 
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { AboutMeSection } from '@/app/(users)/aboutme/_components/aboutme-section'
 import { fetchProfile } from '@/app/(users)/aboutme/actions'
 import { ProfileSchemaType } from '@/schemas/profile'
 import { AboutmeForm } from '@/app/(users)/aboutme/_components/aboutme-form'
-import AboutMeHeader from '@/app/(users)/aboutme/_components/aboutme-header'
-import UpdateProfileButton from "@/app/(users)/aboutme/_components/update-profile-button"
+import { Button } from '@/components/ui/button'
+import { Edit } from 'lucide-react'
+import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'About Me Page',
+  title: 'About Me | Personal Data App',
   description: 'App and API for personal data management',
+  icons: {
+    icon: '/favicon.ico',
+  },
 }
 
 export default async function AboutMe() {
@@ -38,9 +41,17 @@ export default async function AboutMe() {
   }
   return (
     <div className="section">
-      <AboutMeHeader>
-        <UpdateProfileButton />
-      </AboutMeHeader>
+      <div className="flex items-center justify-between gap-2">
+        <div>
+          <h1 className="text-xl md:text-2xl font-bold tracking-tight">About me</h1>
+          <p className="text-muted-foreground text-sm md:text-base">Basic personal information and professional summary</p>
+        </div>
+        <Button asChild>
+          <Link href="/aboutme/edit">
+            <Edit className="w-4 h-4" />
+          </Link>
+        </Button>
+      </div>
       <AboutMeSection data={profileData} />
     </div>
   )

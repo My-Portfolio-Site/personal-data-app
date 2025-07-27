@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useActionState } from "react"
+import { redirect } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
@@ -41,13 +42,14 @@ export function AboutmeForm({ initialData, mode }: AboutmeFormProps) {
     }
   }
 
-  if (!state.message?.success) {
+  if (state.message && !state.message?.success) {
     toast.error(state.message?.message)
   }
 
   if (state.message?.success && wasSubmitted) {
     toast.success(state.message?.message)
     setWasSubmitted(false)
+    redirect('/aboutme')
   }
 
   return (
@@ -248,7 +250,7 @@ export function AboutmeForm({ initialData, mode }: AboutmeFormProps) {
                 </div>
               </div>
             </div>
-            {!state.message?.success && (
+            {state.message && !state.message?.success && (
               <div className={"p-3 rounded-md text-sm bg-red-50 text-red-700 border border-red-200"}>
                 {state.message?.message}
               </div>

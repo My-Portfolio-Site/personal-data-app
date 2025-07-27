@@ -32,7 +32,7 @@ const ValidatedInput = ({
 
   const getErrors = useCallback(() => {
     // Don't validate on first render (when untouched and not submitted)
-    if (!touched && !wasSubmitted) return [];
+    if (!touched && !wasSubmitted || !isRequired) return [];
     const validationResult = fieldSchema.safeParse(value)
     
     return validationResult.success

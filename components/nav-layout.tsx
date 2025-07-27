@@ -18,6 +18,7 @@ import {
   LogOut,
   ShieldUser,
   MailPlus,
+  Key,
 } from 'lucide-react'
 
 import {
@@ -145,13 +146,23 @@ export function NavLayoutWrapper({
     )
   }
 
-
   const isAdmin = currentUser?.role === 'admin'
 
-  const currentSection =
-    userSections.find((section) => section.url === pathname) ||
-    adminSections.find((section) => section.url === pathname) ||
-    userSections[0]
+  const currentSections = pathname.split('/').filter(section => section !== "").map((section, index, array) => {
+    // Build the URL using original path segments (not capitalized titles)
+    const url = "/" + array.slice(0, index + 1).join("/");
+
+    return {
+      title: section.charAt(0).toUpperCase() + section.slice(1),
+      url: url
+    };
+  });
+  if (pathname !== "/") {
+    currentSections.unshift({
+      title: "Home",
+      url: "/"
+    });
+  }
 
   const isAdminSection = adminSections.some((section) => section.url === pathname)
 
@@ -186,7 +197,7 @@ export function NavLayoutWrapper({
                   <SidebarMenuItem key={section.title}>
                     <SidebarMenuButton
                       asChild
-                      isActive={pathname === section.url}
+                      isActive={pathname.includes(section.url)}
                     >
                       <Link
                         href={section.url}
@@ -235,25 +246,19 @@ export function NavLayoutWrapper({
           <Separator orientation='vertical' className='mr-2 h-4' />
           <Breadcrumb>
             <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink href='/'></BreadcrumbLink>
-              </BreadcrumbItem>
-              {isAdmin && isAdminSection && (
-                <>
+              {currentSections.map((section, index) => (
+                <div key={index} className='flex items-center gap-2'>
                   <BreadcrumbSeparator />
-                  <BreadcrumbItem>
-                    <BreadcrumbPage>Admin</BreadcrumbPage>
+                  <BreadcrumbItem key={index}>
+                    {currentSections.at(-1)?.title === section.title ? (
+                      <BreadcrumbPage>{section.title}</BreadcrumbPage>
+                    ) : (
+                      <BreadcrumbLink href={section.url}>{section.title}</BreadcrumbLink>
+                    )}
                   </BreadcrumbItem>
-                </>
-              )}
-              {pathname !== '/' && (
-                <>
-                  <BreadcrumbSeparator />
-                  <BreadcrumbItem>
-                    <BreadcrumbPage>{currentSection.title}</BreadcrumbPage>
-                  </BreadcrumbItem>
-                </>
-              )}
+                </div>
+              ))
+              }
             </BreadcrumbList>
           </Breadcrumb>
           <div className='ml-auto'>
@@ -262,7 +267,7 @@ export function NavLayoutWrapper({
           <ThemeToggle />
         </header>
         <div className='flex-1 flex justify-center'>
-          <div className='sm:mx-3 my-2 md:mx-6 md:my-4 lg:mx-10 lg:my-5 max-w-[730px] w-full'>
+          <div className='sm:mx-3 my-2 md:mx-6 lg:mx-10 max-w-[730px] w-full'>
             {children}
           </div>
         </div>

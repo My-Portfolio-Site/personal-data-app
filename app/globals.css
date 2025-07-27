@@ -155,6 +155,6 @@
 
 @layer components {
   .section {
-    @apply px-3 space-y-4;
+    @apply px-3 space-y-3;
   }
 }

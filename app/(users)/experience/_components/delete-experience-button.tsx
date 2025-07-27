@@ -4,17 +4,18 @@ import { Trash2, Loader } from "lucide-react"
 import { useState } from 'react'
 import { deleteExperienceById } from '@/app/(users)/experience/actions'
 import { toast } from "sonner"
+import { ConfirmDialog } from '@/components/confirm-dialog'
 
-export default function DeleteExperienceButton({ experienceId }: { experienceId: string }) {
+export default function DeleteExperienceButton({ experienceId, company }: { experienceId: string, company: string }) {
   const [isLoading, setIsLoading] = useState(false)
 
   const handleDelete = async ({ experienceId }: { experienceId: string }) => {
     try {
       setIsLoading(true)
       const result = await deleteExperienceById(experienceId)
-      if ("error" in result) {
+      if (!result.success) {
         console.log("Error deleting experience:", result)
-        toast.error(result.error)
+        toast.error(result.message)
       } else {
         toast.success("Experience deleted successfully")
       }
@@ -38,8 +39,17 @@ export default function DeleteExperienceButton({ experienceId }: { experienceId:
     )
   }
   return (
-    <Button variant='ghost' size='sm' className='text-red-400' onClick={() => handleDelete({ experienceId })}>
-      <Trash2 className="w-4 h-4" />
-    </Button>
+    <ConfirmDialog
+      title="Delete Experience"
+      variant="destructive"
+      description={"Are you sure you want to delete this experience for company '" + company + "'?"}
+      confirmText="Delete"
+      cancelText="Cancel"
+      onConfirm={() => handleDelete({ experienceId })}
+    >
+      <Button variant='ghost' size='sm' className='text-red-400'>
+        <Trash2 className="w-4 h-4" />
+      </Button>
+    </ConfirmDialog>
   )
 }

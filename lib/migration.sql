@@ -14,7 +14,8 @@ CREATE TABLE IF NOT EXISTS "accounts" (
     "session_state" text DEFAULT NULL,
     "oauth_token_secret" text DEFAULT NULL,
     "oauth_token" text DEFAULT NULL,
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    FOREIGN KEY (userId) REFERENCES "users" (id) ON DELETE CASCADE
 );
 CREATE INDEX idx_accounts_userId ON "accounts" (userId);
 CREATE INDEX idx_accounts_provider_providerAccountId ON "accounts" (provider, providerAccountId);
@@ -27,7 +28,8 @@ CREATE TABLE IF NOT EXISTS "sessions" (
     "sessionToken" text NOT NULL,
     "userId" text NOT NULL DEFAULT NULL,
     "expires" datetime NOT NULL DEFAULT NULL, 
-    PRIMARY KEY (sessionToken)
+    PRIMARY KEY (sessionToken),
+    FOREIGN KEY (userId) REFERENCES "users" (id) ON DELETE CASCADE
 );
 CREATE INDEX idx_sessions_userId ON "sessions" (userId);
 CREATE INDEX idx_sessions_id ON "sessions" (id);
@@ -77,10 +79,10 @@ CREATE TABLE "experiences" (
     "location" text NOT NULL, 
     "position" text NOT NULL,
     "startDate" date NOT NULL,
-    "endDate" date DEFAULT NULL,
-    "description" text DEFAULT NULL,
-    "achievements" text NOT NULL,
-    "technologies" text NOT NULL,
+    "endDate" date NULL,
+    "description" text NOT NULL,
+    "achievements" text NULL,
+    "technologies" text NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (userId) REFERENCES "users" (id) ON DELETE CASCADE
   );
@@ -94,21 +96,17 @@ CREATE INDEX idx_experiences_userId_id ON "experiences" (userId, id);
 CREATE TABLE IF NOT EXISTS "profiles" (
   "id" TEXT NOT NULL,
   "userId" TEXT NOT NULL,
-  "firstName" TEXT DEFAULT NULL,
-  "lastName" TEXT DEFAULT NULL,
-  "title" TEXT DEFAULT NULL,
-  "email" TEXT DEFAULT NULL,
+  "firstName" TEXT NOT NULL,
+  "lastName" TEXT NOT NULL,
+  "title" TEXT NOT NULL,
+  "email" TEXT NOT NULL,
   "phone" TEXT DEFAULT NULL,
-  "location" TEXT DEFAULT NULL,
+  "location" TEXT NOT NULL,
   "website" TEXT DEFAULT NULL,
   "linkedin" TEXT DEFAULT NULL,
   "github" TEXT DEFAULT NULL,
   "avatar" TEXT DEFAULT NULL,
-  "summary" TEXT DEFAULT NULL,
-  "yearsOfExperience" REAL DEFAULT 0.0,
-  "projectsDone" INTEGER DEFAULT 0,
-  "totalSkills" INTEGER DEFAULT 0,
-  "certificationCompleted" INTEGER DEFAULT 0,
+  "summary" TEXT NOT NULL
   PRIMARY KEY ("id"),
   FOREIGN KEY ("userId") REFERENCES "users" ("id") ON DELETE CASCADE
 );
@@ -116,3 +114,25 @@ CREATE TABLE IF NOT EXISTS "profiles" (
 CREATE INDEX idx_profiles_userId ON "profiles" ("userId");
 CREATE INDEX idx_profiles_id ON "profiles" ("id");
 CREATE INDEX idx_profiles_userId_id ON "profiles" ("userId", "id");
+
+
+CREATE TABLE IF NOT EXISTS "educations" (
+  "id" TEXT NOT NULL,
+  "userId" TEXT NOT NULL,
+  "institution" TEXT NOT NULL,
+  "degree" TEXT NOT NULL,
+  "field" TEXT NOT NULL,
+  "location" TEXT NOT NULL,
+  "startDate" TEXT NOT NULL,
+  "endDate" TEXT DEFAULT NULL,
+  "gpa" TEXT NOT NULL,
+  "honors" TEXT DEFAULT NULL,
+  "coursework" TEXT DEFAULT NULL,
+  "activities" TEXT DEFAULT NULL,
+  PRIMARY KEY ("id"),
+  FOREIGN KEY ("userId") REFERENCES "users" ("id") ON DELETE CASCADE
+);
+
+CREATE INDEX idx_educations_userId ON "educations" ("userId");
+CREATE INDEX idx_educations_id ON "educations" ("id");
+CREATE INDEX idx_educations_userId_id ON "educations" ("userId", "id");

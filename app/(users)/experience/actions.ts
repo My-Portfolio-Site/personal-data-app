@@ -49,6 +49,7 @@ export async function deleteExperienceById(id: string) {
       console.log('Failed to delete experience,', 'status:', response.status)
       throw new Error('Failed to delete experience')
     }
+    revalidatePath('/experience')
     return { message: 'Experience deleted successfully', status: 200, success: true } as ActionResponse
   } catch (err) {
     return { message: (err as Error).message, status: 400, success: false } as ActionResponse
@@ -101,6 +102,8 @@ export async function addExperience(_prev: ExperienceActionState, formData: Form
 // Update an existing experience
 export async function updateExperience(_prev: ExperienceActionState, formData: FormData): Promise<ExperienceActionState> {
   const data = Object.fromEntries(formData)
+
+  console.log("RD:", data)
   
   const validationResult = experienceSchema.safeParse(data)
   if (!validationResult.success) {
@@ -115,6 +118,8 @@ export async function updateExperience(_prev: ExperienceActionState, formData: F
     const response = await fetchApi<ExperienceSchemaType>('/experience', 'PUT', validationResult.data)
 
     if (!response.ok) {
+      console.log('Action: Failed to update experience with data:', data);
+      
       console.log('API Response: Failed to update experience,', 'status:', response.status)
       return {
         data: data as ExperienceSchemaType,
