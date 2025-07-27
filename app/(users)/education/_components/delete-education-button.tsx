@@ -2,27 +2,27 @@
 import { Button } from "@/components/ui/button"
 import { Trash2, Loader } from "lucide-react"
 import { useState } from 'react'
-import { deleteExperienceById } from '@/app/(users)/experience/actions'
+import { deleteEducationById } from '@/app/(users)/education/actions'
 import { toast } from "sonner"
 import { ConfirmDialog } from '@/components/confirm-dialog'
 
-export default function DeleteExperienceButton({ experienceId, company }: { experienceId: string, company: string }) {
+export default function DeleteEducationButton({ educationId, institution }: { educationId: string, institution: string }) {
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleDelete = async ({ experienceId }: { experienceId: string }) => {
+  const handleDelete = async ({ educationId }: { educationId: string }) => {
     try {
       setIsLoading(true)
-      const result = await deleteExperienceById(experienceId)
+      const result = await deleteEducationById(educationId)
       if (!result.success) {
         toast.error(result.message)
       } else {
-        toast.success("Experience deleted successfully")
+        toast.success("Education deleted successfully")
       }
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message)
       } else {
-        toast.error("Unknown error while deleting experience.")
+        toast.error("Unknown error while deleting education.")
       }
     } finally {
       setIsLoading(false)
@@ -38,12 +38,12 @@ export default function DeleteExperienceButton({ experienceId, company }: { expe
   }
   return (
     <ConfirmDialog
-      title="Delete Experience"
+      title="Delete Education"
       variant="destructive"
-      description={"Are you sure you want to delete this experience for company '" + company + "'?"}
+      description={"Are you sure you want to delete this education for institution '" + institution + "'?"}
       confirmText="Delete"
       cancelText="Cancel"
-      onConfirm={() => handleDelete({ experienceId })}
+      onConfirm={() => handleDelete({ educationId })}
     >
       <Button variant='ghost' size='sm' className='text-red-400'>
         <Trash2 className="w-4 h-4" />

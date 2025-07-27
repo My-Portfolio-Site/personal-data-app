@@ -2,7 +2,6 @@
 import { handleSignOut } from '@/app/login/actions'
 import { ThemeToggle } from '@/components/theme-toggle'
 import UserNotVerified from '@/components/user-not-verified'
-import type * as React from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import {
@@ -56,7 +55,7 @@ import {
   SidebarRail,
   SidebarTrigger,
 } from '@/components/ui/sidebar'
-import { CurrentUser, User } from '@/schemas/user'
+import { User } from '@/schemas/user'
 
 const userSections = [
   {
@@ -267,7 +266,7 @@ export function NavLayoutWrapper({
           <ThemeToggle />
         </header>
         <div className='flex-1 flex justify-center'>
-          <div className='sm:mx-3 my-2 md:mx-6 lg:mx-10 max-w-[730px] w-full'>
+          <div className='sm:mx-3 my-2 md:mx-6 lg:mx-10 max-w-[780px] w-full'>
             {children}
           </div>
         </div>
@@ -316,7 +315,7 @@ export function CurrentUserOptions({
                   src={currentUser.image}
                   alt={currentUser.name}
                 />
-                <AvatarFallback className='rounded-lg'>
+                <AvatarFallback className='rounded-lg bg-primary'>
                   {userNameInitials}
                 </AvatarFallback>
               </Avatar>

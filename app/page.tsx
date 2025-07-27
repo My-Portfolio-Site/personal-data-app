@@ -4,7 +4,7 @@ import Link from "next/link";
 export default function Home() {
   return (
     <main className="section">
-      <div className="w-full bg-white/80 dark:bg-slate-900/80 rounded-xl shadow-sm p-8 flex flex-col items-center gap-6 border border-slate-200 dark:border-slate-800">
+      <div className="w-full bg-card rounded-xl shadow-sm p-8 flex flex-col items-center gap-6 border-1 border-ring">
         <h1 className="text-3xl font-extrabold text-center bg-gradient-to-r from-blue-600 to-cyan-400 bg-clip-text text-transparent">Welcome to the Personal Data App</h1>
         <p className="text-lg text-center text-muted-foreground">
           Manage your personal data, experience, education, skills, and more—all in one secure place.<br />
@@ -15,7 +15,7 @@ export default function Home() {
         </Link>
       </div>
 
-      <div className="w-full bg-white/80 dark:bg-slate-900/80 rounded-xl shadow-sm p-8 flex flex-col items-center gap-6 border border-slate-200 dark:border-slate-800">
+      <div className="w-full bg-card rounded-xl shadow-sm p-8 flex flex-col items-center gap-6 border-1 border-ring">
         <h2 className="text-2xl font-bold text-center">
           <span className="bg-gradient-to-r from-purple-600 to-pink-400 bg-clip-text text-transparent">Coming Soon: AI-Powered Features</span>
           <span className="ml-2 text-2xl" role="img" aria-label="AI Robot">🤖</span>
@@ -55,7 +55,7 @@ export default function Home() {
             </p>
           </div>
         </div>
-        <div className="px-4 py-2 rounded-lg bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-300 text-sm">
+        <div className="px-4 py-2 rounded-lg bg-purple-900 text-purple-300 text-sm">
           Stay tuned for these exciting AI features!
         </div>
       </div>

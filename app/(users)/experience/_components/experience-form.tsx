@@ -14,7 +14,6 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Building, X, Plus, Save, Trash2, CalendarIcon } from "lucide-react"
 import type { ExperienceSchemaType, ExperienceSchemaErrorType } from "@/schemas/experience"
 import { experienceSchema } from "@/schemas/experience"
-import { DatePicker } from "@/components/date-picker"
 import { ConfirmDialog } from "@/components/confirm-dialog"
 import { addExperience, updateExperience } from "@/app/(users)/experience/actions"
 import { toast } from "sonner"
@@ -58,7 +57,7 @@ export function ExperienceForm({
   const [newAchievement, setNewAchievement] = useState("")
 
 
-  
+
 
   const addAchievement = (achievement: string) => {
     if (!achievement.trim()) return
@@ -74,21 +73,6 @@ export function ExperienceForm({
     const updatedAchievements = [...achievements]
     updatedAchievements[index] = value
     setAchievements(updatedAchievements)
-  }
-
-  // ==================== Technologies
-  const [technologies, setTechnologies] = useState<string[]>(initialData.technologies ? JSON.parse(initialData.technologies) : [])
-  const [newTechnology, setNewTechnology] = useState("")
-
-  const addTechnology = (technology: string) => {
-    if (!technology.trim()) return
-    if (technologies.includes(technology.trim())) return
-    setTechnologies((prev) => [...prev, technology])
-    setNewTechnology("")
-  }
-
-  const removeTechnology = (index: number) => {
-    setTechnologies(technologies.filter((_, i) => i !== index))
   }
 
 
@@ -250,49 +234,7 @@ export function ExperienceForm({
               <h3 className="text-lg font-semibold">Key Achievements</h3>
               <p className="text-sm text-muted-foreground">List your major accomplishments and impact in this role.</p>
             </div>
-            <input name='achievements' type='hidden' value={JSON.stringify(achievements)} />
-            <div className="space-y-3">
-              <div className="flex gap-2 items-center">
-                <Textarea
-                  value={newAchievement}
-                  onChange={(e) => {
-                    setNewAchievement(e.target.value)
-                  }}
-                  placeholder="Add a new achievement..."
-                  className="flex-1 min-h-[40px] resize-none overflow-hidden"
-                />
-                <Button type="button" size="sm" onClick={() => addAchievement(newAchievement)} disabled={!newAchievement.trim()}>
-                  <Plus className="w-4 h-4" />
-                </Button>
-              </div>
-              <div className='space-y-2'>
-                {achievements.map((achievement, index) => (
-                  <div key={index} className="flex gap-2 items-center">
-                    <Textarea
-                      value={achievement}
-                      onChange={(e) => {
-                        updateAhievement(index, e.target.value)
-                      }}
-                      className="flex-1 min-h-[40px] resize-none overflow-hidden"
-                    />
-                    <ConfirmDialog
-                      title="Delete Achievement"
-                      description="Are you sure you want to delete this achievement? This action cannot be undone."
-                      confirmText="Delete"
-                      cancelText="Cancel"
-                      onConfirm={() => removeAchievement(index)}
-                      variant="destructive"
-                    >
-                      <Button size="sm" variant="destructive" className="">
-                        <Trash2 className="h-5 w-5" />
-                      </Button>
-                    </ConfirmDialog>
-                  </div>
-
-                ))}
-              </div>
-
-            </div>
+            <AchievementsInput achievementsString={state.data?.achievements} />
           </div>
 
           <Separator />
@@ -305,44 +247,7 @@ export function ExperienceForm({
                 Add the technologies, tools, and skills you used in this role.
               </p>
             </div>
-            <div className="space-y-3">
-              <input name='technologies' type='hidden' value={JSON.stringify(technologies)} />
-              <div className="flex gap-2">
-                <Input
-                  value={newTechnology}
-                  onChange={(e) => setNewTechnology(e.target.value)}
-                  placeholder="e.g., React, Node.js, AWS..."
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault()
-                      addTechnology(newTechnology)
-                    }
-                  }}
-                />
-                <Button type="button" onClick={() => addTechnology(newTechnology)} disabled={!newTechnology.trim()}>
-                  <Plus className="w-4 h-4" />
-                </Button>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {technologies.map((tech, index) => (
-                  <Badge key={tech} variant="secondary" className="flex items-center gap-1 py-1 pr-1">
-                    {tech}
-                    <ConfirmDialog
-                      title="Remove Technology"
-                      description={`Are you sure you want to remove "${tech}" technology? This action cannot be undone.`}
-                      confirmText="Remove"
-                      cancelText="Cancel"
-                      onConfirm={() => removeTechnology(index)}
-                      variant="destructive"
-                    >
-                      <Button variant="ghost" size="icon" className="size-5 text-destructive hover:text-destructive">
-                        <X className="w-3 h-3" />
-                      </Button>
-                    </ConfirmDialog>
-                  </Badge>
-                ))}
-              </div>
-            </div>
+            <TechnologiesInput technologiesString={state.data?.technologies} />
           </div>
           {state.message && !state.message?.success && (
             <div className={"p-3 rounded-md text-sm bg-red-50 text-red-700 border border-red-200"}>
@@ -362,3 +267,130 @@ export function ExperienceForm({
   )
 }
 
+
+
+
+const TechnologiesInput = ({ technologiesString }: { technologiesString: string | undefined }) => {
+  // ==================== Technologies
+  const [technologies, setTechnologies] = useState<string[]>(technologiesString ? JSON.parse(technologiesString) : [])
+  const [newTechnology, setNewTechnology] = useState("")
+
+  const addTechnology = (technology: string) => {
+    if (!technology.trim()) return
+    if (technologies.includes(technology.trim())) return
+    setTechnologies((prev) => [...prev, technology])
+    setNewTechnology("")
+  }
+
+  const removeTechnology = (index: number) => {
+    setTechnologies(technologies.filter((_, i) => i !== index))
+  }
+
+  return (
+    <>
+      <input name='technologies' type='hidden' value={JSON.stringify(technologies)} />
+      <div className="space-y-3">
+        <div className="flex gap-2 items-center">
+          <Textarea
+            value={newTechnology}
+            onChange={(e) => {
+              setNewTechnology(e.target.value)
+            }}
+            placeholder="Add a new technology..."
+            className="flex-1 min-h-[40px] resize-none overflow-hidden"
+          />
+          <Button type="button" size="sm" onClick={() => addTechnology(newTechnology)} disabled={!newTechnology.trim()}>
+            <Plus className="w-4 h-4" />
+          </Button>
+        </div>
+        <div className='space-y-2'>
+          <div className="flex flex-wrap gap-2">
+            {technologies.map((technology, index) => (
+              <Badge key={technology} variant="secondary" className="flex items-center gap-1 py-1 pr-1">
+                {technology}
+                <ConfirmDialog
+                  title="Remove Technology"
+                  description={`Are you sure you want to remove "${technology}" technology? This action cannot be undone.`}
+                  confirmText="Remove"
+                  cancelText="Cancel"
+                  onConfirm={() => removeTechnology(index)}
+                  variant="destructive"
+                >
+                  <Button variant="ghost" size="icon" className="size-5 text-destructive hover:text-destructive">
+                    <X className="w-3 h-3" />
+                  </Button>
+                </ConfirmDialog>
+              </Badge>
+            ))}
+          </div>
+        </div>
+      </div>
+    </>
+  )
+}
+
+
+const AchievementsInput = ({ achievementsString }: { achievementsString: string | undefined }) => {
+  // ==================== Achievements
+  const [achievements, setAchievements] = useState<string[]>(achievementsString ? JSON.parse(achievementsString) : [])
+  const [newAchievement, setNewAchievement] = useState("")
+
+  const addAchievement = (achievement: string) => {
+    if (!achievement.trim()) return
+    if (achievements.includes(achievement.trim())) return
+    setAchievements((prev) => [...prev, achievement])
+    setNewAchievement("")
+  }
+
+  const removeAchievement = (index: number) => {
+    setAchievements(achievements.filter((_, i) => i !== index))
+  }
+
+  return (
+    <>
+      <input name='achievements' type='hidden' value={JSON.stringify(achievements)} />
+      <div className="space-y-3">
+        <div className="flex gap-2 items-center">
+          <Textarea
+            value={newAchievement}
+            onChange={(e) => {
+              setNewAchievement(e.target.value)
+            }}
+            placeholder="Add a new achievement..."
+            className="flex-1 min-h-[40px] resize-none overflow-hidden"
+          />
+          <Button type="button" size="sm" onClick={() => addAchievement(newAchievement)} disabled={!newAchievement.trim()}>
+            <Plus className="w-4 h-4" />
+          </Button>
+        </div>
+        <div className='space-y-2'>
+          {achievements.map((achievement, index) => (
+            <div key={index} className="flex gap-2 items-center">
+              <Textarea
+                value={achievement}
+                onChange={(e) => {
+                  const updatedAchievements = [...achievements]
+                  updatedAchievements[index] = e.target.value
+                  setAchievements(updatedAchievements)
+                }}
+                className="flex-1 min-h-[40px] resize-none overflow-hidden"
+              />
+              <ConfirmDialog
+                title="Delete Achievement"
+                description="Are you sure you want to delete this achievement? This action cannot be undone."
+                confirmText="Delete"
+                cancelText="Cancel"
+                onConfirm={() => removeAchievement(index)}
+                variant="destructive"
+              >
+                <Button size="sm" variant="destructive" className="">
+                  <Trash2 className="h-5 w-5" />
+                </Button>
+              </ConfirmDialog>
+            </div>
+          ))}
+        </div>
+      </div>
+    </>
+  )
+}
