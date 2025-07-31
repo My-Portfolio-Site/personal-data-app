@@ -35,8 +35,8 @@ export function EditUserForm({ initialData }: { initialData: UpdateUserData }) {
     setIsLoading(true)
     try {
       const result = await updateUser(formData)
-      if ("error" in result) {
-        toast.error(result.error)
+      if (!result.success) {
+        toast.error(result.message || "Failed to update user")
       } else {
         setOpen(false)
         toast.success("User updated successfully")

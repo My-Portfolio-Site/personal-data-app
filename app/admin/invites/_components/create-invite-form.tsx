@@ -57,10 +57,9 @@ export default function InviteForm() {
     setIsSubmitting(true)
     setError(null)
     const result = await createInvite(data)
-    if ('error' in result) {
-      console.log(result.error)
-      setError(result.error)
-      toast.error(result.error)
+    if (!result.success) {
+      setError(result.message || 'Failed to send invite')
+      toast.error(error)
       setIsSubmitting(false)
       return
     }

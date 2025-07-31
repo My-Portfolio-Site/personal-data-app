@@ -17,13 +17,11 @@ export async function fetchAllUsers() {
     const API_USERS_URL = API_BASE_URL + '/api/users'
     const response = await fetch(API_USERS_URL, { method: 'GET', headers: { 'Cookie': cookieHeader } })
     if (!response.ok) {
-      const error = { error: 'Failed to fetch users', status: response.status }
-      console.log(error)
-      return error as ApiError
+      throw new Error('Failed to delete invite')
     }
     return (await response.json()) as User[]
   } catch (err) {
-    return { error: (err as Error).message } as ApiError
+    return { success: true, message: (err as Error).message } as ActionResponse
   }
 }
 
@@ -42,13 +40,12 @@ export async function deleteUser(id: string) {
       body: JSON.stringify(parsedData),
     })
     if (!response.ok) {
-      const error: ApiError = await response.json()
-      throw new Error(error.error || 'Failed to delete user')
+      throw new Error('Failed to delete user')
     }
     revalidatePath('/admin/users')
-    return (await response.json()) as ApiResponseMessage
+    return { message: 'User deleted successfully', success: true } as ActionResponse
   } catch (err) {
-    return { error: (err as Error).message } as ApiError
+    return { message: (err as Error).message, success: false } as ActionResponse
   }
 }
 
@@ -67,13 +64,12 @@ export async function updateUser(data: UpdateUserData) {
       body: JSON.stringify(parsedData),
     })
     if (!response.ok) {
-      const error: ApiError = await response.json()
-      throw new Error(error.error || 'Failed to update user')
+      throw new Error('Failed to update user')
     }
     revalidatePath('/admin/users')
-    return (await response.json()) as ApiResponseMessage
+    return { message: 'User updated successfully', success: true } as ActionResponse
   } catch (err) {
-    return { error: (err as Error).message } as ApiError
+    return { message: (err as Error).message, success: false } as ActionResponse
   }
 }
 

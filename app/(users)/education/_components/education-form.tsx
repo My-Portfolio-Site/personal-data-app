@@ -6,12 +6,11 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ValidatedInput, ValidatedTextarea } from "@/components/validated-input"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Building, X, Plus, Save, Trash2, CalendarIcon } from "lucide-react"
+import { GraduationCap, X, Plus, Save } from "lucide-react"
 import type { EducationSchemaType, EducationSchemaErrorType } from "@/schemas/education"
 import { educationSchema } from "@/schemas/education"
 import { ConfirmDialog } from "@/components/confirm-dialog"
@@ -66,7 +65,7 @@ export function EducationForm({
     <Card className='gap-2'>
       <CardHeader>
         <div className="flex items-center gap-2">
-          <Building className="w-5 h-5" />
+          <GraduationCap className="w-5 h-5" />
           <div>
             <CardTitle>{mode === "add" ? "Add Education" : "Edit Education"}</CardTitle>
             <CardDescription>
@@ -78,162 +77,147 @@ export function EducationForm({
         </div>
       </CardHeader>
       <CardContent className="">
-        <form action={formAction} onSubmit={handleSubmit} noValidate className='space-y-6'>
+        <form action={formAction} onSubmit={handleSubmit} noValidate className='space-y-4'>
           <input type="hidden" name="id" value={state.data?.id || ''} />
           <input type="hidden" name="userId" value={state.data?.userId || ''} />
-          {/* Basic Information */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Basic Information</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <ValidatedInput
-                  id="company"
-                  type='text'
-                  name="company"
-                  label="Company"
-                  isRequired={!(educationSchema.shape.company instanceof ZodOptional)}
-                  fieldSchema={educationSchema.shape.company}
-                  wasSubmitted={wasSubmitted}
-                  defaultValue={state.data?.company}
-                  errors={state.errors?.fieldErrors.company}
-                  placeholder="e.g., Google, Microsoft, Startup Inc."
-                />
-              </div>
-              <div className="space-y-2">
-                <ValidatedInput
-                  id="position"
-                  type='text'
-                  name="position"
-                  label="Position"
-                  isRequired={!(educationSchema.shape.position instanceof ZodOptional)}
-                  fieldSchema={educationSchema.shape.position}
-                  wasSubmitted={wasSubmitted}
-                  defaultValue={state.data?.position}
-                  errors={state.errors?.fieldErrors.position}
-                  placeholder="e.g., Senior Software Engineer"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <ValidatedInput
-                id="location"
-                type='text'
-                name="location"
-                label="Location"
-                isRequired={!(educationSchema.shape.location instanceof ZodOptional)}
-                fieldSchema={educationSchema.shape.location}
-                wasSubmitted={wasSubmitted}
-                defaultValue={state.data?.location}
-                errors={state.errors?.fieldErrors.location}
-                placeholder="e.g., San Francisco, CA or Remote"
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <ValidatedInput
-                  id="startDate"
-                  type='date'
-                  name="startDate"
-                  label="Start Date"
-                  defaultValue={state.data?.startDate}
-                  fieldSchema={educationSchema.shape.startDate}
-                  wasSubmitted={wasSubmitted}
-                  isRequired={true}
-                  errors={state.errors?.fieldErrors.startDate}
-                  className="w-fit"
-                // disabled={isCurrentEducation}
-                />
-
-              </div>
-              <div className="space-y-2">
-                <ValidatedInput
-                  id="endDate"
-                  type='date'
-                  name="endDate"
-                  label="End Date"
-                  defaultValue={state.data?.endDate}
-                  fieldSchema={educationSchema.shape.endDate}
-                  wasSubmitted={wasSubmitted}
-                  isRequired={!isCurrentEducation}
-                  errors={state.errors?.fieldErrors.endDate}
-                  className="w-fit"
-                  disabled={isCurrentEducation}
-                />
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="isCurrentEducation"
-                checked={isCurrentEducation}
-                onCheckedChange={(checked) => {
-                  // updateField("isCurrentEducation", checked)
-                  setIsCurrentEducation(Boolean(checked))
-                }}
-              />
-              <Label htmlFor="isCurrentEducation">I currently work here</Label>
-            </div>
+          <ValidatedInput
+            type='text'
+            name="institution"
+            label="Institution"
+            isRequired={!(educationSchema.shape.institution instanceof ZodOptional)}
+            fieldSchema={educationSchema.shape.institution}
+            wasSubmitted={wasSubmitted}
+            defaultValue={state.data?.institution}
+            errors={state.errors?.fieldErrors.institution}
+            placeholder="e.g., Harvard University"
+          />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <ValidatedInput
+              type='text'
+              name="degree"
+              label="Degree"
+              isRequired={!(educationSchema.shape.degree instanceof ZodOptional)}
+              fieldSchema={educationSchema.shape.degree}
+              wasSubmitted={wasSubmitted}
+              defaultValue={state.data?.degree}
+              errors={state.errors?.fieldErrors.degree}
+              placeholder="e.g., Master of Science"
+            />
+            <ValidatedInput
+              type='text'
+              name="field"
+              label="Field"
+              isRequired={!(educationSchema.shape.field instanceof ZodOptional)}
+              fieldSchema={educationSchema.shape.field}
+              wasSubmitted={wasSubmitted}
+              defaultValue={state.data?.field}
+              errors={state.errors?.fieldErrors.field}
+              placeholder="e.g., Computer Science"
+            />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <ValidatedInput
+              type='text'
+              name="location"
+              label="Location"
+              isRequired={!(educationSchema.shape.location instanceof ZodOptional)}
+              fieldSchema={educationSchema.shape.location}
+              wasSubmitted={wasSubmitted}
+              defaultValue={state.data?.location}
+              errors={state.errors?.fieldErrors.location}
+              placeholder="e.g., Massachusetts, USA"
+            />
+            <ValidatedInput
+              type='text'
+              name="gpa"
+              label="GPA"
+              isRequired={!(educationSchema.shape.gpa instanceof ZodOptional)}
+              fieldSchema={educationSchema.shape.gpa}
+              wasSubmitted={wasSubmitted}
+              defaultValue={state.data?.gpa}
+              errors={state.errors?.fieldErrors.gpa}
+              placeholder="e.g., 3.8"
+            />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <ValidatedInput
+              type='date'
+              name="startDate"
+              label="Start Date"
+              defaultValue={state.data?.startDate}
+              fieldSchema={educationSchema.shape.startDate}
+              wasSubmitted={wasSubmitted}
+              isRequired={true}
+              errors={state.errors?.fieldErrors.startDate}
+              className="w-fit"
+            // disabled={isCurrentEducation}
+            />
+            <ValidatedInput
+              type='date'
+              name="endDate"
+              label="End Date"
+              defaultValue={state.data?.endDate}
+              fieldSchema={educationSchema.shape.endDate}
+              wasSubmitted={wasSubmitted}
+              isRequired={!isCurrentEducation}
+              errors={state.errors?.fieldErrors.endDate}
+              className="w-fit"
+              disabled={isCurrentEducation}
+            />
+          </div>
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="isCurrentEducation"
+              checked={isCurrentEducation}
+              onCheckedChange={(checked) => {
+                // updateField("isCurrentEducation", checked)
+                setIsCurrentEducation(Boolean(checked))
+              }}
+            />
+            <Label htmlFor="isCurrentEducation">Ongoing degree</Label>
           </div>
 
-          <Separator />
-
-          {/* Description */}
-          <div className="space-y-4">
-            <div>
-              <h3 className="text-lg font-semibold">Job Description</h3>
-              <p className="text-sm text-muted-foreground">Provide a brief overview of your role and responsibilities.</p>
-            </div>
-            <div className="space-y-2">
-              <ValidatedTextarea
-                name='description'
-                label='Description'
-                type='text'
-                isRequired={!(educationSchema.shape.description instanceof ZodOptional)}
-                fieldSchema={educationSchema.shape.description}
-                wasSubmitted={wasSubmitted}
-                defaultValue={state.data?.description}
-                errors={state.errors?.fieldErrors.description}
-                placeholder="e.g., San Francisco, CA or Remote"
-                rows={4}
-                className="resize-none"
-              />
-            </div>
-          </div>
-
-          <Separator />
-
+          <Separator className='mb-3' />
           {/* Honors */}
-          <div className="space-y-4">
+          <div className="space-y-2">
             <div>
-              <h3 className="text-lg font-semibold">Key Honors</h3>
+              <h3 className="text-lg font-semibold">Honors</h3>
               <p className="text-sm text-muted-foreground">List your major honors and recognitions in this role.</p>
             </div>
             <HonorsInput honorsString={state.data?.honors} />
           </div>
 
-          <Separator />
-
-          {/* Technologies */}
-          <div className="space-y-4">
+          <Separator className='mb-3' />
+          {/* Coursework */}
+          <div className="space-y-2 ">
             <div>
-              <h3 className="text-lg font-semibold">Technologies & Skills</h3>
-              <p className="text-sm text-muted-foreground">
-                Add the onors, tools, and skills you used in this role.
-              </p>
+              <h3 className="text-lg font-semibold">Relevant Coursework</h3>
+              <p className="text-sm text-muted-foreground">List your major coursework in this role.</p>
             </div>
-            <div className="space-y-3">
+            <CourseworkInput courseworkString={state.data?.coursework} />
 
-            </div>
           </div>
+
+          <Separator className='mb-3' />
+          {/* Activities */}
+          <div className="space-y-2 ">
+            <div>
+              <h3 className="text-lg font-semibold">Activities</h3>
+              <p className="text-sm text-muted-foreground">List your extra activities done during study.</p>
+            </div>
+            <ActivitieskInput activitiesString={state.data?.activities} />
+
+          </div>
+
+          <Separator className='mb-3' />
+
           {state.message && !state.message?.success && (
             <div className={"p-3 rounded-md text-sm bg-red-50 text-red-700 border border-red-200"}>
               {state.message?.message}
             </div>
           )}
           {/* Form Actions */}
-          <div className="flex flex-col sm:flex-row gap-3 pt-4">
+          <div className="flex flex-col sm:flex-row gap-3">
             <Button disabled={isPending} type='submit' className="flex-1 sm:flex-none text-white">
               <Save className="w-4 h-4" />
               {isPending ? "Saving..." : "Save"}
@@ -241,13 +225,13 @@ export function EducationForm({
           </div>
         </form>
       </CardContent>
-    </Card>
+    </Card >
   )
 }
 
 
+// ==================== Honors
 const HonorsInput = ({ honorsString }: { honorsString: string | undefined }) => {
-  // ==================== Honors
   const [honors, setHonors] = useState<string[]>(honorsString ? JSON.parse(honorsString) : [])
   const [newHonor, setNewHonor] = useState("")
 
@@ -264,11 +248,12 @@ const HonorsInput = ({ honorsString }: { honorsString: string | undefined }) => 
   return (
     <>
       <input name='honors' type='hidden' value={JSON.stringify(honors)} />
-      <div className="flex gap-2">
+      <div className="flex gap-2 max-w-[400px] w-full">
         <Input
+          id='honors'
           value={newHonor}
           onChange={(e) => setNewHonor(e.target.value)}
-          placeholder="e.g., React, Node.js, AWS..."
+          placeholder="e.g., Dean's List..."
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               e.preventDefault()
@@ -290,6 +275,124 @@ const HonorsInput = ({ honorsString }: { honorsString: string | undefined }) => 
               confirmText="Remove"
               cancelText="Cancel"
               onConfirm={() => removeHonor(index)}
+              variant="destructive"
+            >
+              <Button variant="ghost" size="icon" className="size-5 text-destructive hover:text-destructive">
+                <X className="w-3 h-3" />
+              </Button>
+            </ConfirmDialog>
+          </Badge>
+        ))}
+      </div>
+    </>
+  )
+}
+
+
+// ==================== Coursework
+const CourseworkInput = ({ courseworkString }: { courseworkString: string | undefined }) => {
+  const [coursework, setCoursework] = useState<string[]>(courseworkString ? JSON.parse(courseworkString) : [])
+  const [newCourse, setNewCourse] = useState("")
+
+  const addCourse = (course: string) => {
+    if (!course.trim()) return
+    if (coursework.includes(course.trim())) return
+    setCoursework((prev) => [...prev, course])
+    setNewCourse("")
+  }
+
+  const removeCourse = (index: number) => {
+    setCoursework(coursework.filter((_, i) => i !== index))
+  }
+  return (
+    <>
+      <input name='coursework' type='hidden' value={JSON.stringify(coursework)} />
+      <div className="flex gap-2 max-w-[400px] w-full">
+        <Input
+          id='coursework'
+          value={newCourse}
+          onChange={(e) => setNewCourse(e.target.value)}
+          placeholder="e.g., Machine Learning, Data Science..."
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault()
+              addCourse(newCourse)
+            }
+          }}
+        />
+        <Button type="button" onClick={() => addCourse(newCourse)} disabled={!newCourse.trim()}>
+          <Plus className="w-4 h-4" />
+        </Button>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {coursework.map((course, index) => (
+          <Badge key={course} variant="secondary" className="flex items-center gap-1 py-1 pr-1">
+            {course}
+            <ConfirmDialog
+              title="Remove Course"
+              description={`Are you sure you want to remove "${course}" course? This action cannot be undone.`}
+              confirmText="Remove"
+              cancelText="Cancel"
+              onConfirm={() => removeCourse(index)}
+              variant="destructive"
+            >
+              <Button variant="ghost" size="icon" className="size-5 text-destructive hover:text-destructive">
+                <X className="w-3 h-3" />
+              </Button>
+            </ConfirmDialog>
+          </Badge>
+        ))}
+      </div>
+    </>
+  )
+}
+
+
+// ==================== Activities
+const ActivitieskInput = ({ activitiesString }: { activitiesString: string | undefined }) => {
+  const [activities, setActivities] = useState<string[]>(activitiesString ? JSON.parse(activitiesString) : [])
+  const [newActivity, setNewActivity] = useState("")
+
+  const addActivity = (activity: string) => {
+    if (!activity.trim()) return
+    if (activities.includes(activity.trim())) return
+    setActivities((prev) => [...prev, activity])
+    setNewActivity("")
+  }
+
+  const removeActivity = (index: number) => {
+    setActivities(activities.filter((_, i) => i !== index))
+  }
+  return (
+    <>
+      <input name='activities' type='hidden' value={JSON.stringify(activities)} />
+      <div className="flex gap-2 max-w-[400px] w-full">
+        <Input
+          id='activities'
+          value={newActivity}
+          onChange={(e) => setNewActivity(e.target.value)}
+          placeholder="e.g., ACM Programming Team..."
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault()
+              addActivity(newActivity)
+            }
+          }}
+        />
+        <Button type="button" onClick={() => addActivity(newActivity)} disabled={!newActivity.trim()}>
+          <Plus className="w-4 h-4" />
+        </Button>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {activities.map((activity, index) => (
+          <Badge key={activity} variant="secondary" className="flex items-center gap-1 py-1 pr-1">
+            {activity}
+            <ConfirmDialog
+              title="Remove Course"
+              description={`Are you sure you want to remove "${activity}" activity? This action cannot be undone.`}
+              confirmText="Remove"
+              cancelText="Cancel"
+              onConfirm={() => removeActivity(index)}
               variant="destructive"
             >
               <Button variant="ghost" size="icon" className="size-5 text-destructive hover:text-destructive">

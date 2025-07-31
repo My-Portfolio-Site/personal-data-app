@@ -102,90 +102,76 @@ export function ExperienceForm({
         </div>
       </CardHeader>
       <CardContent className="">
-        <form action={formAction} onSubmit={handleSubmit} noValidate className='space-y-6'>
+        <form action={formAction} onSubmit={handleSubmit} noValidate className='space-y-4'>
           <input type="hidden" name="id" value={state.data?.id || ''} />
           <input type="hidden" name="userId" value={state.data?.userId || ''} />
           {/* Basic Information */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Basic Information</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <ValidatedInput
-                  id="company"
-                  type='text'
-                  name="company"
-                  label="Company"
-                  isRequired={!(experienceSchema.shape.company instanceof ZodOptional)}
-                  fieldSchema={experienceSchema.shape.company}
-                  wasSubmitted={wasSubmitted}
-                  defaultValue={state.data?.company}
-                  errors={state.errors?.fieldErrors.company}
-                  placeholder="e.g., Google, Microsoft, Startup Inc."
-                />
-              </div>
-              <div className="space-y-2">
-                <ValidatedInput
-                  id="position"
-                  type='text'
-                  name="position"
-                  label="Position"
-                  isRequired={!(experienceSchema.shape.position instanceof ZodOptional)}
-                  fieldSchema={experienceSchema.shape.position}
-                  wasSubmitted={wasSubmitted}
-                  defaultValue={state.data?.position}
-                  errors={state.errors?.fieldErrors.position}
-                  placeholder="e.g., Senior Software Engineer"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
               <ValidatedInput
-                id="location"
                 type='text'
-                name="location"
-                label="Location"
-                isRequired={!(experienceSchema.shape.location instanceof ZodOptional)}
-                fieldSchema={experienceSchema.shape.location}
+                name="company"
+                label="Company"
+                isRequired={!(experienceSchema.shape.company instanceof ZodOptional)}
+                fieldSchema={experienceSchema.shape.company}
                 wasSubmitted={wasSubmitted}
-                defaultValue={state.data?.location}
-                errors={state.errors?.fieldErrors.location}
-                placeholder="e.g., San Francisco, CA or Remote"
+                defaultValue={state.data?.company}
+                errors={state.errors?.fieldErrors.company}
+                placeholder="e.g., Google, Microsoft, Startup Inc."
+              />
+              <ValidatedInput
+                type='text'
+                name="position"
+                label="Position"
+                isRequired={!(experienceSchema.shape.position instanceof ZodOptional)}
+                fieldSchema={experienceSchema.shape.position}
+                wasSubmitted={wasSubmitted}
+                defaultValue={state.data?.position}
+                errors={state.errors?.fieldErrors.position}
+                placeholder="e.g., Senior Software Engineer"
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <ValidatedInput
-                  id="startDate"
-                  type='date'
-                  name="startDate"
-                  label="Start Date"
-                  defaultValue={state.data?.startDate}
-                  fieldSchema={experienceSchema.shape.startDate}
-                  wasSubmitted={wasSubmitted}
-                  isRequired={true}
-                  errors={state.errors?.fieldErrors.startDate}
-                  className="w-fit"
-                // disabled={isCurrentRole}
-                />
+            <ValidatedInput
+              type='text'
+              name="location"
+              label="Location"
+              isRequired={!(experienceSchema.shape.location instanceof ZodOptional)}
+              fieldSchema={experienceSchema.shape.location}
+              wasSubmitted={wasSubmitted}
+              defaultValue={state.data?.location}
+              errors={state.errors?.fieldErrors.location}
+              placeholder="e.g., San Francisco, CA or Remote"
+            />
 
-              </div>
-              <div className="space-y-2">
-                <ValidatedInput
-                  id="endDate"
-                  type='date'
-                  name="endDate"
-                  label="End Date"
-                  defaultValue={state.data?.endDate}
-                  fieldSchema={experienceSchema.shape.endDate}
-                  wasSubmitted={wasSubmitted}
-                  isRequired={!isCurrentRole}
-                  errors={state.errors?.fieldErrors.endDate}
-                  className="w-fit"
-                  disabled={isCurrentRole}
-                />
-              </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+              <ValidatedInput
+                type='date'
+                name="startDate"
+                label="Start Date"
+                defaultValue={state.data?.startDate}
+                fieldSchema={experienceSchema.shape.startDate}
+                wasSubmitted={wasSubmitted}
+                isRequired={true}
+                errors={state.errors?.fieldErrors.startDate}
+                className="w-fit"
+              // disabled={isCurrentRole}
+              />
+
+              <ValidatedInput
+                type='date'
+                name="endDate"
+                label="End Date"
+                defaultValue={state.data?.endDate}
+                fieldSchema={experienceSchema.shape.endDate}
+                wasSubmitted={wasSubmitted}
+                isRequired={!isCurrentRole}
+                errors={state.errors?.fieldErrors.endDate}
+                className="w-fit"
+                disabled={isCurrentRole}
+              />
             </div>
 
             <div className="flex items-center space-x-2">
@@ -201,35 +187,32 @@ export function ExperienceForm({
             </div>
           </div>
 
-          <Separator />
+          <Separator className='mb-3' />
 
           {/* Description */}
-          <div className="space-y-4">
+          <div className="space-y-2">
             <div>
               <h3 className="text-lg font-semibold">Job Description</h3>
               <p className="text-sm text-muted-foreground">Provide a brief overview of your role and responsibilities.</p>
             </div>
-            <div className="space-y-2">
-              <ValidatedTextarea
-                name='description'
-                label='Description'
-                type='text'
-                isRequired={!(experienceSchema.shape.description instanceof ZodOptional)}
-                fieldSchema={experienceSchema.shape.description}
-                wasSubmitted={wasSubmitted}
-                defaultValue={state.data?.description}
-                errors={state.errors?.fieldErrors.description}
-                placeholder="e.g., San Francisco, CA or Remote"
-                rows={4}
-                className="resize-none"
-              />
-            </div>
+            <ValidatedTextarea
+              name='description'
+              label='Description'
+              type='text'
+              isRequired={!(experienceSchema.shape.description instanceof ZodOptional)}
+              fieldSchema={experienceSchema.shape.description}
+              wasSubmitted={wasSubmitted}
+              defaultValue={state.data?.description}
+              errors={state.errors?.fieldErrors.description}
+              placeholder="e.g., San Francisco, CA or Remote"
+              rows={2}
+            />
           </div>
 
-          <Separator />
+          <Separator className='mb-3' />
 
           {/* Achievements */}
-          <div className="space-y-4">
+          <div className="space-y-2">
             <div>
               <h3 className="text-lg font-semibold">Key Achievements</h3>
               <p className="text-sm text-muted-foreground">List your major accomplishments and impact in this role.</p>
@@ -237,10 +220,10 @@ export function ExperienceForm({
             <AchievementsInput achievementsString={state.data?.achievements} />
           </div>
 
-          <Separator />
+          <Separator className='mb-3'/>
 
           {/* Technologies */}
-          <div className="space-y-4">
+          <div className="space-y-2">
             <div>
               <h3 className="text-lg font-semibold">Technologies & Skills</h3>
               <p className="text-sm text-muted-foreground">
@@ -249,13 +232,14 @@ export function ExperienceForm({
             </div>
             <TechnologiesInput technologiesString={state.data?.technologies} />
           </div>
+          <Separator className='mb-3' />
           {state.message && !state.message?.success && (
             <div className={"p-3 rounded-md text-sm bg-red-50 text-red-700 border border-red-200"}>
               {state.message?.message}
             </div>
           )}
           {/* Form Actions */}
-          <div className="flex flex-col sm:flex-row gap-3 pt-4">
+          <div className="flex flex-col sm:flex-row gap-3">
             <Button disabled={isPending} type='submit' className="flex-1 sm:flex-none text-white">
               <Save className="w-4 h-4" />
               {isPending ? "Saving..." : "Save"}
@@ -289,7 +273,7 @@ const TechnologiesInput = ({ technologiesString }: { technologiesString: string 
   return (
     <>
       <input name='technologies' type='hidden' value={JSON.stringify(technologies)} />
-      <div className="space-y-3">
+      <div className="space-y-2 max-w-[500px]">
         <div className="flex gap-2 items-center">
           <Textarea
             value={newTechnology}
@@ -349,7 +333,7 @@ const AchievementsInput = ({ achievementsString }: { achievementsString: string 
   return (
     <>
       <input name='achievements' type='hidden' value={JSON.stringify(achievements)} />
-      <div className="space-y-3">
+      <div className="space-y-3 max-w-[500px]">
         <div className="flex gap-2 items-center">
           <Textarea
             value={newAchievement}

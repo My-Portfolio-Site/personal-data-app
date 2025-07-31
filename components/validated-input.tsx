@@ -48,21 +48,22 @@ const ValidatedInput = ({
   const handleChange = (e: any) => setValue(e.currentTarget.value)
 
   return (
-    <>
+    <div className="space-y-2">
+      {/* Label and Input */}
       <Label htmlFor={name}>{label} {isRequired && <span className="text-red-500">*</span>}</Label>
       <Input
         id={name}
         name={name}
         onBlur={handleBlur}
         onChange={handleChange}
-        className={fieldErrors.length > 0 ? "border-destructive" : ""}
+        className={'max-w-[400px] w-full '+(fieldErrors.length > 0 ? "border-destructive" : "")}
         defaultValue={value}
         {...props}
       />
       {shouldRenderErrors && (
         <span className="text-sm text-destructive">{fieldErrors}</span>
       )}
-    </>
+    </div>
   )
 }
 
@@ -103,11 +104,11 @@ const ValidatedTextarea = ({
         onBlur={handleBlur}
         onChange={handleChange}
         defaultValue={value}
-        className={
-          fieldErrors.length > 0
+        className={'resize-none ' +
+          (fieldErrors.length > 0
             ? 'outline-red-500'
             : 'outline-red-500'
-        }
+        )}
         {...props}
       />
       {shouldRenderErrors && (

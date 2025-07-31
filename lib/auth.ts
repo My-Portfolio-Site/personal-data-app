@@ -1,7 +1,7 @@
 import NextAuth from "next-auth"
 
 import authConfig from "@/lib/auth.config";
-import { checkInvitation } from "@/lib/helpers";
+// import { checkInvitation } from "@/lib/helpers";
 import { User } from "@/schemas/user";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({

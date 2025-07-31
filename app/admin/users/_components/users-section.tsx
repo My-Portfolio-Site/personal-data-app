@@ -19,8 +19,8 @@ export default function UsersSection({ users, currentUserId }: { users: User[], 
 
   async function handleDelete(id: string) {
     const result = await deleteUser(id)
-    if ('error' in result) {
-      toast.error(result.error)
+    if (!result.success) {
+      toast.error(result.message)
     } else {
       toast.success('User deleted successfully')
     }

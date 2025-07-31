@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 export const metadata: Metadata = {
-  title: 'Experiences | Personal Data App',
+  title: 'Education | Personal Data App',
   description: 'App and API for personal data management',
 }
 

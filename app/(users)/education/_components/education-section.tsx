@@ -6,7 +6,7 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Building, Calendar, GraduationCap, Award } from 'lucide-react'
+import { Calendar, GraduationCap, Award } from 'lucide-react'
 import type { EducationSchemaType } from '@/schemas/education'
 import DeleteEducationButton from '@/app/(users)/education/_components/delete-education-button'
 import EditEducationButton from '@/app/(users)/education/_components/edit-education-button'

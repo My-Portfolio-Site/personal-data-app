@@ -1,19 +1,18 @@
 import 'server-only';
 
-import { auth } from '@/lib/auth'
-import { User } from '@/schemas/user';
-import { db } from './db';
+// import { auth } from '@/lib/auth'
+// import { User } from '@/schemas/user';
+// import { db } from './db';
 import { cookies, headers } from 'next/headers'
 import { getCurrentUserId } from '@/lib/dal';
 
 export function getCurrentUrl(headers: Headers) {
   const protocol = headers.get("x-forwarded-proto") || "https";
   const host = headers.get("host") || headers.get("x-forwarded-host") || "localhost";
-  console.log(protocol, host)
-
   return `${protocol}://${host}`;
 }
 
+// encapsulation of js fetch api to pass cookie headers
 export async function fetchApi<T = never>(
   route: string, method: 'GET' | 'POST' | 'PUT' | 'DELETE', data?: T
 ) {

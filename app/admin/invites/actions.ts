@@ -32,7 +32,7 @@ export async function fetchAllInvites() {
     }
     return (await response.json()) as Invite[]
   } catch (err) {
-    return { error: (err as Error).message } as ApiError
+    return { success: false, message: (err as Error).message } as ActionResponse
   }
 }
 
@@ -68,14 +68,12 @@ export async function createInvite(data: CreateInviteForm) {
       body: JSON.stringify(allParsedData),
     })
     if (!response.ok) {
-      const error: ApiError = await response.json()
-      console.log('Failed to create invite: ', error)
       throw new Error('Failed to create invite')
     }
     revalidatePath('/admin/invites')
-    return (await response.json()) as ApiResponseMessage
+    return {message: 'Invite created successfully', success: true} as ActionResponse
   } catch (err) {
-    return { error: (err as Error).message } as ApiError
+    return { message: (err as Error).message, success: false } as ActionResponse
   }
 }
 
@@ -95,13 +93,12 @@ export async function updateInvite(data: UpdateInvite) {
       body: JSON.stringify(parsedData),
     })
     if (!response.ok) {
-      const error: ApiError = await response.json()
-      throw new Error(error.error || 'Failed to update invite')
+      throw new Error('Failed to update invite')
     }
     revalidatePath('/admin/invites')
-    return (await response.json()) as ApiResponseMessage
+    return { message: 'Invite updated successfully', success: true } as ActionResponse
   } catch (err) {
-    return { error: (err as Error).message } as ApiError
+    return { message: (err as Error).message, success: false } as ActionResponse
   }
 }
 
@@ -121,13 +118,12 @@ export async function deleteInvite(id: string) {
       body: JSON.stringify(parsedData),
     })
     if (!response.ok) {
-      const error: ApiError = await response.json()
-      throw new Error(error.error || 'Failed to delete invite')
+      throw new Error('Failed to delete invite')
     }
     revalidatePath('/admin/invites')
-    return (await response.json()) as ApiResponseMessage
+    return { message: 'Invite deleted successfully', success: true } as ActionResponse
   } catch (err) {
-    return { error: (err as Error).message } as ApiError
+    return { message: (err as Error).message, success: false } as ActionResponse
   }
 }
 

@@ -26,11 +26,10 @@ export default function InvitesTab({invites}: { invites: Invite[] }) {
   async function handleUpdateInvite(data: UpdateInvite) {
     setIsLoading(true)
     const result = await updateInvite(data)
-    if ('error' in result) {
-      console.log(result.error)
-      toast.error(result.error)
+    if (!result.success) {
+      toast.error(result.message || 'Failed to update invite')
       setIsLoading(false)
-      return result.error
+      return
     }
     toast.success('Invite updated successfully')
     setIsLoading(false)
@@ -39,9 +38,8 @@ export default function InvitesTab({invites}: { invites: Invite[] }) {
   async function handleDelete(id: string) {
     setIsLoading(true)
     const result = await deleteInvite(id)
-    if ('error' in result) {
-      console.log(result.error)
-      toast.error(result.error)
+    if (!result.success) {
+      toast.error(result.message)
       setIsLoading(false)
       return
     }

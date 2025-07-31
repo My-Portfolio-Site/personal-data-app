@@ -12,13 +12,7 @@ import type { ExperienceSchemaType } from "@/schemas/experience"
 import { ExperienceForm } from "@/app/(users)/experience/_components/experience-form"
 import { fetchExperienceById } from '@/app/(users)/experience/actions'
 
-interface EditExperiencePageProps {
-  params: {
-    experienceId: string; // Type for your dynamic route parameter
-  };
-}
-
-export default async function EditExperiencePage({ params }: EditExperiencePageProps) {
+export default async function EditExperiencePage({ params }: { params: Promise<{ experienceId: string; }>}) {
   const { experienceId } = await params
 
   const response = await fetchExperienceById(experienceId)

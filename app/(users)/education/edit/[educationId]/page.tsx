@@ -19,7 +19,7 @@ interface EditEducationPageProps {
   };
 }
 
-export default async function EditEducationPage({ params }: EditEducationPageProps) {
+export default async function EditEducationPage({ params }: { params: Promise<{ educationId: string }>}) {
   const { educationId } = await params
 
   const response = await fetchEducationById(educationId)
@@ -41,10 +41,10 @@ export default async function EditEducationPage({ params }: EditEducationPagePro
       </Button>
 
       {/* Form */}
-      {/* <EducationForm
+      <EducationForm
         initialData={education}
         mode="edit"
-      /> */}
+      />
     </div>
   )
 }

@@ -1,7 +1,7 @@
 
 import { auth } from "@/lib/auth"
 import { getCloudflareContext } from "@opennextjs/cloudflare";
-import { User } from "@/schemas/user"
+import { NextResponse } from "next/server"
 
 export default auth(async (req) => {
   const publicRoutes = ['/api/auth', '/login', '/error', '/api/acceptinvite']
@@ -9,6 +9,8 @@ export default auth(async (req) => {
   const session = req.auth
   const ctx = await getCloudflareContext({ async: true });
   const reqUrl = req.nextUrl.pathname;
+  const response = NextResponse.next()
+  response.headers.set('x-pathname', req.nextUrl.pathname)
 
   // if (reqUrl.startsWith('/api')) {
   //   console.log('=== MIDDLEWARE DEBUG ===');
@@ -24,8 +26,8 @@ export default auth(async (req) => {
     console.log('Skipping authentication for public route:', reqUrl);
     return;
   }
-  console.log('URL:', reqUrl);
-  console.log('Middleware Session:', session?.user?.email);
+  console.log('Middleware: Requested URL=', reqUrl);
+  console.log('Middleware: Session=', session?.user?.email);
 
 
   if (!session?.user?.id) {
@@ -52,8 +54,8 @@ export default auth(async (req) => {
       );
     }
   }
+  return response
 })
-
 // Optionally, don't invoke Middleware on some paths
 export const config = {
   matcher: [

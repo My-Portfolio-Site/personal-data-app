@@ -5,8 +5,11 @@ import EducationSection from "@/app/(users)/education/_components/education-sect
 import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
 import Link from 'next/link'
+import { getCurrentUrl } from '@/lib/helpers'
+import { headers } from 'next/headers'
 
 import { fetchEducations } from '@/app/(users)/education/actions'
+import path from 'path'
 
 export const metadata: Metadata = {
   title: 'Education | Personal Data App',
@@ -20,13 +23,17 @@ export default async function Education() {
     // toast.error(response.message || 'Failed to fetch profile data')
     throw new Error(response.message || 'Failed to fetch education data')
   }
+  // const headersList = await headers()
+  // const pathname = headersList.get('x-pathname')
+  // console.log("URL:", pathname);
+  
   const educations = response.data as EducationSchemaType[]
   return (
     <div className="section">
       <div className="flex items-center justify-between gap-2">
         <div>
           <h1 className="text-xl md:text-2xl font-bold tracking-tight">Education</h1>
-          <p className="text-muted-foreground text-sm md:text-base">Manage your education history and academics</p>
+          <p className="text-muted-foreground text-sm md:text-base">Manage your education history and academic achievements</p>
         </div>
         <Button asChild>
           <Link href="/education/add">
@@ -45,7 +52,7 @@ export default async function Education() {
           <CardHeader>
             <CardTitle>No Education Added</CardTitle>
             <CardDescription>
-              Click "+" to get started with your education history and academics
+              Click "+" to get started with your education history and academic achievements
             </CardDescription>
           </CardHeader>
         </Card>

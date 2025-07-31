@@ -39,9 +39,7 @@ export async function POST(req: Request) {
     }
     const validationResult = profileSchema.safeParse(await req.json())
     if (!validationResult.success) {
-      return {
-        errors: z.flattenError(validationResult.error).fieldErrors
-      }
+      return NextResponse.json({errors: z.flattenError(validationResult.error).formErrors })
     }
     console.log("API Create Profile Request:", validationResult.data);
     
