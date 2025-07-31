@@ -1,0 +1,175 @@
+"use client"
+
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Edit, Trash2, Users, Mail, Phone, Linkedin, Building } from "lucide-react"
+
+const mockReferences = [
+  {
+    id: 1,
+    name: "Sarah Johnson",
+    title: "Engineering Manager",
+    company: "TechCorp Inc.",
+    relationship: "Direct Manager",
+    email: "sarah.johnson@techcorp.com",
+    phone: "+1 (555) 987-6543",
+    linkedin: "https://linkedin.com/in/sarahjohnson",
+    workingPeriod: "2021 - Present",
+    testimonial:
+      "John is an exceptional software engineer who consistently delivers high-quality solutions. His leadership skills and technical expertise make him invaluable to any team.",
+    canContact: true,
+  },
+  {
+    id: 2,
+    name: "Michael Chen",
+    title: "Senior Product Manager",
+    company: "TechCorp Inc.",
+    relationship: "Colleague",
+    email: "michael.chen@techcorp.com",
+    phone: "+1 (555) 876-5432",
+    linkedin: "https://linkedin.com/in/michaelchen",
+    workingPeriod: "2021 - Present",
+    testimonial:
+      "Working with John has been a pleasure. He has excellent communication skills and always delivers projects on time with exceptional quality.",
+    canContact: true,
+  },
+  {
+    id: 3,
+    name: "Emily Rodriguez",
+    title: "CTO",
+    company: "StartupXYZ",
+    relationship: "Former Manager",
+    email: "emily.rodriguez@startupxyz.com",
+    linkedin: "https://linkedin.com/in/emilyrodriguez",
+    workingPeriod: "2019 - 2020",
+    testimonial:
+      "John was instrumental in building our core platform. His full-stack expertise and problem-solving abilities were crucial to our success.",
+    canContact: false,
+    note: "Prefers LinkedIn contact",
+  },
+]
+
+export function ReferencesSection() {
+  return (
+    <div className="">
+      <div className="space-y-4">
+        {mockReferences.map((ref) => (
+          <Card key={ref.id}>
+            <CardHeader>
+              <div className="flex items-start justify-between">
+                <div className="flex items-start gap-4">
+                  <Avatar className="w-12 h-12">
+                    <AvatarImage src={`/placeholder.svg?height=48&width=48`} />
+                    <AvatarFallback>
+                      {ref.name
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="space-y-1">
+                    <CardTitle className="flex items-center gap-2">
+                      <Users className="w-5 h-5" />
+                      {ref.name}
+                    </CardTitle>
+                    <CardDescription>
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="font-medium">{ref.title}</span>
+                        <span>•</span>
+                        <span className="flex items-center gap-1">
+                          <Building className="w-3 h-3" />
+                          {ref.company}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-4 text-xs">
+                        <Badge variant="outline">{ref.relationship}</Badge>
+                        <span>Worked together: {ref.workingPeriod}</span>
+                      </div>
+                    </CardDescription>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button variant="ghost" size="sm">
+                    <Edit className="w-4 h-4" />
+                  </Button>
+                  <Button variant="ghost" size="sm">
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="bg-muted/50 p-4 rounded-lg">
+                <p className="text-sm italic">"{ref.testimonial}"</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <h4 className="font-medium text-sm">Contact Information</h4>
+                  <div className="space-y-1 text-sm">
+                    {ref.email && (
+                      <div className="flex items-center gap-2">
+                        <Mail className="w-4 h-4" />
+                        <span>{ref.email}</span>
+                      </div>
+                    )}
+                    {ref.phone && (
+                      <div className="flex items-center gap-2">
+                        <Phone className="w-4 h-4" />
+                        <span>{ref.phone}</span>
+                      </div>
+                    )}
+                    {ref.linkedin && (
+                      <div className="flex items-center gap-2">
+                        <Linkedin className="w-4 h-4" />
+                        <a
+                          href={ref.linkedin}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-primary hover:underline"
+                        >
+                          LinkedIn Profile
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <h4 className="font-medium text-sm">Contact Preference</h4>
+                  <div className="flex items-center gap-2">
+                    <Badge variant={ref.canContact ? "default" : "secondary"}>
+                      {ref.canContact ? "Available for Contact" : "Limited Contact"}
+                    </Badge>
+                  </div>
+                  {ref.note && <p className="text-xs text-muted-foreground">{ref.note}</p>}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+{/* 
+      <Card className="border-dashed">
+        <CardHeader>
+          <CardTitle>Add New Reference</CardTitle>
+          <CardDescription>Click to expand and add a professional reference</CardDescription>
+        </CardHeader>
+      </Card> */}
+
+      <Card className="bg-muted/50 mt-6">
+        <CardHeader>
+          <CardTitle className="text-sm">Reference Guidelines</CardTitle>
+        </CardHeader>
+        <CardContent className="text-xs space-y-2">
+          <p>• Always ask permission before adding someone as a reference</p>
+          <p>• Provide context about the role you're applying for</p>
+          <p>• Keep references updated about your job search progress</p>
+          <p>• Thank your references after they've been contacted</p>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
