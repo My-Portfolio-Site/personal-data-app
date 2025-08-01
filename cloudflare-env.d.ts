@@ -3,7 +3,7 @@
 // Runtime types generated with workerd@1.20250617.0 2025-03-01 global_fetch_strictly_public,nodejs_compat
 declare namespace Cloudflare {
 	interface Env {
-		NEXT_INC_CACHE_KV: KVNamespace;
+		// NEXT_INC_CACHE_KV: KVNamespace;
 		NEXTJS_ENV: string;
 		AUTH_SECRET: string;
 		AUTH_GOOGLE_ID: string;

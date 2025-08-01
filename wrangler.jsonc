@@ -4,7 +4,7 @@
   "main": ".open-next/worker.js",
   "compatibility_date": "2025-03-01",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
-  // "keep_names": false,
+  "keep_names": false,
   "assets": {
     "binding": "ASSETS",
     "directory": ".open-next/assets"
@@ -26,12 +26,12 @@
       "preview_database_id": "2d4ca79d-b6e2-4b7c-81ed-cc478e1c1dbb"
     }
   ],
-  "kv_namespaces": [
-    {
-      "binding": "NEXT_INC_CACHE_KV",
-      "id": "96460dc667074bf7a3aad856fcd2de33"
-    }
-  ],
+  // "kv_namespaces": [
+  //   {
+  //     "binding": "NEXT_INC_CACHE_KV",
+  //     "id": "96460dc667074bf7a3aad856fcd2de33"
+  //   }
+  // ],
   "services": [
     {
       "binding": "WORKER_SELF_REFERENCE",
