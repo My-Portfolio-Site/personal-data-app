@@ -5,7 +5,7 @@ import { NextResponse } from "next/server"
 import { User } from "@/schemas/user";
 
 export default auth(async (req) => {
-  const publicRoutes = ['/api/auth', '/login', '/error', '/api/acceptinvite']
+  const publicRoutes = ['/api/auth', '/login']
   const rotectedAdminRoutes = ['/admin']
   const session = req.auth
   const ctx = await getCloudflareContext({ async: true });
@@ -16,7 +16,7 @@ export default auth(async (req) => {
   if (reqUrl.startsWith('/api/auth') || publicRoutes.some(route => reqUrl.startsWith(route))) {
     // Skip authentication for public routes
     console.log('Skipping authentication for public route:', reqUrl);
-    return;
+    return response;
   }
 
   console.log('Middleware: Requested URL=', reqUrl);

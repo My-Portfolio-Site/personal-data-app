@@ -16,8 +16,6 @@ import {
   ShieldUser
 } from 'lucide-react'
 
-import { Separator } from '@/components/ui/separator'
-
 import {
   Sidebar,
   SidebarContent,
@@ -35,7 +33,6 @@ import {
   SidebarTrigger,
 } from '@/components/ui/sidebar'
 import { User } from '@/schemas/user'
-import { LoggedUserOptions } from '@/components/logged-user-options'
 
 
 const userSections = [
@@ -105,7 +102,7 @@ export async function NavLayoutWrapper({
   if (publicURLs.includes(pathname)) {
     return (
       <div>
-        <div className='absolute right-0'>
+        <div className='absolute right-2 top-2'>
           <ThemeToggle />
         </div>
         {children}
@@ -114,6 +111,8 @@ export async function NavLayoutWrapper({
   }
 
   if (!currentUser) {
+    console.log("Nav layout returning null.");
+    
     return null;
   }
   console.log("Path name:", pathname);
