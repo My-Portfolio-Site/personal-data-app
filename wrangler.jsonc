@@ -18,9 +18,6 @@
       "custom_domain": true
     }
   ],
-  "vars": {
-    "TEST": "test-value"
-  },
   "d1_databases": [
     {
       "binding": "DB",
