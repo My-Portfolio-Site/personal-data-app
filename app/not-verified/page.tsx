@@ -5,13 +5,12 @@ import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth'
 import { User } from "@/schemas/user";
 
-import { ThemeToggle } from '@/components/theme-toggle'
-import { LoggedUserOptions } from '@/components/logged-user-options'
-
 export const metadata: Metadata = {
   title: 'User Not Verified | Personal Data App',
   description: 'App and API for personal data management',
 }
+
+import { PageHeader, PageContent } from "@/components/page-formatter";
 
 export default async function UserNotVerifiedPage() {
   const session = await auth();
@@ -21,8 +20,11 @@ export default async function UserNotVerifiedPage() {
   }
 
   return (
-    <div className=''>
-      <UserNotVerified />
-    </div>
+    <section>
+      <PageHeader title="User Not Verified" />
+      <PageContent>
+        <UserNotVerified />
+      </PageContent>
+    </section>
   );
 }

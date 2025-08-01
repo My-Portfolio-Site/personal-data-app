@@ -53,7 +53,6 @@ export default auth(async (req) => {
     const userVerified = currentUser.userVerified;
     if (!userVerified) {
       console.log('Middleware: User not verified');
-
       return new Response(
         JSON.stringify({ error: "User not verified." }),
         { status: 401, headers: { "Content-Type": "application/json" } }
@@ -62,7 +61,7 @@ export default auth(async (req) => {
   } else {
     const currentUser = session.user as User;
     const userVerified = currentUser.userVerified;
-    if (!userVerified) {
+    if (!userVerified && !reqUrl.includes('/not-verified')) {
       console.log('Middleware: User not verified');
       const newUrl = new URL('/not-verified', req.nextUrl.origin);
       return Response.redirect(newUrl);

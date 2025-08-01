@@ -14,7 +14,7 @@ export default function UserNotVerified() {
         <CardContent className="flex flex-col items-center gap-4">
           <p className="text-center text-muted-foreground">
             Your account is currently <span className="font-semibold text-yellow-600 dark:text-yellow-400">not verified</span> by the admin.<br />
-            Please wait for verification. You will receive an email once your account is approved.
+            Please wait for verification. You will able access all pages once your account is approved.
           </p>
           <Button variant="outline" onClick={() => window.location.reload()}>
             Refresh Status
