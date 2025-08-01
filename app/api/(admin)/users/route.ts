@@ -51,9 +51,14 @@ export async function DELETE(req: Request) {
 // Update a user by ID
 export async function PUT(req: Request) {
   try {
+    const currentUserId = await getCurrentUserId();
     const { id, role, userVerified } = updateUserFormSchema.parse(await req.json());
     if (!id) {
       return NextResponse.json({ error: "User ID is required" }, { status: 400 });
+    }
+    if (id === currentUserId) {
+      console.log("User cannot delete themselves");
+      return NextResponse.json({ error: "User cannot delete themselves" }, { status: 403 });
     }
     const checkQuery = `SELECT * FROM "users" WHERE "id" = ?;`;
     const userExists: User | null = await db.prepare(checkQuery).bind(id).first();

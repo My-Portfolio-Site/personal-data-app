@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Save, UserRoundPen } from "lucide-react"
+import { Save, Edit } from "lucide-react"
 import {
   Dialog,
   DialogClose,
@@ -22,7 +22,7 @@ import { toast } from "sonner"
 import { UpdateUserData } from "@/schemas/user"
 
 
-export function EditUserForm({ initialData }: { initialData: UpdateUserData }) {
+export function EditUserForm({ initialData, isDisabled = false }: { initialData: UpdateUserData, isDisabled?: boolean }) {
   const [formData, setFormData] = useState({
     id: initialData.id,
     role: initialData.role,
@@ -50,9 +50,9 @@ export function EditUserForm({ initialData }: { initialData: UpdateUserData }) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant='secondary' size='icon' className='size-7 mr-2 hover:bg-secondary-hover'>
-          <UserRoundPen size={16} color='#0887e7' strokeWidth={3} />
+      <DialogTrigger asChild disabled={isDisabled}>
+        <Button variant='secondary' size='icon' className='size-8 mr-4 hover:bg-secondary-hover'>
+          <Edit size={64} color='#0887e7' strokeWidth={3} />
         </Button>
       </DialogTrigger>
 
@@ -63,14 +63,15 @@ export function EditUserForm({ initialData }: { initialData: UpdateUserData }) {
             Update the user's role and verification status.
           </DialogDescription>
         </DialogHeader>
-        <div className="space-y-4">
-          <div className="space-y-2">
+        <div className="space-y-8">
+          <div className="space-y-4">
             <Label htmlFor="role">Role</Label>
             <Input
               id="role"
               value={formData.role}
               onChange={e => setFormData(f => ({ ...f, role: e.target.value as "user" | "admin" }))}
               placeholder="e.g., admin, user"
+              autoFocus={true}
             />
           </div>
           <div className="flex items-center space-x-2">

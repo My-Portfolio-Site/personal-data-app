@@ -13,8 +13,10 @@ export default function Loading() {
             orientation="vertical"
             className="mx-2 data-[orientation=vertical]:h-4"
           />
-          <Skeleton className="h-8 w-20" />
-          <Skeleton className="h-10 w-10 ml-auto flex items-center gap-2" />
+          <Skeleton className="h-8 w-25" />
+          <Skeleton className="h-8 w-8 ml-auto flex items-center gap-2" />
+          <div className="lg:w-10"></div>
+          
         </div>
       </header>
       <PageContent>
