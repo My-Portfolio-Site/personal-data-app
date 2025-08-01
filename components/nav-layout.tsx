@@ -1,8 +1,8 @@
-
-import { headers } from 'next/headers'
+'use client'
+// import { headers } from 'next/headers'
 import { ThemeToggle } from '@/components/theme-toggle'
 import UserNotVerified from '@/components/user-not-verified'
-// import { usePathname } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import {
   User as UserIcon,
@@ -106,9 +106,9 @@ export async function NavLayoutWrapper({
   currentUser: User | null
 }) {
 
-  // const pathname = usePathname()
-  const headersList = await headers()
-  const pathname = headersList.get('x-pathname') || ''
+  const pathname = usePathname()
+  // const headersList = await headers()
+  // const pathname = headersList.get('x-pathname') || ''
 
   if (publicURLs.includes(pathname)) {
     return (
