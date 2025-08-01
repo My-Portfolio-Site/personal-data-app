@@ -5,6 +5,7 @@ import { ArrowLeft } from "lucide-react"
 import { ProfileSchemaType } from "@/schemas/profile"
 import { AboutmeForm } from "@/app/(users)/aboutme/_components/aboutme-form"
 import { fetchProfile } from '@/app/(users)/aboutme/actions'
+import { PageHeader, PageContent } from "@/components/page-formatter";
 
 export const metadata: Metadata = {
   title: 'About Me | Personal Data App',
@@ -19,20 +20,20 @@ export default async function EditProfilePage() {
   const profileData = response.data as ProfileSchemaType
 
   return (
-    <div className="section">
-      {/* Header with Back Button */}
-      <Button variant="ghost" size="sm" asChild className="mb-2">
-        <Link href="/aboutme">
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Aboutme
-        </Link>
-      </Button>
-
-      {/* Form */}
-      <AboutmeForm
-        initialData={profileData}
-        mode="edit"
-      />
-    </div>
+    <section>
+      <PageHeader title="Update About Me" />
+      <PageContent>
+        <Button variant="ghost" size="sm" asChild className="mb-3 mt-0 h-fit">
+          <Link href="/aboutme">
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Aboutme
+          </Link>
+        </Button>
+        <AboutmeForm
+          initialData={profileData}
+          mode="edit"
+        />
+      </PageContent>
+    </section>
   )
 }

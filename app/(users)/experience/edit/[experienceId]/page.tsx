@@ -12,6 +12,8 @@ import type { ExperienceSchemaType } from "@/schemas/experience"
 import { ExperienceForm } from "@/app/(users)/experience/_components/experience-form"
 import { fetchExperienceById } from '@/app/(users)/experience/actions'
 
+import { PageHeader, PageContent } from "@/components/page-formatter";
+
 export default async function EditExperiencePage({ params }: { params: Promise<{ experienceId: string; }>}) {
   const { experienceId } = await params
 
@@ -24,20 +26,22 @@ export default async function EditExperiencePage({ params }: { params: Promise<{
   const experience = response.data as ExperienceSchemaType
 
   return (
-    <div className="section">
-      {/* Header with Back Button */}
-      <Button variant="ghost" size="sm" asChild className="mb-2">
-        <Link href="/experience">
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Experience
-        </Link>
-      </Button>
+    <section>
+      <PageHeader title="Update Experience" />
+      <PageContent>
+        <Button variant="ghost" size="sm" asChild className="mb-3 mt-0 h-fit">
+          <Link href="/experience">
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Experience
+          </Link>
+        </Button>
 
       {/* Form */}
       <ExperienceForm
         initialData={experience}
         mode="edit"
       />
-    </div>
+      </PageContent>
+    </section>
   )
 }

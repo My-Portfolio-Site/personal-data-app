@@ -1,8 +1,8 @@
-'use client'
-// import { headers } from 'next/headers'
+// 'use client'
+import { headers } from 'next/headers'
 import { ThemeToggle } from '@/components/theme-toggle'
-import UserNotVerified from '@/components/user-not-verified'
-import { usePathname } from 'next/navigation'
+import { NavUser } from '@/components/nav-user'
+// import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import {
   User as UserIcon,
@@ -16,14 +16,6 @@ import {
   ShieldUser
 } from 'lucide-react'
 
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb'
 import { Separator } from '@/components/ui/separator'
 
 import {
@@ -106,9 +98,9 @@ export async function NavLayoutWrapper({
   currentUser: User | null
 }) {
 
-  const pathname = usePathname()
-  // const headersList = await headers()
-  // const pathname = headersList.get('x-pathname') || ''
+  // const pathname = usePathname()
+  const headersList = await headers()
+  const pathname = headersList.get('x-pathname') || ''
 
   if (publicURLs.includes(pathname)) {
     return (
@@ -124,42 +116,21 @@ export async function NavLayoutWrapper({
   if (!currentUser) {
     return null;
   }
-
-  if (!currentUser.userVerified) {
-    return (
-      <div className=''>
-        <div className='absolute right-0 flex m-3'>
-          <ThemeToggle />
-          <LoggedUserOptions currentUser={currentUser} />
-        </div>
-        <UserNotVerified />
-      </div>
-    )
-  }
+  console.log("Path name:", pathname);
+  
 
   const isAdmin = currentUser?.role === 'admin'
 
-  const currentSections = pathname.split('/').filter(section => section !== "").map((section, index, array) => {
-    // Build the URL using original path segments (not capitalized titles)
-    const url = "/" + array.slice(0, index + 1).join("/");
-
-    return {
-      title: section.charAt(0).toUpperCase() + section.slice(1),
-      url: url
-    };
-  });
-  if (pathname !== "/") {
-    currentSections.unshift({
-      title: "Home",
-      url: "/"
-    });
-  }
-
-  // const isAdminSection = adminSections.some((section) => section.url === pathname)
-
   return (
-    <SidebarProvider>
-      <Sidebar className='border-r'>
+    <SidebarProvider
+      style={
+        {
+          "--sidebar-width": "calc(var(--spacing) * 65)",
+          "--header-height": "calc(var(--spacing) * 12)",
+        } as React.CSSProperties
+      }
+    >
+      <Sidebar variant='inset'>
         <SidebarHeader>
           <SidebarMenu>
             <SidebarMenuItem>
@@ -229,39 +200,20 @@ export async function NavLayoutWrapper({
               </SidebarGroupContent>
             </SidebarGroup>
           )}
+          <SidebarGroup className="mt-auto">
+            <ThemeToggle />
+          </SidebarGroup>
         </SidebarContent>
+        <SidebarFooter>
+          <NavUser user={currentUser} />
+        </SidebarFooter>
       </Sidebar>
+
+      {/* Main Content */}
       <SidebarInset>
-        <header className='flex h-16 shrink-0 items-center gap-2 border-b px-4'>
-          <SidebarTrigger className='-ml-1' />
-          <Separator orientation='vertical' className='mr-2 h-4' />
-          <Breadcrumb>
-            <BreadcrumbList>
-              {currentSections.map((section, index) => (
-                <div key={index} className='flex items-center gap-2'>
-                  <BreadcrumbSeparator />
-                  <BreadcrumbItem key={index}>
-                    {currentSections.at(-1)?.title === section.title ? (
-                      <BreadcrumbPage>{section.title}</BreadcrumbPage>
-                    ) : (
-                      <BreadcrumbLink href={section.url}>{section.title}</BreadcrumbLink>
-                    )}
-                  </BreadcrumbItem>
-                </div>
-              ))
-              }
-            </BreadcrumbList>
-          </Breadcrumb>
-          <div className='ml-auto'>
-            <LoggedUserOptions currentUser={currentUser} />
-          </div>
-          <ThemeToggle />
-        </header>
-        <div className='flex-1 flex justify-center'>
-          <div className='sm:mx-3 my-2 md:mx-6 lg:mx-10 max-w-[780px] w-full'>
-            {children}
-          </div>
-        </div>
+        <div className="">{children}</div>
+        {/* <div className='sm:mx-3 my-2 md:mx-6 lg:mx-10 max-w-[780px] w-full'>
+        </div> */}
       </SidebarInset>
     </SidebarProvider>
   )

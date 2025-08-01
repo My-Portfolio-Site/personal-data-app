@@ -5,7 +5,7 @@ import { GoogleLoginButton } from "@/app/login/_components/google-login-button";
 import AuthError from '@/app/login/_components/auth-error'
 
 export const metadata: Metadata = {
-  title: 'Login',
+  title: 'Login | Personal Data App',
   description: 'App and API for personal data management',
 }
 
@@ -14,8 +14,6 @@ export default async function LoginPage() {
   if (session?.user) {
     redirect('/');
   }
-  
-  console.log("Login Page x");
 
   return (
     <div className="flex items-center justify-center h-screen bg-background">

@@ -19,22 +19,22 @@ export function ThemeToggle() {
     return null
   }
   return (
-    <div className='m-1 md:m-3'>
-      <Tabs defaultValue={theme} className='w-full'>
-        <TabsList className='h-7'>
-          <TabsTrigger value='light' className='px-[2px] py-[1px]'>
+    <div className='ml-2'>
+      <Tabs defaultValue={theme} className='w-full '>
+        <TabsList className='border-1 border-ring/20 h-8'>
+          <TabsTrigger value='light' className=''>
             <span className='' onClick={() => setTheme('light')}>
-              <SunMedium size={16} />
+              <SunMedium/>
             </span>
           </TabsTrigger>
-          <TabsTrigger value='dark' className='px-[2px] py-[1px]'>
+          <TabsTrigger value='dark' className=''>
             <span className='' onClick={() => setTheme('dark')}>
-              <Moon size={16} />
+              <Moon />
             </span>
           </TabsTrigger>
-          <TabsTrigger value='system' className='px-[2px] py-[1px]'>
+          <TabsTrigger value='system' className=''>
             <span className='' onClick={() => setTheme('system')}>
-              <Laptop size={16} />
+              <Laptop />
             </span>
           </TabsTrigger>
         </TabsList>

@@ -53,7 +53,7 @@ export function AboutmeForm({ initialData, mode }: AboutmeFormProps) {
   }
 
   return (
-    <Card className="gap-2">
+    <Card className='gap-2'>
       <CardHeader>
         <div className="flex items-center gap-2">
           <User className="w-5 h-5" />
@@ -230,7 +230,7 @@ export function AboutmeForm({ initialData, mode }: AboutmeFormProps) {
           {/* Form Actions */}
           <div className="flex flex-col sm:flex-row gap-3">
             <Button type="submit" disabled={isPending} className="flex-1 sm:flex-none">
-              {isPending ? mode === "add" ? "Saving..." : 'Updating...' : mode === "add" ? "Save Profile" : "Update Profile"}
+              {isPending ? "Saving..." : "Save"}
             </Button>
           </div>
         </form>

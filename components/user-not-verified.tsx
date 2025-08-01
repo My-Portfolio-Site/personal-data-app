@@ -1,12 +1,12 @@
-
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { Button } from "./ui/button";
+'use client'
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { AlertTriangle } from "lucide-react";
 
 export default function UserNotVerified() {
   return (
-    <div className="flex h-screen items-center justify-center">
-      <Card className="w-full max-w-md shadow-xl border-0">
+    <div className="flex mt-20 items-center justify-center">
+      <Card className="w-full max-w-md shadow-xl m-2">
         <CardHeader className="flex flex-col items-center gap-2">
           <AlertTriangle className="text-yellow-500 mb-2" size={48} />
           <CardTitle className="text-2xl font-bold text-center">Account Not Verified</CardTitle>
