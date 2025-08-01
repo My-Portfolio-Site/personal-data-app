@@ -4,11 +4,8 @@
 declare namespace Cloudflare {
 	interface Env {
 		NEXT_INC_CACHE_KV: KVNamespace;
-		TEST: "test-value";
 		NEXTJS_ENV: string;
 		AUTH_SECRET: string;
-		AUTH_GITHUB_ID: string;
-		AUTH_GITHUB_SECRET: string;
 		AUTH_GOOGLE_ID: string;
 		AUTH_GOOGLE_SECRET: string;
 		DB: D1Database;

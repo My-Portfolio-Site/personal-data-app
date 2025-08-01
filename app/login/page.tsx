@@ -15,14 +15,15 @@ export default async function LoginPage() {
     redirect('/');
   }
   
+  console.log("Login Page x");
 
   return (
     <div className="flex items-center justify-center h-screen bg-background">
       <div className="bg-muted py-8 px-5 rounded-lg shadow-md w-full max-w-sm">
         <h1 className="text-2xl font-bold text-center">Login</h1>
-        <GoogleLoginButton />
+        {/* <GoogleLoginButton /> */}
         <p className="text-center mt-4 text-sm text-muted-foreground">Only invited users can login.</p>
-        <AuthError/>
+        {/* <AuthError/> */}
       </div>
     </div>
   );

@@ -11,7 +11,6 @@ const authConfig = {
     maxAge: 60 * 60 * 24, // 1 day
   },
   providers: [
-    GitHub,
     Google,
     // Google
     // ({

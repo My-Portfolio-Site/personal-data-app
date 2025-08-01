@@ -54,7 +54,7 @@ export default auth(async (req) => {
       );
     }
   }
-  return response
+  // return response
 })
 // Optionally, don't invoke Middleware on some paths
 export const config = {
