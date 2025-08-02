@@ -4,7 +4,7 @@ import { handleSignIn } from '@/app/login/actions'
 
 export function GithubLoginButton() {
   return (
-    <div className='flex flex-col gap-4 mx-5 my-5 items-center'>
+    <div className='flex flex-col gap-4 mx-5 items-center'>
       <Button variant='outline' className='w-fit' onClick={() => handleSignIn('github')} disabled>
         <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>
           <path

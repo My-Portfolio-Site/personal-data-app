@@ -27,7 +27,6 @@ export default function Error({
     <section>
       <PageHeader title="Error" />
       <PageContent>
-
         <div className="flex h-full flex-col items-center justify-center p-4">
           <div className="w-full max-w-md">
             <Card>
