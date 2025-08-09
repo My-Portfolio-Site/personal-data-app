@@ -10,6 +10,7 @@ declare namespace Cloudflare {
 		AUTH_GOOGLE_SECRET: string;
 		DB: D1Database;
         AI: Ai;
+        AI_GATEWAY_API_KEY: string;
 		MY_RATE_LIMITER: RateLimit;
 		ASSETS: Fetcher;
 	}

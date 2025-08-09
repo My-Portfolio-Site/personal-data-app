@@ -165,12 +165,16 @@ const ChatInterface = () => {
           <ConversationScrollButton />
         </Conversation>
         {error && (
+        <div>
           <Message from='assistant'>
             <MessageContent className=''>
               <Response key='error' className='border-1 border-destructive/30 text-destructive'>
                 An error occurred. Please try again.
               </Response>
-              <Actions className="mt-2">
+              
+            </MessageContent>
+          </Message>
+          <Actions className="mt-2">
                 <Action
                   // onClick={() => regenerate()}
                   label="Retry"
@@ -178,14 +182,7 @@ const ChatInterface = () => {
                   <RefreshCcwIcon className="size-3" />
                 </Action>
               </Actions>
-            </MessageContent>
-          </Message>
-          // <div className='rounded-md bg-card p-3 flex gap-2 justify-between mx-5 border-1 border-destructive/30 w-fit'>
-          //   <p className='text-sm text-center italic text-destructive'>An error occurred.</p>
-          //   <Button variant="destructive" className='text-white'>
-          //     Retry
-          //   </Button>
-          // </div>
+          </div>
         )}
         <PromptInput onSubmit={handleSubmit} className="mt-4">
           <PromptInputTextarea
