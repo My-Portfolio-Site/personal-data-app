@@ -38,6 +38,9 @@
       "service": "personal"
     }
   ],
+   "ai": {
+    "binding": "AI"
+  },
   "unsafe": {
     "bindings": [
       {

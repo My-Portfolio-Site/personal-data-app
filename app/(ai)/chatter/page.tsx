@@ -4,24 +4,15 @@ export const metadata: Metadata = {
   description: 'AI chat application',
 }
 
-
-
-import Link from "next/link";
 import { PageHeader, PageContent } from "@/components/page-formatter";
+import ChatInterface from '@/app/(ai)/chatter/_components/chat-interface'
 
-export default function Home() {
+export default function Chatter() {
   return (
-    <section>
-      <PageHeader title="Home" />
+    <section className='min-h-full'>
+      <PageHeader title="Chatter" />
       <PageContent>
-        <div className="w-full bg-card rounded-xl shadow-sm p-8 flex flex-col items-center gap-5">
-          <p className="text-lg text-center text-muted-foreground">
-            Chat with documents uploaded in the db.
-          </p>
-          <div className="px-4 py-2 rounded-lg bg-purple-900 text-purple-300 text-sm">
-            Coming soon...
-          </div>
-        </div>
+       <ChatInterface />
       </PageContent>
     </section>
   );

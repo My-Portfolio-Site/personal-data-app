@@ -14,11 +14,11 @@ import { BadgeCheck, BadgeX, Mail, UserRoundCog, UserRound } from 'lucide-react'
 
 export default async function UsersSection({ users, currentUserId }: { users: User[], currentUserId: string }) {
   return (
-    <div className='flex flex-col gap-5 items-center justify-center'>
+    <div className='grid gap-5 items-center justify-center'>
       {users.map((user) => {
         const color = user.userVerified ? 'border-success/50' : 'border-warning/50'
         return (
-          <Card key={user.id} className={`border-2 ${color} max-w-full w-md grow-2`}>
+          <Card key={user.id} className={`border-2 ${color} max-w-full w-full lg:w-md`}>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className='text-2xl font-semibold'>
                 {user.name}

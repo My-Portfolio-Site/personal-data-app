@@ -47,8 +47,8 @@ export function PageHeader({ title, children }: { title: string, children?: Reac
 
 export function PageContent({ children }: { children: React.ReactNode }) {
   return (
-    <div className='flex-1 flex justify-center'>
-      <div className='mx-2 md:mx-5 my-3 md:my-5 space-y-4 max-w-[780px] w-full'>
+    <div className='flex-1 flex justify-center min-h-dvh md:min-h-[calc(100dvh-var(--header-height)-16px)]'>
+      <div className='mx-4 md:mx-8 my-3 md:my-5 space-y-4 max-w-[780px] w-full min-h-full'>
         {children}
       </div>
     </div>

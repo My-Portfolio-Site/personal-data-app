@@ -1,0 +1,232 @@
+'use client';
+
+import {
+  Conversation,
+  ConversationContent,
+  ConversationScrollButton,
+} from '@/components/ai-elements/conversation';
+import { Actions, Action } from '@/components/ai-elements/actions';
+import {
+  Source,
+  Sources,
+  SourcesContent,
+  SourcesTrigger,
+} from '@/components/ai-elements/source';
+import {
+  Reasoning,
+  ReasoningContent,
+  ReasoningTrigger,
+} from '@/components/ai-elements/reasoning';
+import { Message, MessageContent } from '@/components/ai-elements/message';
+import {
+  PromptInput,
+  PromptInputButton,
+  PromptInputModelSelect,
+  PromptInputModelSelectContent,
+  PromptInputModelSelectItem,
+  PromptInputModelSelectTrigger,
+  PromptInputModelSelectValue,
+  PromptInputSubmit,
+  PromptInputTextarea,
+  PromptInputToolbar,
+  PromptInputTools,
+} from '@/components/ai-elements/prompt-input';
+import { Loader } from '@/components/ai-elements/loader';
+import { useState } from 'react';
+import { useChat } from '@ai-sdk/react';
+import { DefaultChatTransport } from 'ai';
+import { Response } from '@/components/ai-elements/response';
+import { GlobeIcon, RefreshCcwIcon, CopyIcon } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+
+const models = [
+  {
+    name: 'GPT 4o',
+    value: 'openai/gpt-4o',
+  },
+  {
+    name: 'Deepseek R1',
+    value: 'deepseek/deepseek-r1',
+  },
+];
+
+const ChatInterface = () => {
+  const [input, setInput] = useState('');
+  const [model, setModel] = useState<string>(models[0].value);
+  const [webSearch, setWebSearch] = useState<boolean>(false);
+  const { messages, sendMessage, status, error } = useChat({
+    transport: new DefaultChatTransport({
+      api: '/api/chatter',
+    }),
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (input.trim()) {
+      sendMessage(
+        { text: input },
+        {
+          body: {
+            model: model,
+            webSearch: webSearch,
+          },
+        },
+      );
+      setInput('');
+    }
+  };
+
+  return (
+    <div className="max-w-4xl mx-auto relative size-full ">
+      <div className="flex flex-col h-full">
+        <Conversation className='h-fit'>
+          <ConversationContent>
+            {messages.map((message, messageIndex) => {
+              const isLastMessage = messageIndex === messages.length - 1;
+              return (
+                <div key={message.id}>
+                  {message.role === 'assistant' && (
+                    <Sources className='mb-0'>
+                      <SourcesTrigger
+                        count={
+                          message.parts.filter(
+                            (part) => part.type === 'source-url',
+                          ).length
+                        }
+                      />
+                      {message.parts.map((part, i) => {
+                        switch (part.type) {
+                          case 'source-url':
+                            return (
+                              <SourcesContent key={`${message.id}-${i}`}>
+                                <Source
+                                  key={`${message.id}-${i}`}
+                                  href={part.url}
+                                  title={part.url}
+                                />
+                              </SourcesContent>
+                            );
+                        }
+                      })}
+                    </Sources>
+                  )}
+                  <Message from={message.role} key={message.id}>
+                    <MessageContent>
+                      {message.parts.map((part, i) => {
+                        switch (part.type) {
+                          case 'text':
+                            return (
+                              <div key={`${message.id}-${i}`}>
+                                <Response>{part.text}</Response>
+
+                              </div>
+                            );
+                          case 'reasoning':
+                            return (
+                              <Reasoning
+                                key={`${message.id}-${i}`}
+                                className="w-full"
+                                isStreaming={status === 'streaming'}
+                              >
+                                <ReasoningTrigger />
+                                <ReasoningContent>{part.text}</ReasoningContent>
+                              </Reasoning>
+                            );
+                          default:
+                            return null;
+                        }
+                      })}
+
+                    </MessageContent>
+                  </Message>
+                  {message.role === 'assistant' && isLastMessage && (
+                    <Actions className="h-6">
+                      <Action
+                        // onClick={() => regenerate()}
+                        label="Retry"
+                      >
+                        <RefreshCcwIcon className="size-3" />
+                      </Action>
+                      <Action
+                        onClick={() =>
+                          navigator.clipboard.writeText("part.text")
+                        }
+                        label="Copy"
+                      >
+                        <CopyIcon className="size-3" />
+                      </Action>
+                    </Actions>
+                  )}
+                </div>
+              )
+            })}
+            {status === 'submitted' && <Loader />}
+          </ConversationContent>
+          <ConversationScrollButton />
+        </Conversation>
+        {error && (
+          <Message from='assistant'>
+            <MessageContent className=''>
+              <Response key='error' className='border-1 border-destructive/30 text-destructive'>
+                An error occurred. Please try again.
+              </Response>
+              <Actions className="mt-2">
+                <Action
+                  // onClick={() => regenerate()}
+                  label="Retry"
+                >
+                  <RefreshCcwIcon className="size-3" />
+                </Action>
+              </Actions>
+            </MessageContent>
+          </Message>
+          // <div className='rounded-md bg-card p-3 flex gap-2 justify-between mx-5 border-1 border-destructive/30 w-fit'>
+          //   <p className='text-sm text-center italic text-destructive'>An error occurred.</p>
+          //   <Button variant="destructive" className='text-white'>
+          //     Retry
+          //   </Button>
+          // </div>
+        )}
+        <PromptInput onSubmit={handleSubmit} className="mt-4">
+          <PromptInputTextarea
+            onChange={(e) => setInput(e.target.value)}
+            value={input}
+          />
+          <PromptInputToolbar>
+            <PromptInputTools>
+              <PromptInputButton
+                variant={webSearch ? 'default' : 'ghost'}
+                onClick={() => setWebSearch(!webSearch)}
+              >
+                <GlobeIcon size={16} />
+                <span>Search</span>
+              </PromptInputButton>
+              <PromptInputModelSelect
+                onValueChange={(value) => {
+                  setModel(value);
+                }}
+                value={model}
+              >
+                <PromptInputModelSelectTrigger>
+                  <PromptInputModelSelectValue />
+                </PromptInputModelSelectTrigger>
+                <PromptInputModelSelectContent>
+                  {models.map((model) => (
+                    <PromptInputModelSelectItem key={model.value} value={model.value}>
+                      {model.name}
+                    </PromptInputModelSelectItem>
+                  ))}
+                </PromptInputModelSelectContent>
+              </PromptInputModelSelect>
+            </PromptInputTools>
+            <PromptInputSubmit disabled={!input} status={status} />
+          </PromptInputToolbar>
+        </PromptInput>
+
+      </div>
+    </div >
+  )
+
+}
+
+export default ChatInterface;

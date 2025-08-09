@@ -139,7 +139,7 @@ export async function NavLayoutWrapper({
 
       {/* Main Content */}
       <SidebarInset>
-        <div className="">{children}</div>
+        {children}
         {/* <div className='sm:mx-3 my-2 md:mx-6 lg:mx-10 max-w-[780px] w-full'>
         </div> */}
       </SidebarInset>
