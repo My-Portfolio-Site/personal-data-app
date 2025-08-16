@@ -144,6 +144,7 @@ CREATE TABLE IF NOT EXISTS "chat_history" (
     "title" text,
     "summary" text,
     "messages" text,
+    "messages_count" AS (json_array_length(messages, '$')) STORED,
     "updatedAt" datetime DEFAULT CURRENT_TIMESTAMP,
     "createdAt" datetime DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),

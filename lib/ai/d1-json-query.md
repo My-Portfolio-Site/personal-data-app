@@ -21,3 +21,10 @@ update conversations set messages=json_insert(messages, '$[#]', '{
   }'
 );
 ```
+
+CREATE TABLE "conversations"(
+  "id" TEXT NOT NULL,
+  "messages" TEXT NOT NULL,
+  "messages_count" AS (json_array_length(messages, '$')) STORED,
+  "userId" TEXT
+);
