@@ -48,7 +48,7 @@ export function PageHeader({ title, children }: { title: string, children?: Reac
 
 export function PageContent({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className='flex-1 flex justify-center max-h-[calc(100vh-var(--header-height))] md:max-h-[calc(100vh-var(--header-height)-16px)] md:min-h-[calc(100vh-var(--header-height)-16px)]'>
+    <div className='flex-1 flex justify-center max-h-[calc(100vh-var(--header-height))] min-h-[calc(100vh-var(--header-height))] md:max-h-[calc(100vh-var(--header-height)-16px)] md:min-h-[calc(100vh-var(--header-height)-16px)]'>
       <div className={cn('mx-4 md:mx-8 my-2 space-y-4 max-w-[780px] w-full min-h-full overflow-y-scroll no-scrollbar rounded-sm', className)}>
         {children}
       </div>

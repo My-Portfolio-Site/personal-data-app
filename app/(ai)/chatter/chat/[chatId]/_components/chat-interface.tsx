@@ -100,6 +100,7 @@ const ChatInterface = ({
       {/* <div className="flex flex-col h-full overflow-hidden"> */}
       <Conversation id='conversations' className='overflow-y-hidden no-child-scrollbar'>
         <ConversationContent className='pt-0'>
+          {/* {messages.length === 0 && <h3 className='h-full pt-15 text-center text-muted-foreground'>Start chat by typing your message.</h3>} */}
           {messages.map((message, messageIndex) => {
             const isLastMessage = messageIndex === messages.length - 1;
             const sourceUrls = message.parts.filter(part => part.type === 'source-url');

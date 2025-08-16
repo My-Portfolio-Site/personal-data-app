@@ -157,7 +157,7 @@ const AINavSection = ({ currentPath }: { currentPath: string }) => {
       items: [
         {
           title: "Chatter",
-          url: "/chatter",
+          url: "/chatter/chat",
         },
         {
           title: "Upload",
@@ -167,6 +167,7 @@ const AINavSection = ({ currentPath }: { currentPath: string }) => {
           title: "History",
           url: "/chatter/history",
         },
+        
       ],
     }
   ]
