@@ -1,0 +1,147 @@
+[
+  {
+    "parts": [
+      {
+        "type": "text",
+        "text": "hi"
+      }
+    ],
+    "id": "WGSlh813niosLOWW",
+    "role": "user"
+  },
+  {
+    "id": "m71JnsfUjQI3FJqH",
+    "role": "assistant",
+    "parts": [
+      {
+        "type": "step-start"
+      },
+      {
+        "type": "text",
+        "text": "Hello! How can I assist you today?",
+        "providerMetadata": {
+          "openai": {
+            "itemId": "msg_68979880d69881a09643362533632eae0c4f9236a673f7ed"
+          }
+        },
+        "state": "done"
+      }
+    ]
+  },
+  {
+    "parts": [
+      {
+        "type": "text",
+        "text": "ok"
+      }
+    ],
+    "id": "w26soQu1QPPdw3Yee8",
+    "role": "user"
+  },
+  {
+    "id": "yjyjyjtsd",
+    "role": "assistant",
+    "parts": [
+      {
+        "type": "step-start"
+      },
+      {
+        "type": "text",
+        "text": "Is there anything specific you'd like to talk about or any questions you have? LLM usually stands for Large Language Model. These are advanced artificial intelligence models designed to understand and generate human-like text. They are trained on vast amounts of data and can perform a variety of tasks such as translation, answering questions, content creation, and more. Examples include OpenAI's GPT models and Google's BERT.",
+        "providerMetadata": {
+          "openai": {
+            "itemId": "msg_689798c8a85c81a0b5360a3ca38b37c10c4f9236a673f7ed"
+          }
+        },
+        "state": "done"
+      }
+    ]
+  },
+  {
+    "parts": [
+      {
+        "type": "text",
+        "text": "ok"
+      }
+    ],
+    "id": "w26soQu1QPPdw3Y8dd",
+    "role": "user"
+  },
+  {
+    "id": "fsrgrhsfsfsfe",
+    "role": "assistant",
+    "parts": [
+      {
+        "type": "step-start"
+      },
+      {
+        "type": "text",
+        "text": "Is there anything specific you'd like to talk about or any questions you have?",
+        "providerMetadata": {
+          "openai": {
+            "itemId": "msg_689798c8a85c81a0b5360a3ca38b37c10c4f9236a673f7ed"
+          }
+        },
+        "state": "done"
+      }
+    ]
+  },
+  {
+    "parts": [
+      {
+        "type": "text",
+        "text": "ok"
+      }
+    ],
+    "id": "w26soQu1QPPdw3Y8",
+    "role": "user"
+  },
+  {
+    "id": "ggrgrgr",
+    "role": "assistant",
+    "parts": [
+      {
+        "type": "step-start"
+      },
+      {
+        "type": "text",
+        "text": "Is there anything specific you'd like to talk about or any questions you have?",
+        "providerMetadata": {
+          "openai": {
+            "itemId": "msg_689798c8a85c81a0b5360a3ca38b37c10c4f9236a673f7ed"
+          }
+        },
+        "state": "done"
+      }
+    ]
+  },
+  {
+    "parts": [
+      {
+        "type": "text",
+        "text": "hi"
+      }
+    ],
+    "id": "rDxqnGO017R8OqSV",
+    "role": "user"
+  },
+  {
+    "id": "",
+    "role": "assistant",
+    "parts": [
+      {
+        "type": "step-start"
+      },
+      {
+        "type": "text",
+        "text": "Hello again! How can I help you today?",
+        "providerMetadata": {
+          "openai": {
+            "itemId": "msg_689a4e8996a081a0bae5fa7b5462ccb70c4f9236a673f7ed"
+          }
+        },
+        "state": "done"
+      }
+    ]
+  }
+]

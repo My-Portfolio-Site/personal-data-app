@@ -156,7 +156,7 @@ const AINavSection = ({ currentPath }: { currentPath: string }) => {
       icon: Bot,
       items: [
         {
-          title: "Chat",
+          title: "Chatter",
           url: "/chatter",
         },
         {
@@ -195,7 +195,7 @@ const AINavSection = ({ currentPath }: { currentPath: string }) => {
                   {item.items?.map((subItem) => (
                     <SidebarMenuSubItem key={subItem.title}>
                       <SidebarMenuSubButton asChild
-                        isActive={currentPath === subItem.url}
+                        isActive={currentPath.startsWith(subItem.url)}
                       >
                         <a href={subItem.url}>
                           <span>{subItem.title}</span>

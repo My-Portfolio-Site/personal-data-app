@@ -1,5 +1,6 @@
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
+import { cn } from '@/lib/utils';
 
 export function PageHeader({ title, children }: { title: string, children?: React.ReactNode }) {
   return (
@@ -45,10 +46,10 @@ export function PageHeader({ title, children }: { title: string, children?: Reac
   )
 }
 
-export function PageContent({ children }: { children: React.ReactNode }) {
+export function PageContent({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className='flex-1 flex justify-center min-h-[calc(100dvh-var(--header-height))] md:min-h-[calc(100dvh-var(--header-height)-16px)]'>
-      <div className='mx-4 md:mx-8 my-3 md:my-5 space-y-4 max-w-[780px] w-full min-h-full'>
+    <div className='flex-1 flex justify-center max-h-[calc(100vh-var(--header-height))] md:max-h-[calc(100vh-var(--header-height)-16px)] md:min-h-[calc(100vh-var(--header-height)-16px)]'>
+      <div className={cn('mx-4 md:mx-8 my-2 space-y-4 max-w-[780px] w-full min-h-full overflow-y-scroll no-scrollbar rounded-sm', className)}>
         {children}
       </div>
     </div>

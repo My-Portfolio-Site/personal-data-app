@@ -136,3 +136,23 @@ CREATE TABLE IF NOT EXISTS "educations" (
 CREATE INDEX idx_educations_userId ON "educations" ("userId");
 CREATE INDEX idx_educations_id ON "educations" ("id");
 CREATE INDEX idx_educations_userId_id ON "educations" ("userId", "id");
+
+
+CREATE TABLE IF NOT EXISTS "chat_history" (
+    "id" text NOT NULL,
+    "userId" text NOT NULL,
+    "title" text,
+    "summary" text,
+    "messages" text,
+    "updatedAt" datetime DEFAULT CURRENT_TIMESTAMP,
+    "createdAt" datetime DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    FOREIGN KEY ("userId") REFERENCES "users" ("id") ON DELETE CASCADE
+);
+
+CREATE INDEX idx_chat_history_id ON "chat_history" ("id");
+CREATE INDEX idx_chat_history_userId ON "chat_history" ("userId");
+CREATE INDEX idx_chat_history_userId_id ON "chat_history" ("userId", "id");
+
+
+

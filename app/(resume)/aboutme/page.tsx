@@ -34,7 +34,7 @@ export default async function AboutMe() {
           </Link>
         </Button>
       </PageHeader>
-      <PageContent>
+      <PageContent className='my-2'>
         {(Object.entries(profileData).length === 0) ? (
           <div>
             <Card className='border-dashed text-center mb-2'>

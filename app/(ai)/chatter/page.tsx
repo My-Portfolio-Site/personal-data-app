@@ -1,19 +1,8 @@
-import { Metadata } from 'next'
-export const metadata: Metadata = {
-  title: 'Chatter',
-  description: 'AI chat application',
-}
+import { redirect } from 'next/navigation';
+// import { createChat } from '@/lib/ai/chat-store';
+import { createChat } from '@/lib/ai/chat-store-db';
 
-import { PageHeader, PageContent } from "@/components/page-formatter";
-import ChatInterface from '@/app/(ai)/chatter/_components/chat-interface'
-
-export default function Chatter() {
-  return (
-    <section className='min-h-full'>
-      <PageHeader title="Chatter" />
-      <PageContent>
-       <ChatInterface />
-      </PageContent>
-    </section>
-  );
+export default async function Page() {
+  const id = await createChat(); // create a new chat
+  redirect(`/chatter/${id}`); // redirect to chat page, see below
 }

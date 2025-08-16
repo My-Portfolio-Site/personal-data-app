@@ -40,7 +40,7 @@ export default async function RootLayout({
             {children}
           </NavLayoutWrapper>
         </Provider>
-        <Toaster richColors position='bottom-center' />
+        <Toaster richColors position='bottom-center' visibleToasts={1} />
       </body>
     </html>
   )

@@ -9,10 +9,6 @@ import { experienceSchema, ExperienceSchemaType } from "@/schemas/experience";
 export async function GET(req: Request) {
   try {
     const currentUserId = await getCurrentUserId();
-
-    const url = new URL(req.url);
-    const experienceId = url.searchParams.get("experienceId");
-
     if (!currentUserId) {
       console.log("Not authenticated.");
       return NextResponse.json(
@@ -20,6 +16,9 @@ export async function GET(req: Request) {
         { status: 400 }
       );
     }
+    
+    const url = new URL(req.url);
+    const experienceId = url.searchParams.get("experienceId");
     if (experienceId) {
       // Fetch a single
       console.log(`Fetching experiences for currentUserId: ${currentUserId} and experienceId: ${experienceId}`);
