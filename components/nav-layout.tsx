@@ -109,7 +109,7 @@ export async function NavLayoutWrapper({
                     </svg>
                   </div>
                   <div className='flex flex-col gap-0.5 leading-none'>
-                    <span className='font-semibold'>Personal Data App</span>
+                    <span className='font-semibold'>Personal App</span>
                     <span className='text-xs text-muted-foreground'>
                       Professional CV Editor
                     </span>
