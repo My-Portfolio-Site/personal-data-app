@@ -37,7 +37,6 @@ import { useChat, UIMessage } from '@ai-sdk/react';
 import { DefaultChatTransport, SourceUrlUIPart } from 'ai';
 import { Response } from '@/components/ai-elements/response';
 import { GlobeIcon, RefreshCcwIcon, CopyIcon } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Toaster } from '@/components/ui/sonner';
 import { toast } from 'sonner';
 import { User } from '@/schemas/user';
@@ -103,12 +102,12 @@ const ChatInterface = ({
       <Toaster id='single-top' richColors position='top-center' visibleToasts={1} />
       {/* <div className="flex flex-col h-full overflow-hidden"> */}
       <Conversation id='conversations' className='overflow-y-hidden no-child-scrollbar'>
-        <ConversationContent className='pt-0'>
+        <ConversationContent className='pt-0 px-0 md:px-4'>
           {/* {messages.length === 0 && <h3 className='h-full pt-15 text-center text-muted-foreground'>Start chat by typing your message.</h3>} */}
           {messages.map((message, messageIndex) => {
             const isLastMessage = messageIndex === messages.length - 1;
             const sourceUrls = message.parts.filter(part => part.type === 'source-url');
-            console.log(message);
+            // console.log(message);
             
             return (
               <div key={message.id}>

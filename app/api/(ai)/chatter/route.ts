@@ -17,13 +17,10 @@ export async function POST(req: Request) {
   // append the new message to the previous messages:
   const messages = [...previousMessages, message];
   
-  console.log("API:CID:", id);
-  console.log("API:Model:", model);
-  console.log("API:Messages:", messages);
-  
   const result = streamText({
     model: webSearch ? 'perplexity/sonar' : model,
     messages: convertToModelMessages(messages),
+    maxOutputTokens: 500,
     system:
       'You are a helpful assistant that can answer questions and help with tasks',
   });
@@ -39,7 +36,7 @@ export async function POST(req: Request) {
       if (!responseMessage.id) {
         responseMessage.id = generateId();
       }
-      console.log("API: result msg:", responseMessage);
+      // console.log("API: result msg:", responseMessage);
       // save response message
       await saveChat({ chatId: id, messages:[...messages, responseMessage] });
     },

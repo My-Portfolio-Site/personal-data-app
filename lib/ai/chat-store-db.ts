@@ -7,6 +7,8 @@ import { db } from "@/lib/db";
 import { getCurrentUserId } from "@/lib/dal";
 import { ChatSchemaType } from '@/schemas/chat';
 
+import { getChatSummary } from '@/lib/ai/ai-helpers';
+
 
 export async function createChat(): Promise<string> {
   const chatId = generateId(); // generate a unique chat ID
@@ -24,9 +26,8 @@ export async function createChat(): Promise<string> {
 export async function loadChat(chatId: string): Promise<ChatSchemaType | null> {
   const currentUserId = await getCurrentUserId();
 
-  const query = `SELECT id, userId, title, summary, messages -> '$' as messages FROM chat_history WHERE "id" = ? AND "userId" = ?;`;
+  const query = `SELECT * FROM chat_history WHERE "id" = ? AND "userId" = ?;`;
   const result = await db.prepare(query).bind(chatId, currentUserId).first<ChatSchemaType>();
-  console.log("Raw Chat: ", result);
   
   return result;
 }
@@ -40,6 +41,9 @@ export async function saveChat({
 }): Promise<void> {
   const currentUserId = await getCurrentUserId();
 
+  const chatTitle = messages[0].parts.find(part => part.type === 'text')?.text
+  const chatSummary = await getChatSummary(messages)
+
   const query = `
     UPDATE "chat_history"
     SET
@@ -48,7 +52,7 @@ export async function saveChat({
     "messages" = COALESCE(?, "messages")
     WHERE "id" = ? AND "userId" = ?;
   `;
-  await db.prepare(query).bind('', '', JSON.stringify(messages), chatId, currentUserId).run();
+  await db.prepare(query).bind(chatTitle, chatSummary, JSON.stringify(messages), chatId, currentUserId).run();
 }
 
 

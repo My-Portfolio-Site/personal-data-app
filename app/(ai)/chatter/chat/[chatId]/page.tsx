@@ -11,14 +11,13 @@ import { getUser } from '@/lib/dal';
 import { User } from '@/schemas/user';
 import { ChatSchemaType } from '@/schemas/chat';
 import { UIMessage } from 'ai';
+import { getChatSummary } from '@/lib/ai/ai-helpers';
 
 export default async function Chatter(props: { params: Promise<{ chatId: string }> }) {
   const { chatId } = await props.params; // get the chat ID from the URL
   const chat = await loadChat(chatId) as ChatSchemaType
 
   const messages = JSON.parse(chat.messages) as UIMessage[]
-  console.log("Load messages:", messages);
-  // console.log("Load messages:", JSON.parse(messages));
 
   const currentUser = await getUser() as User
 
