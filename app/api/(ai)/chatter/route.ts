@@ -41,7 +41,7 @@ export async function POST(req: Request) {
       }
       console.log("API: result msg:", responseMessage);
       // save response message
-      saveChat({ chatId: id, messages:[...messages, responseMessage] });
+      await saveChat({ chatId: id, messages:[...messages, responseMessage] });
     },
   });
 }
