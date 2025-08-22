@@ -40,7 +40,7 @@ export async function POST(req: Request) {
 
   // result.consumeStream(); // no await
   
-  const webSearchTool = groq.tools.browserSearch({});
+  const webSearchTool = groq.tools.browserSearch({}) as any;
   const result = provider.toLowerCase() === 'groq' ? 
   streamText({
       model: groq(model),
