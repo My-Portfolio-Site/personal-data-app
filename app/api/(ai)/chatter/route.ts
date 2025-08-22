@@ -18,27 +18,47 @@ export async function POST(req: Request) {
   // append the new message to the previous messages:
   const messages = [...previousMessages, message];
   const systemMessage = 'You are a helpful assistant that can answer questions and help with tasks'
+  console.log('Provider: ', provider, ' Model:', model);
 
-  const resultGroq = streamText({
-    model: groq(model),
-    tools: {
-      browser_search: groq.tools.browserSearch({}) as any,
-    },
-    toolChoice: 'required',
-    messages: convertToModelMessages(messages),
-    maxOutputTokens: 500,
-    system: systemMessage
-  })
+  
+  // const resultGroq = streamText({
+  //   model: groq(model),
+  //   tools: {
+  //     browser_search: webSearchTool,
+  //   },
+  //   messages: convertToModelMessages(messages),
+  //   maxOutputTokens: 500,
+  //   system: systemMessage
+  // })
 
-  const resultOpenai = streamText({
-    model: model,
-    messages: convertToModelMessages(messages),
-    maxOutputTokens: 500,
-    system: systemMessage
-  });
+  // const resultOpenai = streamText({
+  //   model: model,
+  //   messages: convertToModelMessages(messages),
+  //   maxOutputTokens: 500,
+  //   system: systemMessage
+  // });
 
   // result.consumeStream(); // no await
-  const result = provider === 'groq' ? resultGroq : resultOpenai;
+  
+  const webSearchTool = groq.tools.browserSearch({});
+  const result = provider.toLowerCase() === 'groq' ? 
+  streamText({
+      model: groq(model),
+      tools: {
+        browser_search: webSearchTool,
+      },
+      toolChoice: webSearch ? 'required' : 'auto',
+      messages: convertToModelMessages(messages),
+      maxOutputTokens: 500,
+      system: systemMessage
+    }) 
+    : 
+    streamText({
+      model: model,
+      messages: convertToModelMessages(messages),
+      maxOutputTokens: 500,
+      system: systemMessage
+    });
   // send sources and reasoning back to the client
   return result.toUIMessageStreamResponse({
     sendSources: true,
