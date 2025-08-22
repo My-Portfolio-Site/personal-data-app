@@ -8,6 +8,7 @@ import { PageHeader, PageContent } from "@/components/page-formatter";
 import { ChatSchemaType } from '@/schemas/chat';
 import { ChatHistorySection } from '@/app/(ai)/chatter/history/_components/chat-history-section';
 import { fetchChatHistory } from '@/app/(ai)/chatter/history/action';
+import Loading from './loading';
 
 export default async function ChatHistory() {
   const response = await fetchChatHistory()

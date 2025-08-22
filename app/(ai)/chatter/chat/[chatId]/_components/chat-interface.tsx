@@ -32,7 +32,7 @@ import {
   PromptInputTools,
 } from '@/components/ai-elements/prompt-input';
 import { Loader } from '@/components/ai-elements/loader';
-import { useState } from 'react';
+import { useState, useEffect, use } from 'react';
 import { useChat, UIMessage } from '@ai-sdk/react';
 import { DefaultChatTransport, SourceUrlUIPart } from 'ai';
 import { Response } from '@/components/ai-elements/response';
@@ -41,19 +41,52 @@ import { Toaster } from '@/components/ui/sonner';
 import { toast } from 'sonner';
 import { User } from '@/schemas/user';
 
-const models = [
+const providersModels = [
   {
-    name: 'GPT-5 Nano',
-    value: 'openai/gpt-5-nano',
+    provider: 'OpenAI',
+    models: [
+      {
+        name: 'GPT-5',
+        value: 'openai/gpt-5',
+        webSearchAvailable: false
+      },
+      {
+        name: 'GPT-5 Nano',
+        value: 'openai/gpt-5-nano',
+        webSearchAvailable: false
+      },
+      {
+        name: 'GPT OSS 120b',
+        value: 'openai/gpt-oss-120b',
+        webSearchAvailable: false
+      },
+      {
+        name: 'GPT OSS 20b',
+        value: 'openai/gpt-oss-20b',
+        webSearchAvailable: false
+      },
+    ]
   },
   {
-    name: 'GPT 4o',
-    value: 'openai/gpt-4o',
-  },
-  {
-    name: 'Deepseek R1',
-    value: 'deepseek/deepseek-r1',
-  },
+    provider: 'Groq',
+    models: [
+      {
+        name: 'Llama 4 Scout',
+        value: 'meta-llama/llama-4-scout-17b-16e-instruct',
+        webSearchAvailable: false
+      },
+      {
+        name: 'GPT OSS 120b',
+        value: 'openai/gpt-oss-120b',
+        webSearchAvailable: true
+      },
+      {
+        name: 'GPT OSS 20b',
+        value: 'openai/gpt-oss-20b',
+        webSearchAvailable: true
+      }
+    ]
+  }
 ];
 
 const ChatInterface = ({
@@ -62,8 +95,16 @@ const ChatInterface = ({
   initialMessages,
 }: { id: string | undefined; currentUser: User; initialMessages: UIMessage[] }) => {
   const [input, setInput] = useState('');
-  const [model, setModel] = useState<string>(models[0].value);
+  
+  const availableProviders = Array.from(new Set(providersModels.map(m => m.provider)));
+  const [provider, setProvider] = useState<string>(availableProviders[0]);  
+
+  const availableModels = providersModels.find(p => p.provider === provider)?.models || [];
+  const [model, setModel] = useState<string>(availableModels[0].value);
+
+  const [isWebSearchAvailable, setIsWebSearchAvailable] = useState<boolean>(providersModels.find(p => p.provider === provider)?.models.find(m => m.value === model)?.webSearchAvailable || false);
   const [webSearch, setWebSearch] = useState<boolean>(false);
+  
   const { messages, sendMessage, status, error } = useChat({
     id, // use the provided chat ID
     messages: initialMessages, // load initial messages
@@ -76,16 +117,27 @@ const ChatInterface = ({
     }),
   });
 
+  useEffect(() => {
+    if (availableModels.length > 0) {
+      setModel(availableModels[0].value);
+    }
+  }, [availableModels]);
+
+  useEffect(() => {
+    setIsWebSearchAvailable(availableModels.find(m => m.value === model)?.webSearchAvailable || false);
+  }, [model]);
+
   if (error) {
     toast.error(error.message || 'Something went wrong, please try again.', { toasterId: 'single-top' })
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
     if (input.trim()) {
       sendMessage(
         { text: input }, {
         body: {
+          provider: provider,
           model: model,
           webSearch: webSearch
         },
@@ -108,7 +160,7 @@ const ChatInterface = ({
             const isLastMessage = messageIndex === messages.length - 1;
             const sourceUrls = message.parts.filter(part => part.type === 'source-url');
             // console.log(message);
-            
+
             return (
               <div key={message.id}>
                 {message.role === 'assistant' && sourceUrls.length > 0 && (
@@ -144,10 +196,10 @@ const ChatInterface = ({
                   </MessageContent>
                   {message.role === 'user' ? (
                     <MessageAvatar src={currentUser.image} name={currentUser.name.toUpperCase()} className='mb-1' />
-                  ):(
-                      <MessageAvatar src='/bot.png' name='Bot' className='mb-1 p-0.5 bg-white' />
+                  ) : (
+                    <MessageAvatar src='/bot.png' name='Bot' className='mb-1 p-0.5 bg-white' />
                   )}
-                  
+
                 </Message>
                 {message.role === 'assistant' && isLastMessage && (
                   <Actions className="h-6 ml-10">
@@ -183,29 +235,46 @@ const ChatInterface = ({
         <PromptInputToolbar>
           <PromptInputTools>
             <PromptInputButton
+              disabled={!isWebSearchAvailable}
               variant={webSearch ? 'default' : 'ghost'}
               onClick={() => setWebSearch(!webSearch)}
+              className={isWebSearchAvailable ? '' : 'cursor-not-allowed'}
             >
               <GlobeIcon size={16} />
               <span>Search</span>
             </PromptInputButton>
+            {/* Provider selector */}
             <PromptInputModelSelect
               onValueChange={(value) => {
-                setModel(value);
+                setProvider(value);
               }}
-              value={model}
+              value={provider}
             >
               <PromptInputModelSelectTrigger>
                 <PromptInputModelSelectValue />
               </PromptInputModelSelectTrigger>
               <PromptInputModelSelectContent>
-                {models.map((model) => (
+                {availableProviders.map((provider) => (
+                  <PromptInputModelSelectItem key={provider} value={provider}>
+                    {provider}
+                  </PromptInputModelSelectItem>
+                ))}
+              </PromptInputModelSelectContent>
+            </PromptInputModelSelect>
+            {/* Model selector */}
+            <PromptInputModelSelect onValueChange={(value) => { setModel(value) }} value={model}>
+              <PromptInputModelSelectTrigger>
+                <PromptInputModelSelectValue />
+              </PromptInputModelSelectTrigger>
+              <PromptInputModelSelectContent>
+                {availableModels.map((model) => (
                   <PromptInputModelSelectItem key={model.value} value={model.value}>
                     {model.name}
                   </PromptInputModelSelectItem>
                 ))}
               </PromptInputModelSelectContent>
             </PromptInputModelSelect>
+            
           </PromptInputTools>
           <PromptInputSubmit disabled={!input} status={status} />
         </PromptInputToolbar>

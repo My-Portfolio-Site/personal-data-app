@@ -2,31 +2,43 @@ import { streamText, UIMessage, convertToModelMessages } from 'ai';
 import { saveChat, loadChat } from '@/lib/ai/chat-store-db';
 import { ChatSchemaType } from '@/schemas/chat';
 import { generateId } from 'ai';
+import { groq } from '@ai-sdk/groq';
 
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
-  const { id, model, webSearch, message }: { id: string; model: string; webSearch: boolean, message: UIMessage } = await req.json();
-  
+  const { id, model, provider, webSearch, message }: { id: string; model: string; provider: string; webSearch: boolean; message: UIMessage } = await req.json();
+
   // load the previous messages from the server
   const chat = await loadChat(id) as ChatSchemaType
   const previousMessages = JSON.parse(chat.messages) as UIMessage[]
-  
+
   // append the new message to the previous messages:
   const messages = [...previousMessages, message];
-  
-  const result = streamText({
-    model: webSearch ? 'perplexity/sonar' : model,
+  const systemMessage = 'You are a helpful assistant that can answer questions and help with tasks'
+
+  const resultGroq = streamText({
+    model: groq(model),
+    tools: {
+      browser_search: groq.tools.browserSearch({}) as any,
+    },
+    toolChoice: 'required',
     messages: convertToModelMessages(messages),
     maxOutputTokens: 500,
-    system:
-      'You are a helpful assistant that can answer questions and help with tasks',
-  });
-  
-  // result.consumeStream(); // no await
+    system: systemMessage
+  })
 
+  const resultOpenai = streamText({
+    model: model,
+    messages: convertToModelMessages(messages),
+    maxOutputTokens: 500,
+    system: systemMessage
+  });
+
+  // result.consumeStream(); // no await
+  const result = provider === 'groq' ? resultGroq : resultOpenai;
   // send sources and reasoning back to the client
   return result.toUIMessageStreamResponse({
     sendSources: true,
@@ -38,7 +50,7 @@ export async function POST(req: Request) {
       }
       // console.log("API: result msg:", responseMessage);
       // save response message
-      await saveChat({ chatId: id, messages:[...messages, responseMessage] });
+      await saveChat({ chatId: id, messages: [...messages, responseMessage] });
     },
   });
 }
