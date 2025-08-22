@@ -11,6 +11,7 @@ declare namespace Cloudflare {
 		DB: D1Database;
         AI: Ai;
         AI_GATEWAY_API_KEY: string;
+        GROQ_API_KEY: string;
 		MY_RATE_LIMITER: RateLimit;
 		ASSETS: Fetcher;
 	}
