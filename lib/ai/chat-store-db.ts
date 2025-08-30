@@ -7,11 +7,11 @@ import { db } from "@/lib/db";
 import { getCurrentUserId } from "@/lib/dal";
 import { ChatSchemaType } from '@/schemas/chat';
 
-import { getChatSummary } from '@/lib/ai/ai-helpers';
+// import { getChatSummary } from '@/lib/ai/ai-helpers';
 
 
-export async function createChat(): Promise<string> {
-  const chatId = generateId(); // generate a unique chat ID
+export async function createChat(chatId: string): Promise<string> {
+  // const chatId = generateId(); // generate a unique chat ID
 
   const currentUserId = await getCurrentUserId();
   // Insert the new experience into the database
@@ -19,17 +19,30 @@ export async function createChat(): Promise<string> {
       INSERT INTO "chat_history" ("id", "userId", "title", "summary", "messages")
       VALUES (?, ?, ?, ?, ?);
     `;
+
+  console.log("New chat created: ", chatId);
+
   await db.prepare(query).bind(chatId, currentUserId, '', '', '[]').run();
   return chatId;
 }
 
 export async function loadChat(chatId: string): Promise<ChatSchemaType | null> {
-  const currentUserId = await getCurrentUserId();
+  const currentUserId = await getCurrentUserId() || '';
 
   const query = `SELECT * FROM chat_history WHERE "id" = ? AND "userId" = ?;`;
   const result = await db.prepare(query).bind(chatId, currentUserId).first<ChatSchemaType>();
-  
-  return result;
+  return result ?
+    result :
+    {
+      id: chatId,
+      userId: currentUserId,
+      title: '',
+      summary: '',
+      messages: '[]',
+      messagesCount: 0,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
 }
 
 export async function saveChat({
@@ -42,8 +55,15 @@ export async function saveChat({
   const currentUserId = await getCurrentUserId();
 
   const chatTitle = messages[0].parts.find(part => part.type === 'text')?.text
-  const chatSummary = await getChatSummary(messages)
+  // const chatSummary = await getChatSummary(messages)
+  const chatSummary = "User: " + messages[0].parts.find(part => part.type === 'text')?.text
+    + ", Assistant: " + messages[1].parts.find(part => part.type === 'text')?.text;
+  const response = await db.prepare('SELECT * FROM chat_history WHERE id = ? AND userId = ?').bind(chatId, currentUserId).first();
 
+  
+  if (!response) {
+    await createChat(chatId);
+  }
   const query = `
     UPDATE "chat_history"
     SET

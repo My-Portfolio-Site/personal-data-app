@@ -44,3 +44,28 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "Failed to fetch chat history" }, { status: 500 });
   }
 }
+
+export async function DELETE(req: Request) {
+  try {
+    const currentUserId = await getCurrentUserId();
+    if (!currentUserId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const url = new URL(req.url);
+    const chatId = url.searchParams.get("chatId");
+    if (!chatId) {
+      return NextResponse.json({ error: "Chat ID is required" }, { status: 400 });
+    }
+
+    console.log(`Deleting chat for currentUserId: ${currentUserId} and chatId: ${chatId}`);
+
+    const query = `DELETE FROM "chat_history" WHERE "id" = ? AND "userId" = ?;`;
+    await db.prepare(query).bind(chatId, currentUserId).run();
+
+    return NextResponse.json({ message: "Chat deleted successfully" }, { status: 200 });
+  } catch (error: any) {
+    console.error("API: Error deleting Chat:", error.message);
+    return NextResponse.json({ error: "Failed to delete chat" }, { status: 500 });
+  }
+}

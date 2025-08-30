@@ -40,6 +40,7 @@ export const ChatSchema = z.object({
   title: z.string(),
   summary: z.string(),
   messages: z.string(),
+  messagesCount: z.number(),
   createdAt: z.iso.date(),
   updatedAt: z.iso.date(),
 })

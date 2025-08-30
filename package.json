@@ -49,6 +49,7 @@
     "date-fns": "^4.1.0",
     "embla-carousel-react": "^8.6.0",
     "harden-react-markdown": "^1.0.2",
+    "js-cookie": "^3.0.5",
     "katex": "^0.16.22",
     "lucide-react": "^0.513.0",
     "next": "15.3.4",
@@ -74,6 +75,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.8",
+    "@types/js-cookie": "^3.0.6",
     "@types/node": "^20.19.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",

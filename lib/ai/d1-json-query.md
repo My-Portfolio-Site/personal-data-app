@@ -28,3 +28,11 @@ CREATE TABLE "conversations"(
   "messages_count" AS (json_array_length(messages, '$')) STORED,
   "userId" TEXT
 );
+
+
+wrangler d1 execute personal-data-db --file lib/test.sql --local
+wrangler d1 info personal-data-db
+wrangler d1 migrations create personal-data-db test_mig
+wrangler d1 export personal-data-db --local --no-data --output=migrations/001_mig_all.sql
+
+

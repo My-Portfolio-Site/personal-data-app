@@ -12,7 +12,7 @@ export function PageHeader({ title, children }: { title: string, children?: Reac
           className="mx-2 data-[orientation=vertical]:h-4"
         />
         <div className='flex-1 flex'>
-          <div className=" max-w-[780px] w-full flex items-center justify-between">
+          <div className=" w-full flex items-center justify-between">
             <div className='flex aspect-square size-4 items-center justify-center rounded-lg mr-3'>
               {/* <FileText className='size-4' /> */}
               <svg width="30" height="30" viewBox="0 0 85 93" fill="none" xmlns="http://www.w3.org/2000/svg">

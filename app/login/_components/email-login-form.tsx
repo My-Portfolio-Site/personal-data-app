@@ -15,11 +15,20 @@ export function EmailLoginForm({
     <form>
       <div className="flex flex-col gap-6">
         <div className="grid gap-3">
-          <Label htmlFor="email">Email (coming soon...)</Label>
+          <Label htmlFor="username">Username</Label>
           <Input
-            id="email"
-            type="email"
-            placeholder="m@example.com"
+            id="username"
+            type="username"
+            placeholder="myusername"
+            disabled={true}
+          />
+        </div>
+        <div className="grid gap-3">
+          <Label htmlFor="password">Password</Label>
+          <Input
+            id="password"
+            type="password"
+            placeholder="********"
             disabled={true}
           />
         </div>

@@ -5,7 +5,7 @@ import { Separator } from "@/components/ui/separator"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 export default function Loading() {
-  const messages = Array.from({ length: 6 }); // 6 dummy messages
+  const messages = Array.from({ length: 4 }); // 4 dummy messages
   return (
     <section>
       <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
@@ -36,7 +36,7 @@ export default function Loading() {
                     <AvatarImage src="" alt="avatar" />
                     <AvatarFallback>AI</AvatarFallback>
                   </Avatar>
-                  <Skeleton className={`flex-1 ${isUser ? "h-12" : "h-20"} rounded-md`} />
+                  <Skeleton className={`flex-1 ${isUser ? "h-12 max-w-90" : "h-20 max-w-120"} rounded-md  w-full`} />
                 </div>
               );
             })}
@@ -44,8 +44,7 @@ export default function Loading() {
 
           {/* Input Box */}
           <div className="flex items-center space-x-2 mt-4">
-            <Skeleton className="flex-1 h-10 rounded-full" />
-            <Skeleton className="w-10 h-10 rounded-full" />
+            <Skeleton className="flex-1 h-25 rounded-md" />
           </div>
         </div>
       </PageContent>

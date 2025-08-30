@@ -1,4 +1,5 @@
 'use client';
+import Cookies from 'js-cookie';
 
 import {
   Conversation,
@@ -31,62 +32,40 @@ import {
   PromptInputToolbar,
   PromptInputTools,
 } from '@/components/ai-elements/prompt-input';
+import {
+  Tool,
+  ToolContent,
+  ToolHeader,
+  ToolOutput,
+  ToolInput,
+} from '@/components/ai-elements/tool';
 import { Loader } from '@/components/ai-elements/loader';
 import { useState, useEffect, use } from 'react';
 import { useChat, UIMessage } from '@ai-sdk/react';
-import { DefaultChatTransport, SourceUrlUIPart } from 'ai';
+import { ChatStatus, DefaultChatTransport, SourceUrlUIPart } from 'ai';
 import { Response } from '@/components/ai-elements/response';
 import { GlobeIcon, RefreshCcwIcon, CopyIcon } from 'lucide-react';
 import { Toaster } from '@/components/ui/sonner';
 import { toast } from 'sonner';
 import { User } from '@/schemas/user';
 
-const providersModels = [
+const availableModels = [
   {
-    provider: 'OpenAI',
-    models: [
-      {
-        name: 'GPT-5',
-        value: 'openai/gpt-5',
-        webSearchAvailable: false
-      },
-      {
-        name: 'GPT-5 Nano',
-        value: 'openai/gpt-5-nano',
-        webSearchAvailable: false
-      },
-      {
-        name: 'GPT OSS 120b',
-        value: 'openai/gpt-oss-120b',
-        webSearchAvailable: false
-      },
-      {
-        name: 'GPT OSS 20b',
-        value: 'openai/gpt-oss-20b',
-        webSearchAvailable: false
-      },
-    ]
+    name: 'GPT-5',
+    value: 'openai/gpt-5',
   },
   {
-    provider: 'Groq',
-    models: [
-      {
-        name: 'Llama 4 Scout',
-        value: 'meta-llama/llama-4-scout-17b-16e-instruct',
-        webSearchAvailable: false
-      },
-      {
-        name: 'GPT OSS 120b',
-        value: 'openai/gpt-oss-120b',
-        webSearchAvailable: true
-      },
-      {
-        name: 'GPT OSS 20b',
-        value: 'openai/gpt-oss-20b',
-        webSearchAvailable: true
-      }
-    ]
-  }
+    name: 'GPT-5 Nano',
+    value: 'openai/gpt-5-nano',
+  },
+  {
+    name: 'GPT OSS 120b',
+    value: 'openai/gpt-oss-120b',
+  },
+  {
+    name: 'GPT OSS 20b',
+    value: 'openai/gpt-oss-20b',
+  },
 ];
 
 const ChatInterface = ({
@@ -95,17 +74,13 @@ const ChatInterface = ({
   initialMessages,
 }: { id: string | undefined; currentUser: User; initialMessages: UIMessage[] }) => {
   const [input, setInput] = useState('');
-  
-  const availableProviders = Array.from(new Set(providersModels.map(m => m.provider)));
-  const [provider, setProvider] = useState<string>(availableProviders[0]);  
 
-  const availableModels = providersModels.find(p => p.provider === provider)?.models || [];
-  const [model, setModel] = useState<string>(availableModels[0].value);
+  const [model, setModel] = useState<string>(Cookies.get('chatter_model') || availableModels[0].value);
 
-  const [isWebSearchAvailable, setIsWebSearchAvailable] = useState<boolean>(providersModels.find(p => p.provider === provider)?.models.find(m => m.value === model)?.webSearchAvailable || false);
   const [webSearch, setWebSearch] = useState<boolean>(false);
-  
-  const { messages, sendMessage, status, error } = useChat({
+
+
+  const { messages, sendMessage, status, error, regenerate } = useChat({
     id, // use the provided chat ID
     messages: initialMessages, // load initial messages
     transport: new DefaultChatTransport({
@@ -117,18 +92,48 @@ const ChatInterface = ({
     }),
   });
 
+  const [messageCount, setMessageCount] = useState<number>(messages.length || initialMessages.length || 0);
   useEffect(() => {
-    if (availableModels.length > 0) {
-      setModel(availableModels[0].value);
-    }
-  }, [availableModels]);
+    setMessageCount(messages.length || initialMessages.length || 0);
+  }, [messages, initialMessages]);
 
-  useEffect(() => {
-    setIsWebSearchAvailable(availableModels.find(m => m.value === model)?.webSearchAvailable || false);
-  }, [model]);
+  const chatLimitReached = messageCount >= 4;
+  console.log("Message count:", messageCount, "limit reached:", chatLimitReached);
+
+  const handleModelChange = (value: string) => {
+    setModel(value);
+    Cookies.set("chatter_model", value);
+  };
 
   if (error) {
-    toast.error(error.message || 'Something went wrong, please try again.', { toasterId: 'single-top' })
+    toast.error('Something went wrong, please try again.', {
+      description: error.message,
+      toasterId: 'single-top',
+      action: {
+        label: 'Close',
+        onClick: () => {
+          // Close logic here
+        }
+      }
+    });
+  }
+
+  if (chatLimitReached) {
+    // Show a message indicating the user has reached the limit
+    toast.error('You have reached the maximum message limit.', {
+      description: 'Please start a new conversation to continue chatting.',
+      toasterId: 'single-top',
+      // action: {
+      //   label: 'New Conversation',
+      //   onClick: () => {
+      //     // Logic to start a new conversation
+      //   }
+      // }
+    });
+  }
+
+  const handleRegenerate = async () => {
+    await regenerate({ body: { model, webSearch } });
   }
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
@@ -137,7 +142,6 @@ const ChatInterface = ({
       sendMessage(
         { text: input }, {
         body: {
-          provider: provider,
           model: model,
           webSearch: webSearch
         },
@@ -151,30 +155,36 @@ const ChatInterface = ({
     // <div className="max-w-4xl mx-auto relative size-full ">
     <div className='flex flex-col size-full'>
 
-      <Toaster id='single-top' richColors position='top-center' visibleToasts={1} />
+      <Toaster id='single-top' richColors position='top-center' visibleToasts={1} closeButton={true} duration={8000} />
       {/* <div className="flex flex-col h-full overflow-hidden"> */}
       <Conversation id='conversations' className='overflow-y-hidden no-child-scrollbar'>
+        {messages.length === 0 &&
+          <div className='h-full grid content-center'>
+            <p className='text-center text-2xl font-bold bg-linear-to-r from-sidebar-primary via-sidebar-primary to-primary bg-clip-text text-transparent'>
+              Hello, {currentUser.name.split(" ")[0]}!
+            </p>
+          </div>
+        }
         <ConversationContent className='pt-0 px-0 md:px-4'>
-          {/* {messages.length === 0 && <h3 className='h-full pt-15 text-center text-muted-foreground'>Start chat by typing your message.</h3>} */}
           {messages.map((message, messageIndex) => {
             const isLastMessage = messageIndex === messages.length - 1;
             const sourceUrls = message.parts.filter(part => part.type === 'source-url');
             // console.log(message);
+            const messageText = message.parts.find(part => part.type === 'text')?.text;
 
             return (
-              <div key={message.id}>
+              <div key={message.id + "_" + messageIndex}>
                 {message.role === 'assistant' && sourceUrls.length > 0 && (
                   <DisplaySources sources={sourceUrls} />
                 )}
                 <Message from={message.role} key={message.id} className='py-3'>
-                  <MessageContent>
+                  <MessageContent className='group-[.is-assistant]:bg-transparent group-[.is-user]:bg-secondary'>
                     {message.parts.map((part, i) => {
                       switch (part.type) {
                         case 'text':
                           return (
                             <div key={`${message.id}-${i}`}>
                               <Response>{part.text}</Response>
-
                             </div>
                           );
                         case 'reasoning':
@@ -192,32 +202,17 @@ const ChatInterface = ({
                           return null;
                       }
                     })}
-
                   </MessageContent>
+
+                  {/* Avatar */}
                   {message.role === 'user' ? (
                     <MessageAvatar src={currentUser.image} name={currentUser.name.toUpperCase()} className='mb-1' />
                   ) : (
                     <MessageAvatar src='/bot.png' name='Bot' className='mb-1 p-0.5 bg-white' />
                   )}
-
                 </Message>
                 {message.role === 'assistant' && isLastMessage && (
-                  <Actions className="h-6 ml-10">
-                    <Action
-                      // onClick={() => regenerate()}
-                      label="Retry"
-                    >
-                      <RefreshCcwIcon className="size-3" />
-                    </Action>
-                    <Action
-                      onClick={() =>
-                        navigator.clipboard.writeText("part.text")
-                      }
-                      label="Copy"
-                    >
-                      <CopyIcon className="size-3" />
-                    </Action>
-                  </Actions>
+                  <MessageActions messageCount={messageCount} messageTextPart={messageText} regenerate={handleRegenerate} />
                 )}
               </div>
             )
@@ -226,59 +221,18 @@ const ChatInterface = ({
         </ConversationContent>
         <ConversationScrollButton />
       </Conversation>
-
-      <PromptInput onSubmit={handleSubmit} className="mt-2">
-        <PromptInputTextarea
-          onChange={(e) => setInput(e.target.value)}
-          value={input}
-        />
-        <PromptInputToolbar>
-          <PromptInputTools>
-            <PromptInputButton
-              disabled={!isWebSearchAvailable}
-              variant={webSearch ? 'default' : 'ghost'}
-              onClick={() => setWebSearch(!webSearch)}
-              className={isWebSearchAvailable ? '' : 'cursor-not-allowed'}
-            >
-              <GlobeIcon size={16} />
-              <span>Search</span>
-            </PromptInputButton>
-            {/* Provider selector */}
-            <PromptInputModelSelect
-              onValueChange={(value) => {
-                setProvider(value);
-              }}
-              value={provider}
-            >
-              <PromptInputModelSelectTrigger>
-                <PromptInputModelSelectValue />
-              </PromptInputModelSelectTrigger>
-              <PromptInputModelSelectContent>
-                {availableProviders.map((provider) => (
-                  <PromptInputModelSelectItem key={provider} value={provider}>
-                    {provider}
-                  </PromptInputModelSelectItem>
-                ))}
-              </PromptInputModelSelectContent>
-            </PromptInputModelSelect>
-            {/* Model selector */}
-            <PromptInputModelSelect onValueChange={(value) => { setModel(value) }} value={model}>
-              <PromptInputModelSelectTrigger>
-                <PromptInputModelSelectValue />
-              </PromptInputModelSelectTrigger>
-              <PromptInputModelSelectContent>
-                {availableModels.map((model) => (
-                  <PromptInputModelSelectItem key={model.value} value={model.value}>
-                    {model.name}
-                  </PromptInputModelSelectItem>
-                ))}
-              </PromptInputModelSelectContent>
-            </PromptInputModelSelect>
-            
-          </PromptInputTools>
-          <PromptInputSubmit disabled={!input} status={status} />
-        </PromptInputToolbar>
-      </PromptInput>
+      <PromptInputSection
+        input={input}
+        setInput={setInput}
+        handleSubmit={handleSubmit}
+        status={status}
+        webSearch={webSearch}
+        setWebSearch={setWebSearch}
+        model={model}
+        handleModelChange={handleModelChange}
+        availableModels={availableModels}
+        chatLimitReached={chatLimitReached}
+      />
     </div>
   )
 
@@ -286,7 +240,7 @@ const ChatInterface = ({
 
 const DisplaySources = ({ sources }: { sources: SourceUrlUIPart[] }) => {
   return (
-    <Sources className='mb-0'>
+    <Sources className='mb-0 ml-10'>
       <SourcesTrigger count={sources.length}
       />
       {sources.map((url, i) => {
@@ -301,9 +255,109 @@ const DisplaySources = ({ sources }: { sources: SourceUrlUIPart[] }) => {
       })}
     </Sources>
   )
-
 }
 
+const ToolUseInfo = () => {
+  return (
+    <Tool>
+      <ToolHeader type="tool-call" state={'output-available' as const} />
+      <ToolContent>
+        <ToolInput input="Input to tool call" />
+        <ToolOutput errorText="Error" output="Output from tool call" />
+      </ToolContent>
+    </Tool>
+  )
+}
+
+const MessageActions = ({ messageCount, messageTextPart, regenerate }: { messageCount: number; messageTextPart: string | undefined; regenerate: () => void }) => {
+  return (
+    <Actions className="h-6 ml-14">
+      <span className='text-xs text-gray-500 px-2'>
+        {messageCount}/20
+      </span>
+      <Action
+        onClick={() => regenerate()}
+        label="Retry"
+      >
+        <RefreshCcwIcon className="size-3" />
+      </Action>
+      <Action
+        onClick={() =>
+          navigator.clipboard.writeText(messageTextPart || "")
+        }
+        label="Copy"
+        className='active:text-amber-200'
+      >
+        <CopyIcon className="size-3 " />
+      </Action>
+
+    </Actions>
+  )
+}
+
+
+const PromptInputSection = ({
+  input,
+  setInput,
+  handleSubmit,
+  status,
+  webSearch,
+  setWebSearch,
+  model,
+  handleModelChange,
+  availableModels,
+  chatLimitReached
+}: {
+  input: string;
+  setInput: React.Dispatch<React.SetStateAction<string>>;
+  handleSubmit: React.FormEventHandler<HTMLFormElement>;
+  status: ChatStatus | undefined;
+  webSearch: boolean;
+  setWebSearch: React.Dispatch<React.SetStateAction<boolean>>;
+  model: string;
+  handleModelChange: (value: string) => void;
+  availableModels: Array<{ value: string; name: string }>;
+  chatLimitReached: boolean;
+}) => {
+  return (
+    <PromptInput onSubmit={handleSubmit} className="mt-2">
+      <PromptInputTextarea
+        onChange={(e) => setInput(e.target.value)}
+        value={input}
+      />
+      <PromptInputToolbar>
+        <PromptInputTools>
+          <PromptInputButton
+            variant={webSearch ? 'default' : 'ghost'}
+            onClick={() => setWebSearch(!webSearch)}
+          >
+            <GlobeIcon size={16} />
+            <span>Search</span>
+          </PromptInputButton>
+
+          {!webSearch &&
+            <PromptInputModelSelect
+              onValueChange={handleModelChange}
+              value={model}
+            >
+              <PromptInputModelSelectTrigger>
+                <PromptInputModelSelectValue />
+              </PromptInputModelSelectTrigger>
+              <PromptInputModelSelectContent>
+                {availableModels.map((model) => (
+                  <PromptInputModelSelectItem key={model.value} value={model.value}>
+                    {model.name}
+                  </PromptInputModelSelectItem>
+                ))}
+              </PromptInputModelSelectContent>
+            </PromptInputModelSelect>
+          }
+        </PromptInputTools>
+        <PromptInputSubmit status={status} disabled={chatLimitReached} />
+      </PromptInputToolbar>
+    </PromptInput>
+  );
+};
 
 export default ChatInterface;
 

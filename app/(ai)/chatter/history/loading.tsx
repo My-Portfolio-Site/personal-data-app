@@ -20,8 +20,9 @@ export default function Loading() {
         </div>
       </header>
       <PageContent>
-        {[1, 2, 3, 4, 5].map((i) => (
-          <Card key={i} className="max-w-full w-[100%]">
+        <div className="flex flex-col gap-3 p-3 w-full items-center">
+        {[1, 2, 3].map((i) => (
+          <Card key={i} className="max-w-full w-lg">
             <CardHeader>
               <div className="flex items-start flex-col justify-between">
                 <div className="flex justify-between gap-2 w-full">
@@ -38,6 +39,7 @@ export default function Loading() {
             </CardContent>
           </Card>
           ))}
+          </div>
       </PageContent>
     </section >
   )

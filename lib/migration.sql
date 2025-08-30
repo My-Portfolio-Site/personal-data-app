@@ -137,14 +137,14 @@ CREATE INDEX idx_educations_userId ON "educations" ("userId");
 CREATE INDEX idx_educations_id ON "educations" ("id");
 CREATE INDEX idx_educations_userId_id ON "educations" ("userId", "id");
 
-
+DROP TABLE IF EXISTS "chat_history";
 CREATE TABLE IF NOT EXISTS "chat_history" (
     "id" text NOT NULL,
     "userId" text NOT NULL,
     "title" text,
     "summary" text,
     "messages" text,
-    "messages_count" AS (json_array_length(messages, '$')) STORED,
+    "messagesCount" AS (json_array_length(messages, '$')) STORED,
     "updatedAt" datetime DEFAULT CURRENT_TIMESTAMP,
     "createdAt" datetime DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
