@@ -15,7 +15,7 @@ export async function POST(req: Request) {
   const chat = await loadChat(id) as ChatSchemaType
   const previousMessages = JSON.parse(chat.messages) as UIMessage[]
   const messageCount = chat?.messagesCount || 0;
-  if (messageCount >= 10) {
+  if (messageCount >= 20) {
     console.log("Maxed Message count:", messageCount);
     return new Response('Chat message limit reached. Please start a new chat.', { status: 403 });
   }

@@ -97,7 +97,7 @@ const ChatInterface = ({
     setMessageCount(messages.length || initialMessages.length || 0);
   }, [messages, initialMessages]);
 
-  const chatLimitReached = messageCount >= 4;
+  const chatLimitReached = messageCount >= 20;
   console.log("Message count:", messageCount, "limit reached:", chatLimitReached);
 
   const handleModelChange = (value: string) => {
