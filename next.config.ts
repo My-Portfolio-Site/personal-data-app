@@ -9,6 +9,9 @@ const nextConfig: NextConfig = {
   // experimental: {
   //   serverComponentsExternalPackages: ['sharp', 'onnxruntime-node'],
   // },
+  experimental: {
+    esmExternals: true
+  },
 }
 
 export default nextConfig;

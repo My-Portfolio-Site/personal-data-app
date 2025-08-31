@@ -1,4 +1,4 @@
-import { streamText, UIMessage, convertToModelMessages, tool, stepCountIs } from 'ai';
+import { streamText, UIMessage, convertToModelMessages, stepCountIs } from 'ai';
 import { saveChat, loadChat } from '@/lib/ai/chat-store-db';
 import { ChatSchemaType } from '@/schemas/chat';
 import { generateId } from 'ai';

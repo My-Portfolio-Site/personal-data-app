@@ -1,5 +1,5 @@
 import { tool, type ToolUIPart } from 'ai';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 import Exa from 'exa-js';
 
 export const exa = new Exa(process.env.EXA_API_KEY);
@@ -10,13 +10,12 @@ const toolInputSchema = z.object({
 
 const toolOutputSchema = z.object({
   title: z.string().describe('The title of the search result'),
-  url: z.string().url().describe('The URL of the search result'),
+  url: z.url().describe('The URL of the search result'),
   content: z.string().describe('The content of the search result'),
   publishedDate: z.string().describe('The published date of the search result'),
 });
 
 export const webSearchTool = tool({
-  name: 'web_search',
   description: 'Search the web for up-to-date information',
   inputSchema: toolInputSchema,
   outputSchema: toolOutputSchema,
@@ -25,7 +24,6 @@ export const webSearchTool = tool({
       livecrawl: 'always',
       numResults: 1,
     });
-    console.log("Web search tool results:", results.length);
 
     return {
       title: results[0].title,
