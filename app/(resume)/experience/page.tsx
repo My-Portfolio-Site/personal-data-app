@@ -23,7 +23,6 @@ export default async function ExperiencePage() {
     throw new Error(response.message || 'Failed to fetch profile data')
   }
 
-
   const experiences = response.data as ExperienceSchemaType[]
 
   return (

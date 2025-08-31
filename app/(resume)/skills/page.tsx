@@ -1,7 +1,14 @@
 import React from 'react'
 import { Plus } from 'lucide-react'
-import { Button} from '@/components/ui/button'
+import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
+import type { SkillSchemaType, SkillSchemaErrorType } from '@/schemas/skill'
+import { skillSchema } from '@/schemas/skill'
+import { SkillsSection } from './_components/skills-section'
+import { fetchSkills } from './actions'
+import { PageContent, PageHeader } from '@/components/page-formatter'
+import Link from 'next/link'
+import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 import { Metadata } from 'next'
 
@@ -10,28 +17,42 @@ export const metadata: Metadata = {
   description: 'App and API for personal data management',
 }
 
-import { SkillsSection } from './_components/skills-section'
-export default function Skills() {
-  return (
-    <div id='experiance' className="flex flex-1 flex-col gap-4 p-6">
-      <SectionHeader title='Skills' description=''/>
-       <Separator />
-      <SkillsSection />
-    </div>
-  )
-}
 
-function SectionHeader({title, description}: {title: string, description: string}) {
+export default async function Skills() {
+  const response = await fetchSkills()
+  if (!response.success) {
+    // toast.error(response.message || 'Failed to fetch profile data')
+    throw new Error(response.message || 'Failed to fetch profile data')
+  }
+
+  const skills = response.data as SkillSchemaType[]
+
   return (
-    <div className='flex items-center justify-between'>
-      <div>
-        <h1 className='text-2xl font-bold tracking-tight'>{title}</h1>
-        <p className='text-muted-foreground'>{description}</p>
-      </div>
-      <Button>
-        <Plus className='w-4 h-4 mr-2' />
-        Add Skill
-      </Button>
-    </div>
+    <section>
+      <PageHeader title="Skills" >
+        <Button asChild size='sm'>
+          <Link href="/experience/add">
+            <Plus className="w-4 h-4" />
+          </Link>
+        </Button>
+      </PageHeader>
+      <PageContent>
+
+
+        {/* Empty State */}
+        {skills.length === 0 ? (
+          <Card className='border-dashed text-center'>
+            <CardHeader>
+              <CardTitle>No Skill Added</CardTitle>
+              <CardDescription>
+                Click "+" to get started with your skills
+              </CardDescription>
+            </CardHeader>
+          </Card>
+        ) :
+          <SkillsSection skills={skills} />
+        }
+      </PageContent>
+    </section>
   )
 }

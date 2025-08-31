@@ -29,7 +29,9 @@ export async function POST(req: Request) {
     model: webSearch ? 'perplexity/sonar' : model,
     messages: convertToModelMessages(messages),
     maxOutputTokens: 500,
-    system: systemMessage
+    system: systemMessage,
+    // tools: webSearch ? [webSearchTool] : [],
+    // maxSteps: 5
   })
 
   // send sources and reasoning back to the client

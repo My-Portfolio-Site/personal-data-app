@@ -156,4 +156,19 @@ CREATE INDEX idx_chat_history_userId ON "chat_history" ("userId");
 CREATE INDEX idx_chat_history_userId_id ON "chat_history" ("userId", "id");
 
 
+DROP TABLE IF EXISTS "skills";
+CREATE TABLE IF NOT EXISTS "skills" (
+    "id" text NOT NULL,
+    "userId" text NOT NULL,
+    "name" text NOT NULL,
+    "level" text,
+    "categoryTitle" text NOT NULL,
+    "category" text NOT NULL,
+    "description" text,
+    PRIMARY KEY (id),
+    FOREIGN KEY (userId) REFERENCES "users" (id) ON DELETE CASCADE
+);
 
+CREATE INDEX idx_skills_userId ON "skills" (userId);
+CREATE INDEX idx_skills_id ON "skills" (id);
+CREATE INDEX idx_skills_userId_id ON "skills" (userId, id);
