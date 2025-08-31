@@ -12,6 +12,7 @@ declare namespace Cloudflare {
         AI: Ai;
         AI_GATEWAY_API_KEY: string;
         GROQ_API_KEY: string;
+        EXA_API_KEY: string;
 		MY_RATE_LIMITER: RateLimit;
 		ASSETS: Fetcher;
 	}

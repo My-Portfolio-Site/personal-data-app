@@ -25,7 +25,6 @@ export async function POST(req: Request) {
   const messages = [...previousMessages, message];
   const systemMessage = 'You are a helpful assistant that can answer questions and help with tasks. Answer short and concise response.'
   console.log('Model:', model);
-  console.log(process.env.EXA_API_KEY);
 
   const result = streamText({
     model: model,
