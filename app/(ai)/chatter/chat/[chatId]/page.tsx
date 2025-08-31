@@ -19,7 +19,7 @@ export default async function Chatter(props: { params: Promise<{ chatId: string 
   const chat = await loadChat(chatId) as ChatSchemaType
 
   const messages = JSON.parse(chat?.messages) as UIMessage[]
-  const messageCount = chat?.messagesCount || 0;
+  const messageCount = chat?.messagesCount/2 || 0;
   console.log("Message count:", messageCount);
 
 

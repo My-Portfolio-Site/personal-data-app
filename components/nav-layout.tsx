@@ -156,7 +156,7 @@ const AINavSection = ({ currentPath }: { currentPath: string }) => {
       icon: Bot,
       items: [
         {
-          title: "Chatter",
+          title: "Chat",
           url: "/chatter/chat",
         },
         {

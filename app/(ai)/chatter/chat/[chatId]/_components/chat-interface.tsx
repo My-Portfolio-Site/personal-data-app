@@ -40,14 +40,16 @@ import {
   ToolInput,
 } from '@/components/ai-elements/tool';
 import { Loader } from '@/components/ai-elements/loader';
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect } from 'react';
 import { useChat, UIMessage } from '@ai-sdk/react';
 import { ChatStatus, DefaultChatTransport, SourceUrlUIPart } from 'ai';
 import { Response } from '@/components/ai-elements/response';
-import { GlobeIcon, RefreshCcwIcon, CopyIcon } from 'lucide-react';
+import { GlobeIcon, RefreshCcwIcon, CopyIcon, Code } from 'lucide-react';
 import { Toaster } from '@/components/ui/sonner';
 import { toast } from 'sonner';
 import { User } from '@/schemas/user';
+import type { WebSearchToolOutput, WebSearchToolUIPart } from '@/lib/ai/tools';
+import { CodeBlock } from '@/components/ai-elements/code-block';
 
 const availableModels = [
   {
@@ -92,13 +94,12 @@ const ChatInterface = ({
     }),
   });
 
-  const [messageCount, setMessageCount] = useState<number>(messages.length || initialMessages.length || 0);
+  const [messageCount, setMessageCount] = useState<number>(messages.length / 2 || initialMessages.length / 2 || 0);
   useEffect(() => {
-    setMessageCount(messages.length || initialMessages.length || 0);
+    setMessageCount(messages.length / 2 || initialMessages.length / 2 || 0);
   }, [messages, initialMessages]);
 
   const chatLimitReached = messageCount >= 20;
-  console.log("Message count:", messageCount, "limit reached:", chatLimitReached);
 
   const handleModelChange = (value: string) => {
     setModel(value);
@@ -198,6 +199,10 @@ const ChatInterface = ({
                               <ReasoningContent>{part.text}</ReasoningContent>
                             </Reasoning>
                           );
+                        case 'tool-webSearchTool':
+                          return (
+                            <WebSearchToolUI key={`${part.toolCallId}-${i}`} part={part as WebSearchToolUIPart} />
+                          );
                         default:
                           return null;
                       }
@@ -208,7 +213,8 @@ const ChatInterface = ({
                   {message.role === 'user' ? (
                     <MessageAvatar src={currentUser.image} name={currentUser.name.toUpperCase()} className='mb-1' />
                   ) : (
-                    <MessageAvatar src='/bot.png' name='Bot' className='mb-1 p-0.5 bg-white' />
+                    null
+                    // <MessageAvatar src='/bot.png' name='Bot' className='mb-1 p-0.5 bg-white' />
                   )}
                 </Message>
                 {message.role === 'assistant' && isLastMessage && (
@@ -257,13 +263,18 @@ const DisplaySources = ({ sources }: { sources: SourceUrlUIPart[] }) => {
   )
 }
 
-const ToolUseInfo = () => {
+const WebSearchToolUI = ({ part }: { part: WebSearchToolUIPart }) => {
   return (
-    <Tool>
-      <ToolHeader type="tool-call" state={'output-available' as const} />
+    <Tool defaultOpen={false}>
+      <ToolHeader type="tool-webSearchTool" state={part.state} />
       <ToolContent>
-        <ToolInput input="Input to tool call" />
-        <ToolOutput errorText="Error" output="Output from tool call" />
+        <ToolInput input={part.input} />
+        <ToolOutput
+          output={
+            <CodeBlock code={JSON.stringify(part.output, null, 2)} language='json' />
+          }
+          errorText={part.errorText}
+        />
       </ToolContent>
     </Tool>
   )
@@ -271,7 +282,7 @@ const ToolUseInfo = () => {
 
 const MessageActions = ({ messageCount, messageTextPart, regenerate }: { messageCount: number; messageTextPart: string | undefined; regenerate: () => void }) => {
   return (
-    <Actions className="h-6 ml-14">
+    <Actions className="h-6 ml-5">
       <span className='text-xs text-gray-500 px-2'>
         {messageCount}/20
       </span>
@@ -334,30 +345,28 @@ const PromptInputSection = ({
             <GlobeIcon size={16} />
             <span>Search</span>
           </PromptInputButton>
-
-          {!webSearch &&
-            <PromptInputModelSelect
-              onValueChange={handleModelChange}
-              value={model}
-            >
-              <PromptInputModelSelectTrigger>
-                <PromptInputModelSelectValue />
-              </PromptInputModelSelectTrigger>
-              <PromptInputModelSelectContent>
-                {availableModels.map((model) => (
-                  <PromptInputModelSelectItem key={model.value} value={model.value}>
-                    {model.name}
-                  </PromptInputModelSelectItem>
-                ))}
-              </PromptInputModelSelectContent>
-            </PromptInputModelSelect>
-          }
+          <PromptInputModelSelect
+            onValueChange={handleModelChange}
+            value={model}
+          >
+            <PromptInputModelSelectTrigger>
+              <PromptInputModelSelectValue />
+            </PromptInputModelSelectTrigger>
+            <PromptInputModelSelectContent>
+              {availableModels.map((model) => (
+                <PromptInputModelSelectItem key={model.value} value={model.value}>
+                  {model.name}
+                </PromptInputModelSelectItem>
+              ))}
+            </PromptInputModelSelectContent>
+          </PromptInputModelSelect>
         </PromptInputTools>
         <PromptInputSubmit status={status} disabled={chatLimitReached} />
       </PromptInputToolbar>
     </PromptInput>
   );
 };
+
 
 export default ChatInterface;
 
