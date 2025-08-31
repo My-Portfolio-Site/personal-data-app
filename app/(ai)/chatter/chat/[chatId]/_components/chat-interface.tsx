@@ -166,7 +166,7 @@ const ChatInterface = ({
             </p>
           </div>
         }
-        <ConversationContent className='pt-0 px-0 md:px-4'>
+        <ConversationContent className='pt-0 px-0 md:px-3'>
           {messages.map((message, messageIndex) => {
             const isLastMessage = messageIndex === messages.length - 1;
             const sourceUrls = message.parts.filter(part => part.type === 'source-url');
@@ -178,7 +178,7 @@ const ChatInterface = ({
                 {message.role === 'assistant' && sourceUrls.length > 0 && (
                   <DisplaySources sources={sourceUrls} />
                 )}
-                <Message from={message.role} key={message.id} className='py-3'>
+                <Message from={message.role} key={message.id} className='py-1'>
                   <MessageContent className='group-[.is-assistant]:bg-transparent group-[.is-user]:bg-secondary'>
                     {message.parts.map((part, i) => {
                       switch (part.type) {
@@ -282,7 +282,7 @@ const WebSearchToolUI = ({ part }: { part: WebSearchToolUIPart }) => {
 
 const MessageActions = ({ messageCount, messageTextPart, regenerate }: { messageCount: number; messageTextPart: string | undefined; regenerate: () => void }) => {
   return (
-    <Actions className="h-6 ml-5">
+    <Actions className="h-6 ml-2">
       <span className='text-xs text-gray-500 px-2'>
         {messageCount}/20
       </span>
