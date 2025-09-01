@@ -1,8 +1,13 @@
 import { tool, type ToolUIPart } from 'ai';
 import { z } from 'zod/v4';
 import Exa from 'exa-js';
+import { getCloudflareContext } from "@opennextjs/cloudflare";
 
-export const exa = new Exa(process.env.EXA_API_KEY);
+// export const db: D1Database = (await getCloudflareContext({async: true})).env.DB;
+
+const context= await getCloudflareContext({ async: true });
+
+export const exa = new Exa(context.env.EXASEARCH_API_KEY);
 
 const toolInputSchema = z.object({
   query: z.string().min(1).max(100).describe('The search query'),
