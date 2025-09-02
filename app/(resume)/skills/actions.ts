@@ -3,7 +3,7 @@ import { z } from "zod/v4";
 import { revalidatePath } from 'next/cache'
 
 import type { SkillSchemaType, SkillSchemaErrorType } from '@/schemas/skill'
-import { skillSchema } from '@/schemas/skill'
+import { skillSchema, SkillActionState } from '@/schemas/skill'
 import { fetchApi } from '@/lib/helpers'
 
 
@@ -24,7 +24,7 @@ export async function fetchSkills() {
   }
 }
 
-// export async function fetchExperienceById(id: string) {
+// export async function fetchSkillById(id: string) {
 //   try {
 //     const response = await fetchApi(`/experience?experienceId=${id}`, 'GET')
 
@@ -43,7 +43,8 @@ export async function fetchSkills() {
 
 
 // Delete a skill
-export async function deleteSkillsById(id: string) {
+
+export async function deleteSkillById(id: string) {
   try {
     const response = await fetchApi(`/skills?skillId=${id}`, 'DELETE')
 
@@ -59,90 +60,90 @@ export async function deleteSkillsById(id: string) {
 }
 
 
-// // Add a new experience
-// export async function addExperience(_prev: ExperienceActionState, formData: FormData): Promise<ExperienceActionState> {
-//   const data = Object.fromEntries(formData)
-//   console.log('Action: Adding experience with data:', data);
-  
-//   const validationResult = experienceSchema.safeParse(data)
-//   if (!validationResult.success) {
-//     return {
-//       data: data as ExperienceSchemaType,
-//       errors: z.flattenError(validationResult.error) as ExperienceSchemaErrorType,
-//       message: {success: false, message: 'One or more fields are invalid.'}
-//     }
-//   }
+// Add a new skill
+export async function addSkill(_prev: SkillActionState, formData: FormData): Promise<SkillActionState> {
+  const data = Object.fromEntries(formData)
+  console.log('Action: Adding skill with data:', data);
 
-//   try {
-//     const response = await fetchApi<ExperienceSchemaType>('/experience', 'POST', validationResult.data)
+  const validationResult = skillSchema.safeParse(data)
+  if (!validationResult.success) {
+    return {
+      data: data as SkillSchemaType,
+      errors: z.flattenError(validationResult.error) as SkillSchemaErrorType,
+      message: {success: false, message: 'One or more fields are invalid.'}
+    }
+  }
 
-//     if (!response.ok) {
-//       console.log('API Response: Failed to create experience,', 'status:', response.status)
-//       return {
-//         data: data as ExperienceSchemaType,
-//         errors: { fieldErrors: [], formErrors: [] } as ExperienceSchemaErrorType,
-//         message: {success: false, message: `Failed to create experience.`}
-//       }
-//     }
+  try {
+    const response = await fetchApi<SkillSchemaType>('/skills', 'POST', validationResult.data)
 
-//     revalidatePath('/experience')
-//     return {
-//       data: data as ExperienceSchemaType,
-//       errors: { fieldErrors: [], formErrors: [] } as ExperienceSchemaErrorType,
-//       message: {success: true, message: 'Experience created successfully'}
-//     }
-//   } catch (err) {
-//     console.error('Error updating experience:', err)
-//     return {
-//       data: data as ExperienceSchemaType,
-//       errors: { fieldErrors: [], formErrors: [] } as ExperienceSchemaErrorType,
-//       message: {success: false, message: err instanceof Error ? err.message : 'An unexpected error occurred'}
-//     }
-//   }
-// }
+    if (!response.ok) {
+      console.log('API Response: Failed to create skill,', 'status:', response.status)
+      return {
+        data: data as SkillSchemaType,
+        errors: { fieldErrors: [], formErrors: [] } as SkillSchemaErrorType,
+        message: {success: false, message: `Failed to create skill.`}
+      }
+    }
+
+    revalidatePath('/skills')
+    return {
+      data: data as SkillSchemaType,
+      errors: { fieldErrors: [], formErrors: [] } as SkillSchemaErrorType,
+      message: {success: true, message: 'Skill created successfully'}
+    }
+  } catch (err) {
+    console.error('Error updating skill:', err)
+    return {
+      data: data as SkillSchemaType,
+      errors: { fieldErrors: [], formErrors: [] } as SkillSchemaErrorType,
+      message: {success: false, message: err instanceof Error ? err.message : 'An unexpected error occurred'}
+    }
+  }
+}
 
 
-// // Update an existing experience
-// export async function updateExperience(_prev: ExperienceActionState, formData: FormData): Promise<ExperienceActionState> {
-//   const data = Object.fromEntries(formData)
+// Update an existing skill
+export async function updateSkill(_prev: SkillActionState, formData: FormData): Promise<SkillActionState> {
+  const data = Object.fromEntries(formData)
 
-//   console.log("RD:", data)
-  
-//   const validationResult = experienceSchema.safeParse(data)
-//   if (!validationResult.success) {
-//     return {
-//       data: data as ExperienceSchemaType,
-//       errors: z.flattenError(validationResult.error) as ExperienceSchemaErrorType,
-//       message: {success: false, message: 'One or more fields are invalid.'}
-//     }
-//   }
+  console.log("RD:", data)
 
-//   try {
-//     const response = await fetchApi<ExperienceSchemaType>('/experience', 'PUT', validationResult.data)
+  const validationResult = skillSchema.safeParse(data)
+  if (!validationResult.success) {
+    return {
+      data: data as SkillSchemaType,
+      errors: z.flattenError(validationResult.error) as SkillSchemaErrorType,
+      message: {success: false, message: 'One or more fields are invalid.'}
+    }
+  }
 
-//     if (!response.ok) {
-//       console.log('Action: Failed to update experience with data:', data);
+  try {
+    const response = await fetchApi<SkillSchemaType>('/skill', 'PUT', validationResult.data)
+
+    if (!response.ok) {
+      console.log('Action: Failed to update experience with data:', data);
       
-//       console.log('API Response: Failed to update experience,', 'status:', response.status)
-//       return {
-//         data: data as ExperienceSchemaType,
-//         errors: { fieldErrors: [], formErrors: [] } as ExperienceSchemaErrorType,
-//         message: {success: false, message: `Failed to update experience.`}
-//       }
-//     }
+      console.log('API Response: Failed to update experience,', 'status:', response.status)
+      return {
+        data: data as SkillSchemaType,
+        errors: { fieldErrors: [], formErrors: [] } as SkillSchemaErrorType,
+        message: {success: false, message: `Failed to update skill.`}
+      }
+    }
 
-//     revalidatePath('/experience')
-//     return {
-//       data: data as ExperienceSchemaType,
-//       errors: { fieldErrors: [], formErrors: [] } as ExperienceSchemaErrorType,
-//       message: {success: true, message: 'Experience updated successfully.'}
-//     }
-//   } catch (err) {
-//     console.error('Error creating experience:', err)
-//     return {
-//       data: data as ExperienceSchemaType,
-//       errors: { fieldErrors: [], formErrors: [] } as ExperienceSchemaErrorType,
-//       message: {success: false, message: err instanceof Error ? err.message : 'An unexpected error occurred'}
-//     }
-//   }
-// }
+    revalidatePath('/skills')
+    return {
+      data: data as SkillSchemaType,
+      errors: { fieldErrors: [], formErrors: [] } as SkillSchemaErrorType,
+      message: {success: true, message: 'Skill updated successfully.'}
+    }
+  } catch (err) {
+    console.error('Error creating skill:', err)
+    return {
+      data: data as SkillSchemaType,
+      errors: { fieldErrors: [], formErrors: [] } as SkillSchemaErrorType,
+      message: {success: false, message: err instanceof Error ? err.message : 'An unexpected error occurred'}
+    }
+  }
+}

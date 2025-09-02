@@ -1,8 +1,5 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
 import { Edit, Code, Palette, Users, Zap, Info } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip"
@@ -102,6 +99,7 @@ export function SkillsSection({ skills }: { skills: SkillSchemaType[] }) {
 
 
 export function TechnicalSkills({ title, skills, colorScheme }: SkillsProps) {
+  if (!skills || skills.length === 0) return null
   return (
     <div className="space-y-2">
       <div className="flex items-center gap-3">
@@ -123,9 +121,9 @@ export function TechnicalSkills({ title, skills, colorScheme }: SkillsProps) {
                         <Info size={15} />
                       </button>
                     </TooltipTrigger>
-                    <TooltipContent className={`max-w-64 mb-1 ${colorScheme.badge}`}>
-                      <div className="font-medium mb-1">{skill.name}</div>
-                      <div className="text-sm text-white">{skill.description}</div>
+                    <TooltipContent className={`max-w-64`}>
+                      {/* <div className="font-medium mb-1">{skill.name}</div> */}
+                      <div className={`text-sm text-white`}>{skill.description}</div>
                     </TooltipContent>
                   </Tooltip>
                 </div>
@@ -145,6 +143,7 @@ export function TechnicalSkills({ title, skills, colorScheme }: SkillsProps) {
 }
 
 export function CoreCompetencies({ title, skills: competencies, colorScheme }: SkillsProps) {
+  if (!competencies || competencies.length === 0) return null
   return (
     <div className="space-y-2">
       <div className="flex items-center gap-3">
@@ -166,6 +165,7 @@ export function CoreCompetencies({ title, skills: competencies, colorScheme }: S
 }
 
 export function SoftSkills({ title, skills, colorScheme }: SkillsProps) {
+  if (!skills || skills.length === 0) return null
   return (
     <div className="col-span-1 lg:col-span-2">
       <div className="flex items-center gap-3 mb-2">

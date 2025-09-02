@@ -13,7 +13,7 @@ import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/ca
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Skills Page',
+  title: 'Skills | Personal Data App',
   description: 'App and API for personal data management',
 }
 
@@ -31,7 +31,7 @@ export default async function Skills() {
     <section>
       <PageHeader title="Skills" >
         <Button asChild size='sm'>
-          <Link href="/experience/add">
+          <Link href="/skills/add">
             <Plus className="w-4 h-4" />
           </Link>
         </Button>

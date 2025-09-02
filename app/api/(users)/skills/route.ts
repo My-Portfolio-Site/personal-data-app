@@ -3,7 +3,6 @@ import { NextResponse } from "next/server";
 
 import { db } from "@/lib/db";
 import { getCurrentUserId } from "@/lib/dal";
-import { experienceSchema, ExperienceSchemaType } from "@/schemas/experience";
 import { skillSchema, SkillSchemaType } from "@/schemas/skill";
 
 // Get all skills
@@ -47,18 +46,18 @@ export async function POST(req: Request) {
     console.log("API request received:", body);
 
     // Validate the request body
-    const { name, level, category, description } = skillSchema.parse(body);
+    const { name, level, category, categoryTitle, description } = skillSchema.parse(body);
 
     // Generate a unique ID for the skill
     const skillId = uuidv4();
-    console.log("Creating skill with ID:", skillId, currentUserId, name, level, category, description);
+    console.log("Creating skill with ID:", skillId, currentUserId, name, level, category, categoryTitle, description);
 
     // Insert the new skill into the database
     const query = `
-      INSERT INTO "skills" ("id", "userId", "name", "level", "category", "description")
-      VALUES (?, ?, ?, ?, ?, ?);
+      INSERT INTO "skills" ("id", "userId", "name", "level", "category", "categoryTitle", "description")
+      VALUES (?, ?, ?, ?, ?, ?, ?);
     `;
-    await db.prepare(query).bind(skillId, currentUserId, name, level, category, description).run();
+    await db.prepare(query).bind(skillId, currentUserId, name, level, category, categoryTitle, description).run();
     return NextResponse.json({ message: "Skill created successfully" }, { status: 201 });
   } catch (error: any) {
     console.error("Error creating skill:", error);
@@ -66,96 +65,92 @@ export async function POST(req: Request) {
   }
 }
 
-// // Update existing skill
-// export async function PUT(req: Request) {
-//   try {
-//     const currentUserId = await getCurrentUserId();
-//     const { id, userId, company, location, position, achievements, technologies, description, startDate, endDate } = experienceSchema.parse(await req.json());
+// Update existing skill
+export async function PUT(req: Request) {
+  try {
+    const currentUserId = await getCurrentUserId();
+    const { id, userId, name, level, category, categoryTitle, description } = skillSchema.parse(await req.json());
 
-//     if (!currentUserId) {
-//       console.log("Not authenticated.");
-//       return NextResponse.json(
-//         { error: "Not authenticated." },
-//         { status: 400 }
-//       );
-//     }
+    if (!currentUserId) {
+      console.log("Not authenticated.");
+      return NextResponse.json(
+        { error: "Not authenticated." },
+        { status: 400 }
+      );
+    }
 
-//     if (currentUserId !== userId) {
-//       console.log("Not authorized. User ID mismatch.");
-//       return NextResponse.json(
-//         { error: "Not authorized. User ID mismatch." },
-//         { status: 403 }
-//       );
-//     }
+    if (currentUserId !== userId) {
+      console.log("Not authorized. User ID mismatch.");
+      return NextResponse.json(
+        { error: "Not authorized. User ID mismatch." },
+        { status: 403 }
+      );
+    }
 
-//     const queryFind = `SELECT * FROM "experiences" WHERE "id" = ? AND "userId" = ?;`;
-//     const resultFind = await db.prepare(queryFind).bind(id, currentUserId).first();
-//     if (!resultFind) {
-//       return NextResponse.json({ error: "Experience not found" }, { status: 404 });
-//     }
+    const queryFind = `SELECT * FROM "skills" WHERE "id" = ? AND "userId" = ?;`;
+    const resultFind = await db.prepare(queryFind).bind(id, currentUserId).first();
+    if (!resultFind) {
+      return NextResponse.json({ error: "Skill not found" }, { status: 404 });
+    }
 
-//     const query = `
-//       UPDATE "experiences"
-//       SET
-//         "company" = COALESCE(?, "company"),
-//         "location" = COALESCE(?, "location"),
-//         "position" = COALESCE(?, "position"),
-//         "achievements" = COALESCE(?, "achievements"),
-//         "technologies" = COALESCE(?, "technologies"),
-//         "description" = COALESCE(?, "description"),
-//         "startDate" = COALESCE(?, "startDate"),
-//         "endDate" = COALESCE(?, "endDate")
-//       WHERE "id" = ? AND "userId" = ?;
-//     `;
-//     const res = await db.prepare(query).bind(
-//       company,
-//       location,
-//       position,
-//       achievements || null,
-//       technologies || null,
-//       description,
-//       startDate,
-//       endDate || null,
-//       id,
-//       userId).run();
-//     console.log("API: Experience updated successfully", res);
+    const query = `
+      UPDATE "skills"
+      SET
+        "name" = COALESCE(?, "name"),
+        "level" = COALESCE(?, "level"),
+        "categoryTitle" = COALESCE(?, "categoryTitle"),
+        "category" = COALESCE(?, "category"),
+        "description" = COALESCE(?, "description"),
+      WHERE "id" = ? AND "userId" = ?;
+    `;
+    const res = await db.prepare(query).bind(
+      name,
+      level,
+      categoryTitle,
+      category,
+      description,
+      id,
+      userId).run();
+    console.log("API: SSkill updated successfully", res);
 
-//     return NextResponse.json({ message: "Experience updated successfully" }, { status: 200 });
-//   } catch (error: any) {
-//     console.error("Error updating experience:", error.message);
-//     return NextResponse.json({ error: "Failed to update experience" }, { status: 500 });
-//   }
-// }
+    return NextResponse.json({ message: "Skill updated successfully" }, { status: 200 });
+  } catch (error: any) {
+    console.error("Error updating skill:", error.message);
+    return NextResponse.json({ error: "Failed to update skill" }, { status: 500 });
+  }
+}
 
-// // Delete an experience by ID
-// export async function DELETE(req: Request) {
-//   try {
-//     const currentUserId = await getCurrentUserId();
 
-//     if (!currentUserId) {
-//       console.log("Not authenticated.");
-//       return NextResponse.json(
-//         { error: "Not authenticated." },
-//         { status: 400 }
-//       );
-//     }
-//     const url = new URL(req.url);
-//     const experienceId = url.searchParams.get("experienceId");
 
-//     if (!experienceId) {
-//       return NextResponse.json({ error: "Experience ID is required" }, { status: 400 });
-//     }
-//     const queryFind = `SELECT * FROM "experiences" WHERE "id" = ? AND "userId" = ?;`;
-//     const resultFind = await db.prepare(queryFind).bind(experienceId, currentUserId).first();
-//     if (!resultFind) {
-//       return NextResponse.json({ error: "Experience not found" }, { status: 404 });
-//     }
+// Delete an skill by ID
+export async function DELETE(req: Request) {
+  try {
+    const currentUserId = await getCurrentUserId();
 
-//     const query = `DELETE FROM "experiences" WHERE "id" = ? AND "userId" = ?;`;
-//     await db.prepare(query).bind(experienceId, currentUserId).run();
-//     return NextResponse.json({ message: "Experience deleted successfully" }, { status: 200 });
-//   } catch (error: any) {
-//     console.error("Error deleting experience:", error.message);
-//     return NextResponse.json({ error: "Failed to delete experience" }, { status: 500 });
-//   }
-// }
+    if (!currentUserId) {
+      console.log("Not authenticated.");
+      return NextResponse.json(
+        { error: "Not authenticated." },
+        { status: 400 }
+      );
+    }
+    const url = new URL(req.url);
+    const skillId = url.searchParams.get("skillId");
+
+    if (!skillId) {
+      return NextResponse.json({ error: "Skill ID is required" }, { status: 400 });
+    }
+    const queryFind = `SELECT * FROM "skills" WHERE "id" = ? AND "userId" = ?;`;
+    const resultFind = await db.prepare(queryFind).bind(skillId, currentUserId).first();
+    if (!resultFind) {
+      return NextResponse.json({ error: "Skill not found" }, { status: 404 });
+    }
+
+    const query = `DELETE FROM "skills" WHERE "id" = ? AND "userId" = ?;`;
+    await db.prepare(query).bind(skillId, currentUserId).run();
+    return NextResponse.json({ message: "Skill deleted successfully" }, { status: 200 });
+  } catch (error: any) {
+    console.error("Error deleting skill:", error.message);
+    return NextResponse.json({ error: "Failed to delete skill" }, { status: 500 });
+  }
+}
