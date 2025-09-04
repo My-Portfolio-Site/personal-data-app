@@ -17,6 +17,21 @@ export async function GET(req: Request) {
       );
     }
 
+    const url = new URL(req.url);
+    const skillId = url.searchParams.get("skillId");
+    if (skillId) {
+      // Fetch a single
+      console.log(`Fetching skills for currentUserId: ${currentUserId} and skillId: ${skillId}`);
+
+      const query = `SELECT * FROM "skills" WHERE "id" = ? AND "userId" = ?;`;
+      const result = await db.prepare(query).bind(skillId, currentUserId).first();
+      if (!result) {
+        return NextResponse.json({ error: "Skill not found" }, { status: 404 });
+      }
+
+      return NextResponse.json(result, { status: 200 });
+    }
+
     // Fetch skills for the given currentUserId
     console.log(`Fetching skills for userId: ${currentUserId}`);
     const query = `SELECT * FROM "skills" WHERE "userId" = ?;`;
@@ -46,18 +61,18 @@ export async function POST(req: Request) {
     console.log("API request received:", body);
 
     // Validate the request body
-    const { name, level, category, categoryTitle, description } = skillSchema.parse(body);
+    const { name, level, category, description } = skillSchema.parse(body);
 
     // Generate a unique ID for the skill
     const skillId = uuidv4();
-    console.log("Creating skill with ID:", skillId, currentUserId, name, level, category, categoryTitle, description);
+    console.log("Creating skill with ID:", skillId, currentUserId, name, level, category, description);
 
     // Insert the new skill into the database
     const query = `
-      INSERT INTO "skills" ("id", "userId", "name", "level", "category", "categoryTitle", "description")
-      VALUES (?, ?, ?, ?, ?, ?, ?);
+      INSERT INTO "skills" ("id", "userId", "name", "level", "category", "description")
+      VALUES (?, ?, ?, ?, ?, ?);
     `;
-    await db.prepare(query).bind(skillId, currentUserId, name, level, category, categoryTitle, description).run();
+    await db.prepare(query).bind(skillId, currentUserId, name, level, category, description).run();
     return NextResponse.json({ message: "Skill created successfully" }, { status: 201 });
   } catch (error: any) {
     console.error("Error creating skill:", error);
@@ -69,7 +84,7 @@ export async function POST(req: Request) {
 export async function PUT(req: Request) {
   try {
     const currentUserId = await getCurrentUserId();
-    const { id, userId, name, level, category, categoryTitle, description } = skillSchema.parse(await req.json());
+    const { id, userId, name, level, category, description } = skillSchema.parse(await req.json());
 
     if (!currentUserId) {
       console.log("Not authenticated.");
@@ -86,6 +101,8 @@ export async function PUT(req: Request) {
         { status: 403 }
       );
     }
+    console.log("API: Updating skill with ID:", id, currentUserId, name, level, category, description);
+    
 
     const queryFind = `SELECT * FROM "skills" WHERE "id" = ? AND "userId" = ?;`;
     const resultFind = await db.prepare(queryFind).bind(id, currentUserId).first();
@@ -98,20 +115,18 @@ export async function PUT(req: Request) {
       SET
         "name" = COALESCE(?, "name"),
         "level" = COALESCE(?, "level"),
-        "categoryTitle" = COALESCE(?, "categoryTitle"),
         "category" = COALESCE(?, "category"),
-        "description" = COALESCE(?, "description"),
+        "description" = COALESCE(?, "description")
       WHERE "id" = ? AND "userId" = ?;
     `;
     const res = await db.prepare(query).bind(
       name,
       level,
-      categoryTitle,
       category,
       description,
       id,
       userId).run();
-    console.log("API: SSkill updated successfully", res);
+    console.log("API: Skill updated successfully", res);
 
     return NextResponse.json({ message: "Skill updated successfully" }, { status: 200 });
   } catch (error: any) {
@@ -120,9 +135,7 @@ export async function PUT(req: Request) {
   }
 }
 
-
-
-// Delete an skill by ID
+// Delete a skill by ID
 export async function DELETE(req: Request) {
   try {
     const currentUserId = await getCurrentUserId();

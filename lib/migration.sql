@@ -162,7 +162,6 @@ CREATE TABLE IF NOT EXISTS "skills" (
     "userId" text NOT NULL,
     "name" text NOT NULL,
     "level" text,
-    "categoryTitle" text NOT NULL,
     "category" text NOT NULL,
     "description" text,
     PRIMARY KEY (id),

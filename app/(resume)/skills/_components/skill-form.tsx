@@ -115,15 +115,14 @@ export function SkillForm({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <CategorySelect
                 initialDataCategory={state.data?.category}
-                initialDataCategoryTitle={state.data?.categoryTitle}
-                errors={state.errors?.fieldErrors.categoryTitle}
+                errors={state.errors?.fieldErrors.category}
                 wasSubmitted={wasSubmitted}
-                fieldSchema={skillSchema.shape.categoryTitle}
+                fieldSchema={skillSchema.shape.category}
               />
               <ValidatedInput
                 type='text'
                 name="level"
-                label="Skill Level (0% to 100%)"
+                label="Skill Level (0 - 100)"
                 isRequired={!(skillSchema.shape.level instanceof ZodOptional)}
                 fieldSchema={skillSchema.shape.level}
                 wasSubmitted={wasSubmitted}
@@ -168,33 +167,29 @@ export function SkillForm({
 }
 
 
-
 const CategorySelect = ({
   initialDataCategory,
-  initialDataCategoryTitle,
   errors,
   wasSubmitted,
   fieldSchema
 }: {
   initialDataCategory: string | undefined
-  initialDataCategoryTitle: string | undefined
   errors?: string[]
   wasSubmitted?: boolean
   fieldSchema: ZodType
 }) => {
   const [category, setCategory] = useState<string>(initialDataCategory || '')
-  const [categoryTitle, setCategoryTitle] = useState<string>(initialDataCategoryTitle || '')
 
   const [touched, setTouched] = useState(false)
 
   const getErrors = useCallback(() => {
     // Don't validate on first render (when untouched and not submitted)
     if (!touched && !wasSubmitted) return [];
-    const validationResult = fieldSchema.safeParse(categoryTitle)
+    const validationResult = fieldSchema.safeParse(category)
     return validationResult.success
       ? []
       : z.flattenError(validationResult.error).formErrors
-  }, [fieldSchema, categoryTitle, touched, wasSubmitted])
+  }, [fieldSchema, category, touched, wasSubmitted])
 
   const fieldErrors = errors || getErrors()
   const shouldRenderErrors = errors || wasSubmitted || touched
@@ -203,14 +198,12 @@ const CategorySelect = ({
 
   return (
     <div className='flex flex-col gap-2'>
-      <input type="hidden" name="categoryTitle" value={categoryTitle || ''} />
       <input type="hidden" name="category" value={category || ''} />
       <Label htmlFor="category">Category <span className="text-red-500">*</span></Label>
       <Select
         onValueChange={(val) => {
           const option = categoryOptions.find((c) => c.value === val)
           if (option) {
-            setCategoryTitle(option.title)
             setCategory(option.value)
           }
         }}

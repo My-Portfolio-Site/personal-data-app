@@ -1,14 +1,12 @@
-import React from 'react'
+
 import { Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
 import type { SkillSchemaType, SkillSchemaErrorType } from '@/schemas/skill'
 import { skillSchema } from '@/schemas/skill'
 import { SkillsSection } from './_components/skills-section'
 import { fetchSkills } from './actions'
 import { PageContent, PageHeader } from '@/components/page-formatter'
 import Link from 'next/link'
-import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 import { Metadata } from 'next'
 
@@ -40,7 +38,7 @@ export default async function Skills() {
 
 
         {/* Empty State */}
-        {skills.length === 0 ? (
+        {/* {skills.length === 0 && (
           <Card className='border-dashed text-center'>
             <CardHeader>
               <CardTitle>No Skill Added</CardTitle>
@@ -49,9 +47,8 @@ export default async function Skills() {
               </CardDescription>
             </CardHeader>
           </Card>
-        ) :
-          <SkillsSection skills={skills} />
-        }
+        )} */}
+        <SkillsSection skills={skills} />
       </PageContent>
     </section>
   )

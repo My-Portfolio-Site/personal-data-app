@@ -25,6 +25,7 @@ export function PageHeader({ title, children }: { title: string, children?: Reac
                 </g>
               </svg>
             </div>
+            
             <h1 className="text-lg font-medium">{title}</h1>
             <div className="ml-auto flex items-center gap-2">
               {children}

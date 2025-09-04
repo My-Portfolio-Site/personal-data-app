@@ -24,22 +24,22 @@ export async function fetchSkills() {
   }
 }
 
-// export async function fetchSkillById(id: string) {
-//   try {
-//     const response = await fetchApi(`/experience?experienceId=${id}`, 'GET')
+// Fetch a skill by ID
+export async function fetchSkillById(id: string) {
+  try {
+    const response = await fetchApi(`/skills?skillId=${id}`, 'GET')
 
-//     if (!response.ok) {
-//       console.log('Failed to fetch experience,', 'status:', response.status)
-//       throw new Error('Failed to fetch experience')
-//     }
+    if (!response.ok) {
+      console.log('Failed to fetch skill,', 'status:', response.status)
+      throw new Error('Failed to fetch skill')
+    }
 
-//     const responseData = await response.json() as ExperienceSchemaType
-//     return { success: true, data: responseData } as ActionResponse<ExperienceSchemaType>;
-//   } catch (err) {
-//     return { message: (err as Error).message, success: false } as ActionResponse;
-//   }
-// }
-
+    const responseData = await response.json() as SkillSchemaType
+    return { success: true, data: responseData } as ActionResponse<SkillSchemaType>;
+  } catch (err) {
+    return { message: (err as Error).message, success: false } as ActionResponse;
+  }
+}
 
 
 // Delete a skill
@@ -119,12 +119,12 @@ export async function updateSkill(_prev: SkillActionState, formData: FormData): 
   }
 
   try {
-    const response = await fetchApi<SkillSchemaType>('/skill', 'PUT', validationResult.data)
+    const response = await fetchApi<SkillSchemaType>('/skills', 'PUT', validationResult.data)
 
     if (!response.ok) {
-      console.log('Action: Failed to update experience with data:', data);
-      
-      console.log('API Response: Failed to update experience,', 'status:', response.status)
+      console.log('Action: Failed to update skill with data:', data);
+
+      console.log('API Response: Failed to update skill,', 'status:', response.body)
       return {
         data: data as SkillSchemaType,
         errors: { fieldErrors: [], formErrors: [] } as SkillSchemaErrorType,
