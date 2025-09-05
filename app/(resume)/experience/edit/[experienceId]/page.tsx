@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 export const metadata: Metadata = {
-  title: 'Experiences | Personal Data App',
+  title: 'Edit Experiences | Personal Data App',
   description: 'App and API for personal data management',
 }
 
@@ -19,8 +19,7 @@ export default async function EditExperiencePage({ params }: { params: Promise<{
 
   const response = await fetchExperienceById(experienceId)
   if (!response.success) {
-    // toast.error(response.message || 'Failed to fetch profile data')
-    throw new Error(response.message || 'Failed to fetch profile data')
+    throw new Error(response.message || 'Failed to fetch experience data')
   }
 
   const experience = response.data as ExperienceSchemaType

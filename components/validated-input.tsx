@@ -49,7 +49,7 @@ const ValidatedInput = ({
   const handleChange = (e: any) => setValue(e.currentTarget.value)
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-1.5">
       {/* Label and Input */}
       <Label htmlFor={name}>{label} {isRequired && <span className="text-red-500">*</span>}</Label>
       <Input
@@ -97,7 +97,7 @@ const ValidatedTextarea = ({
   const handleChange = (e: any) => setValue(e.currentTarget.value)
 
   return (
-    <>
+    <div className="space-y-1.5">
       <Label htmlFor={name}>{label} {isRequired && <span className="text-red-500">*</span>}</Label>
       <Textarea
         id={name}
@@ -115,7 +115,7 @@ const ValidatedTextarea = ({
       {shouldRenderErrors && (
         <span className="text-sm text-destructive">{fieldErrors}</span>
       )}
-    </>
+    </div>
   )
 }
 

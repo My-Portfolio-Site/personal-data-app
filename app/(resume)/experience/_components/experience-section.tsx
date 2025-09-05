@@ -13,13 +13,11 @@ import DeleteExperienceButton from '@/app/(resume)/experience/_components/delete
 import EditExperienceButton from '@/app/(resume)/experience/_components/edit-experience-button'
 
 
-interface ExperienceSectionProps {
-  experience: ExperienceSchemaType
-}
-
 export default function ExperienceSection({
   experience
-}: ExperienceSectionProps) {
+}: {
+  experience: ExperienceSchemaType
+}) {
   const achievements = JSON.parse(experience.achievements || "[]") as string[];
   const technologies = JSON.parse(experience.technologies || "[]") as string[];
 

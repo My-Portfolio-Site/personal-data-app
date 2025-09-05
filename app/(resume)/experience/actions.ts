@@ -89,7 +89,7 @@ export async function addExperience(_prev: ExperienceActionState, formData: Form
       message: {success: true, message: 'Experience created successfully'}
     }
   } catch (err) {
-    console.error('Error updating experience:', err)
+    console.error('Error creating experience:', err)
     return {
       data: data as ExperienceSchemaType,
       errors: { fieldErrors: [], formErrors: [] } as ExperienceSchemaErrorType,

@@ -52,29 +52,6 @@ export function ExperienceForm({
 
   const [isCurrentRole, setIsCurrentRole] = useState(state.data?.endDate === null)
 
-  // =============== Achievements
-  const [achievements, setAchievements] = useState<string[]>(initialData.achievements ? JSON.parse(initialData.achievements) : [])
-  const [newAchievement, setNewAchievement] = useState("")
-
-
-
-
-  const addAchievement = (achievement: string) => {
-    if (!achievement.trim()) return
-    if (achievements.includes(achievement.trim())) return
-    setAchievements((prev) => [...prev, achievement])
-    setNewAchievement("")
-  }
-
-  const removeAchievement = (index: number) => {
-    setAchievements(achievements.filter((_, i) => i !== index))
-  }
-  const updateAhievement = (index: number, value: string) => {
-    const updatedAchievements = [...achievements]
-    updatedAchievements[index] = value
-    setAchievements(updatedAchievements)
-  }
-
 
   if (state.message && !state.message?.success) {
     toast.error(state.message?.message)
@@ -107,7 +84,6 @@ export function ExperienceForm({
           <input type="hidden" name="userId" value={state.data?.userId || ''} />
           {/* Basic Information */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Basic Information</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <ValidatedInput
                 type='text'
@@ -192,7 +168,7 @@ export function ExperienceForm({
           {/* Description */}
           <div className="space-y-2">
             <div>
-              <h3 className="text-lg font-semibold">Job Description</h3>
+              <h3 className="text-md font-semibold">Job Description</h3>
               <p className="text-sm text-muted-foreground">Provide a brief overview of your role and responsibilities.</p>
             </div>
             <ValidatedTextarea
@@ -214,7 +190,7 @@ export function ExperienceForm({
           {/* Achievements */}
           <div className="space-y-2">
             <div>
-              <h3 className="text-lg font-semibold">Key Achievements</h3>
+              <h3 className="text-md font-semibold">Key Achievements</h3>
               <p className="text-sm text-muted-foreground">List your major accomplishments and impact in this role.</p>
             </div>
             <AchievementsInput achievementsString={state.data?.achievements} />

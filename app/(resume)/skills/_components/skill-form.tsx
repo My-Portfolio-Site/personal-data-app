@@ -21,9 +21,7 @@ import { redirect } from 'next/navigation'
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
@@ -197,7 +195,7 @@ const CategorySelect = ({
   const handleBlur = () => setTouched(true)
 
   return (
-    <div className='flex flex-col gap-2'>
+    <div className='flex flex-col gap-1.5'>
       <input type="hidden" name="category" value={category || ''} />
       <Label htmlFor="category">Category <span className="text-red-500">*</span></Label>
       <Select
@@ -210,7 +208,7 @@ const CategorySelect = ({
         defaultValue={category}
       >
         <SelectTrigger
-          className={'w-full ' +
+          className={'max-w-[400px] w-full ' +
             (fieldErrors.length > 0
               ? 'outline-red-500'
               : 'outline-red-500'

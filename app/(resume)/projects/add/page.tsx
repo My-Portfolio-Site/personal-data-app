@@ -1,33 +1,33 @@
 import { Metadata } from 'next'
 export const metadata: Metadata = {
-  title: 'Add Experiences | Personal Data App',
+  title: 'Add Project | Personal Data App',
   description: 'App and API for personal data management',
 }
 
 import Link from "next/link"
-import { ExperienceForm } from "@/app/(resume)/experience/_components/experience-form"
+import { ProjectForm } from "@/app/(resume)/projects/_components/project-form"
 
 import { Button } from "@/components/ui/button"
-import { ExperienceSchemaType } from "@/schemas/experience"
+import { ProjectSchemaType } from "@/schemas/project"
 import { ArrowLeft } from "lucide-react"
 
 import { PageHeader, PageContent } from "@/components/page-formatter";
 
-export default function AddExperiencePage() {
-  const experience = {} as ExperienceSchemaType
+export default function AddProjectPage() {
+  const project = {} as ProjectSchemaType
   return (
     <section>
-      <PageHeader title="Update Experience" />
+      <PageHeader title="Add Project" />
       <PageContent>
         <Button variant="ghost" size="sm" asChild className="mb-3 mt-0 h-fit">
-          <Link href="/experience">
+          <Link href="/projects">
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Experience
+            Back to Projects
           </Link>
         </Button>
 
         {/* Form */}
-        <ExperienceForm initialData={experience} mode="add" />
+        <ProjectForm initialData={project} mode="add" />
 
       </PageContent>
     </section>

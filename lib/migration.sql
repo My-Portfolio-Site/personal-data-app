@@ -171,3 +171,29 @@ CREATE TABLE IF NOT EXISTS "skills" (
 CREATE INDEX idx_skills_userId ON "skills" (userId);
 CREATE INDEX idx_skills_id ON "skills" (id);
 CREATE INDEX idx_skills_userId_id ON "skills" (userId, id);
+
+
+
+DROP TABLE IF EXISTS "projects";
+
+CREATE TABLE IF NOT EXISTS "projects" (
+    "id" text NOT NULL,
+    "userId" text NOT NULL,
+    "title" text NOT NULL,
+    "description" text NOT NULL,
+    "features" text,
+    "technologies" text,
+    "company" text,
+    "year" text NOT NULL,
+    "duration" text,
+    "liveUrl" text,
+    "githubUrl" text,
+    "status" text NOT NULL,
+    "role" text NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (userId) REFERENCES "users" (id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_projects_userId ON "projects" (userId);
+CREATE INDEX idx_projects_id ON "projects" (id);
+CREATE INDEX idx_projects_userId_id ON "projects" (userId, id);
