@@ -6,6 +6,7 @@ declare namespace Cloudflare {
 		// NEXT_INC_CACHE_KV: KVNamespace;
 		NEXTJS_ENV: string;
 		AUTH_SECRET: string;
+        BASE_API_URL: string;
 		AUTH_GOOGLE_ID: string;
 		AUTH_GOOGLE_SECRET: string;
 		DB: D1Database;

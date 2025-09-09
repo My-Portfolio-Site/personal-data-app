@@ -3,7 +3,7 @@ import type { NextAuthConfig } from "next-auth"
 import Google from "next-auth/providers/google"
 import GitHub from "next-auth/providers/github"
 import { D1Adapter } from "@auth/d1-adapter"
-import { db } from "@/lib/db"
+import { db } from "@/server/db/dbBinding"
 
 const authConfig = {
   session: {

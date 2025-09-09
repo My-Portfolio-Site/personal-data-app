@@ -9,24 +9,24 @@ import { User } from "lucide-react"
 import { toast } from "sonner"
 import { ValidatedInput, ValidatedTextarea } from "@/components/validated-input"
 
-import { profileSchema } from "@/schemas/profile"
-import type { ProfileSchemaErrorType, ProfileSchemaType } from "@/schemas/profile"
+import { aboutmeSchema } from "@/schemas/aboutme"
+import type { AboutmeSchemaErrorType, AboutmeSchemaType } from "@/schemas/aboutme"
 
-import { createProfile, updateProfile } from "@/app/(resume)/aboutme/actions"
+import { createAboutme, updateAboutme } from "@/app/(resume)/aboutme/actions"
 import { ZodOptional } from "zod/v4"
 
 interface AboutmeFormProps {
-  initialData: ProfileSchemaType
+  initialData: AboutmeSchemaType
   mode: "add" | "edit"
 }
 
 export function AboutmeForm({ initialData, mode }: AboutmeFormProps) {
   const [wasSubmitted, setWasSubmitted] = useState(false)
-  const [state, formAction, isPending] = useActionState(mode === 'add' ? createProfile : updateProfile, {
+  const [state, formAction, isPending] = useActionState(mode === 'add' ? createAboutme : updateAboutme, {
     data: {
       ...initialData
     },
-    errors: { fieldErrors: [], formErrors: [] } as ProfileSchemaErrorType,
+    errors: { fieldErrors: [], formErrors: [] } as AboutmeSchemaErrorType,
     message: null
   })
 
@@ -36,7 +36,7 @@ export function AboutmeForm({ initialData, mode }: AboutmeFormProps) {
     const formData = new FormData(event.currentTarget)
     const data = Object.fromEntries(formData)
 
-    const validationResult = profileSchema.safeParse(data)
+    const validationResult = aboutmeSchema.safeParse(data)
     if (!validationResult.success) {
       event.preventDefault()
     }
@@ -58,7 +58,7 @@ export function AboutmeForm({ initialData, mode }: AboutmeFormProps) {
         <div className="flex items-center gap-2">
           <User className="w-5 h-5" />
           <div>
-            <CardTitle>{mode === 'add' ? 'Create' : 'Update'} Your Profile</CardTitle>
+            <CardTitle>{mode === 'add' ? 'Create' : 'Update'} Your Aboutme</CardTitle>
             <CardDescription>
               {mode === 'add'
                 ? "Let's start by adding your basic information and professional summary"
@@ -80,8 +80,8 @@ export function AboutmeForm({ initialData, mode }: AboutmeFormProps) {
                 type="text"
                 name="firstName"
                 label="First Name"
-                isRequired={!(profileSchema.shape.firstName instanceof ZodOptional)}
-                fieldSchema={profileSchema.shape.firstName}
+                isRequired={!(aboutmeSchema.shape.firstName instanceof ZodOptional)}
+                fieldSchema={aboutmeSchema.shape.firstName}
                 wasSubmitted={wasSubmitted}
                 defaultValue={state.data?.firstName}
                 errors={state.errors?.fieldErrors.firstName}
@@ -91,8 +91,8 @@ export function AboutmeForm({ initialData, mode }: AboutmeFormProps) {
                 type="text"
                 name="lastName"
                 label="Last Name"
-                isRequired={!(profileSchema.shape.lastName instanceof ZodOptional)}
-                fieldSchema={profileSchema.shape.lastName}
+                isRequired={!(aboutmeSchema.shape.lastName instanceof ZodOptional)}
+                fieldSchema={aboutmeSchema.shape.lastName}
                 wasSubmitted={wasSubmitted}
                 defaultValue={state.data?.lastName}
                 errors={state.errors?.fieldErrors.lastName}
@@ -104,8 +104,8 @@ export function AboutmeForm({ initialData, mode }: AboutmeFormProps) {
               name="title"
               type="text"
               label="Professional Title"
-              isRequired={!(profileSchema.shape.title instanceof ZodOptional)}
-              fieldSchema={profileSchema.shape.title}
+              isRequired={!(aboutmeSchema.shape.title instanceof ZodOptional)}
+              fieldSchema={aboutmeSchema.shape.title}
               wasSubmitted={wasSubmitted}
               defaultValue={state.data?.title}
               errors={state.errors?.fieldErrors.title}
@@ -118,8 +118,8 @@ export function AboutmeForm({ initialData, mode }: AboutmeFormProps) {
                 type="email"
                 name="email"
                 label="Email"
-                isRequired={!(profileSchema.shape.email instanceof ZodOptional)}
-                fieldSchema={profileSchema.shape.email}
+                isRequired={!(aboutmeSchema.shape.email instanceof ZodOptional)}
+                fieldSchema={aboutmeSchema.shape.email}
                 wasSubmitted={wasSubmitted}
                 defaultValue={state.data?.email}
                 errors={state.errors?.fieldErrors.email}
@@ -129,8 +129,8 @@ export function AboutmeForm({ initialData, mode }: AboutmeFormProps) {
                 type="tel"
                 name="phone"
                 label="Phone"
-                isRequired={!(profileSchema.shape.phone instanceof ZodOptional)}
-                fieldSchema={profileSchema.shape.phone}
+                isRequired={!(aboutmeSchema.shape.phone instanceof ZodOptional)}
+                fieldSchema={aboutmeSchema.shape.phone}
                 wasSubmitted={wasSubmitted}
                 defaultValue={state.data?.phone}
                 errors={state.errors?.fieldErrors.phone}
@@ -142,8 +142,8 @@ export function AboutmeForm({ initialData, mode }: AboutmeFormProps) {
               name="location"
               type="text"
               label="Location"
-              isRequired={!(profileSchema.shape.location instanceof ZodOptional)}
-              fieldSchema={profileSchema.shape.location}
+              isRequired={!(aboutmeSchema.shape.location instanceof ZodOptional)}
+              fieldSchema={aboutmeSchema.shape.location}
               wasSubmitted={wasSubmitted}
               defaultValue={state.data?.location}
               errors={state.errors?.fieldErrors.location}
@@ -166,8 +166,8 @@ export function AboutmeForm({ initialData, mode }: AboutmeFormProps) {
               name="summary"
               label="About Me"
               type='text'
-              isRequired={!(profileSchema.shape.summary instanceof ZodOptional)}
-              fieldSchema={profileSchema.shape.summary}
+              isRequired={!(aboutmeSchema.shape.summary instanceof ZodOptional)}
+              fieldSchema={aboutmeSchema.shape.summary}
               wasSubmitted={wasSubmitted}
               defaultValue={state.data?.summary}
               errors={state.errors?.fieldErrors.summary}
@@ -190,8 +190,8 @@ export function AboutmeForm({ initialData, mode }: AboutmeFormProps) {
                 name="website"
                 type="url"
                 label="Website"
-                isRequired={!(profileSchema.shape.website instanceof ZodOptional)}
-                fieldSchema={profileSchema.shape.website}
+                isRequired={!(aboutmeSchema.shape.website instanceof ZodOptional)}
+                fieldSchema={aboutmeSchema.shape.website}
                 wasSubmitted={wasSubmitted}
                 defaultValue={state.data?.website}
                 errors={state.errors?.fieldErrors.website}
@@ -200,9 +200,9 @@ export function AboutmeForm({ initialData, mode }: AboutmeFormProps) {
               <ValidatedInput
                 name="linkedin"
                 type="url"
-                label="LinkedIn Profile"
-                isRequired={!(profileSchema.shape.linkedin instanceof ZodOptional)}
-                fieldSchema={profileSchema.shape.linkedin}
+                label="LinkedIn Aboutme"
+                isRequired={!(aboutmeSchema.shape.linkedin instanceof ZodOptional)}
+                fieldSchema={aboutmeSchema.shape.linkedin}
                 wasSubmitted={wasSubmitted}
                 defaultValue={state.data?.linkedin}
                 errors={state.errors?.fieldErrors.linkedin}
@@ -211,9 +211,9 @@ export function AboutmeForm({ initialData, mode }: AboutmeFormProps) {
               <ValidatedInput
                 name="github"
                 type="url"
-                label="GitHub Profile"
-                isRequired={!(profileSchema.shape.github instanceof ZodOptional)}
-                fieldSchema={profileSchema.shape.github}
+                label="GitHub Aboutme"
+                isRequired={!(aboutmeSchema.shape.github instanceof ZodOptional)}
+                fieldSchema={aboutmeSchema.shape.github}
                 wasSubmitted={wasSubmitted}
                 defaultValue={state.data?.github}
                 errors={state.errors?.fieldErrors.github}

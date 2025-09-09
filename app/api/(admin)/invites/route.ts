@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 import { NextResponse } from "next/server";
 
-import { db } from "@/lib/db";
+import { db } from "@/server/db/dbBinding";
 import { createInviteSchema, acceptInviteSchema, updateInviteSchema, Invite } from "@/schemas/invite";
 
 // Get all invites
@@ -31,9 +31,9 @@ export async function GET(req: Request) {
 // Add a new invite
 export async function POST(req: Request) {
   try {
-    const  body = await req.json();
+    const body = await req.json();
     console.log("API request received:", body);
-    
+
     const { email, role, invitedBy, expires } = createInviteSchema.parse(body);
     const inviteId = uuidv4();
     console.log("Creating invite with ID:", inviteId, email, role, invitedBy, expires);

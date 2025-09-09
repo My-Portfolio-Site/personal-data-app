@@ -48,7 +48,7 @@ import { GlobeIcon, RefreshCcwIcon, CopyIcon, Code } from 'lucide-react';
 import { Toaster } from '@/components/ui/sonner';
 import { toast } from 'sonner';
 import { User } from '@/schemas/user';
-import type { WebSearchToolOutput, WebSearchToolUIPart } from '@/lib/ai/tools';
+import type { WebSearchToolOutput, WebSearchToolUIPart } from '@/server/ai/tools';
 import { CodeBlock } from '@/components/ai-elements/code-block';
 
 const availableModels = [

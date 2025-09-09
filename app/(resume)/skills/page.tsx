@@ -1,10 +1,9 @@
 
 import { Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import type { SkillSchemaType, SkillSchemaErrorType } from '@/schemas/skill'
-import { skillSchema } from '@/schemas/skill'
-import { SkillsSection } from './_components/skills-section'
-import { fetchSkills } from './actions'
+import type { SkillSchemaType } from '@/schemas/skill'
+import { SkillsSection } from '@/app/(resume)/skills/_components/skills-section'
+import { fetchSkills } from '@/server/services/skillsService'
 import { PageContent, PageHeader } from '@/components/page-formatter'
 import Link from 'next/link'
 

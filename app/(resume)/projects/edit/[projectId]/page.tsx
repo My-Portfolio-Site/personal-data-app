@@ -10,7 +10,7 @@ import { ArrowLeft } from "lucide-react"
 
 import type { ProjectSchemaType } from "@/schemas/project"
 import { ProjectForm } from "@/app/(resume)/projects/_components/project-form"
-import { fetchProjectById } from '@/app/(resume)/projects/actions'
+import { fetchProjectById } from '@/server/services/projectsService'
 
 import { PageHeader, PageContent } from "@/components/page-formatter";
 

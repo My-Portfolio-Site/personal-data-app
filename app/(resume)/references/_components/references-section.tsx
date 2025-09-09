@@ -5,57 +5,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Edit, Trash2, Users, Mail, Phone, Linkedin, Building } from "lucide-react"
+import { ReferenceSchemaType } from "@/schemas/reference"
 
-const mockReferences = [
-  {
-    id: 1,
-    name: "Sarah Johnson",
-    title: "Engineering Manager",
-    company: "TechCorp Inc.",
-    relationship: "Direct Manager",
-    email: "sarah.johnson@techcorp.com",
-    phone: "+1 (555) 987-6543",
-    linkedin: "https://linkedin.com/in/sarahjohnson",
-    workingPeriod: "2021 - Present",
-    testimonial:
-      "John is an exceptional software engineer who consistently delivers high-quality solutions. His leadership skills and technical expertise make him invaluable to any team.",
-    canContact: true,
-  },
-  {
-    id: 2,
-    name: "Michael Chen",
-    title: "Senior Product Manager",
-    company: "TechCorp Inc.",
-    relationship: "Colleague",
-    email: "michael.chen@techcorp.com",
-    phone: "+1 (555) 876-5432",
-    linkedin: "https://linkedin.com/in/michaelchen",
-    workingPeriod: "2021 - Present",
-    testimonial:
-      "Working with John has been a pleasure. He has excellent communication skills and always delivers projects on time with exceptional quality.",
-    canContact: true,
-  },
-  {
-    id: 3,
-    name: "Emily Rodriguez",
-    title: "CTO",
-    company: "StartupXYZ",
-    relationship: "Former Manager",
-    email: "emily.rodriguez@startupxyz.com",
-    linkedin: "https://linkedin.com/in/emilyrodriguez",
-    workingPeriod: "2019 - 2020",
-    testimonial:
-      "John was instrumental in building our core platform. His full-stack expertise and problem-solving abilities were crucial to our success.",
-    canContact: false,
-    note: "Prefers LinkedIn contact",
-  },
-]
-
-export function ReferencesSection() {
+export function ReferencesSection({  references }: { references: ReferenceSchemaType[] }) {
   return (
     <div className="">
       <div className="space-y-4">
-        {mockReferences.map((ref) => (
+        {references.map((ref) => (
           <Card key={ref.id}>
             <CardHeader>
               <div className="flex items-start justify-between">
@@ -76,7 +32,7 @@ export function ReferencesSection() {
                     </CardTitle>
                     <CardDescription>
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="font-medium">{ref.title}</span>
+                        <span className="font-medium">{ref.designation}</span>
                         <span>•</span>
                         <span className="flex items-center gap-1">
                           <Building className="w-3 h-3" />
@@ -144,20 +100,13 @@ export function ReferencesSection() {
                       {ref.canContact ? "Available for Contact" : "Limited Contact"}
                     </Badge>
                   </div>
-                  {ref.note && <p className="text-xs text-muted-foreground">{ref.note}</p>}
+                  {/* {ref.note && <p className="text-xs text-muted-foreground">{ref.note}</p>} */}
                 </div>
               </div>
             </CardContent>
           </Card>
         ))}
       </div>
-{/* 
-      <Card className="border-dashed">
-        <CardHeader>
-          <CardTitle>Add New Reference</CardTitle>
-          <CardDescription>Click to expand and add a professional reference</CardDescription>
-        </CardHeader>
-      </Card> */}
 
       <Card className="bg-muted/50 mt-6">
         <CardHeader>

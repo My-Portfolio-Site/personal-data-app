@@ -2,136 +2,102 @@
 import { z } from "zod/v4";
 import { revalidatePath } from 'next/cache'
 
-import type { ProfileSchemaType, ProfileSchemaErrorType } from '@/schemas/profile'
-import { ProfileActionState, profileSchema } from '@/schemas/profile'
-import { fetchApi } from '@/lib/helpers'
-import { redirect, RedirectType } from "next/navigation";
+import type { AboutmeSchemaType, AboutmeSchemaErrorType } from '@/schemas/aboutme'
+import { AboutmeActionState, aboutmeSchema } from '@/schemas/aboutme'
+import { fetchApi } from '@/server/utils/fetchWrapper'
 
-//==============================Profile=====================================//
-// Fetch profile
-export async function fetchProfile() {
+//==============================Aboutme=====================================//
+// Fetch Aboutme
+export async function fetchAboutme() {
   try {
-    const response = await fetchApi('/profile', 'GET')
+    const response = await fetchApi('/aboutme', 'GET')
 
     if (!response.ok) {
-      console.log('Action: Failed to fetch profile,', 'status:', response.status)
-      throw new Error('Failed to fetch profile')
+      console.log('Action: Failed to fetch Aboutme,', 'status:', response.status)
+      throw new Error('Failed to fetch Aboutme')
     }
-    const profileData = await response.json() as ProfileSchemaType;
-    return {success: true, data: profileData} as ActionResponse<ProfileSchemaType>;
+    const AboutmeData = await response.json() as AboutmeSchemaType;
+    return { success: true, data: AboutmeData } as ActionResponse<AboutmeSchemaType>;
   } catch (err) {
     return { message: (err as Error).message, success: false } as ActionResponse;
   }
 }
 
-// Update profile
-export async function updateProfile(_prev: ProfileActionState, formData: FormData): Promise<ProfileActionState> {
+// Update Aboutme
+export async function updateAboutme(_prev: AboutmeActionState, formData: FormData): Promise<AboutmeActionState> {
   const data = Object.fromEntries(formData)
-  const validationResult = profileSchema.safeParse(data)
+  const validationResult = aboutmeSchema.safeParse(data)
   if (!validationResult.success) {
     return {
-      data: data as ProfileSchemaType,
-      errors: z.flattenError(validationResult.error) as ProfileSchemaErrorType,
-      message: {success: false, message: 'One or more fields are invalid.'}
+      data: data as AboutmeSchemaType,
+      errors: z.flattenError(validationResult.error) as AboutmeSchemaErrorType,
+      message: { success: false, message: 'One or more fields are invalid.' }
     }
   }
 
   try {
-    const response = await fetchApi('/profile', 'PUT', validationResult.data)
+    const response = await fetchApi('/aboutme', 'PUT', validationResult.data)
 
     if (!response.ok) {
-      console.log('API Response: Failed to update profile,', 'status:', response.status)
+      console.log('API Response: Failed to update Aboutme,', 'status:', response.status)
       return {
-        data: data as ProfileSchemaType,
-        errors: { fieldErrors: [], formErrors: [] } as ProfileSchemaErrorType,
-        message: {success: false, message: `Failed to update profile.`}
-      }
-    }
-
-    // revalidatePath('/aboutme')
-    return {
-      data: data as ProfileSchemaType,
-      errors: { fieldErrors: [], formErrors: [] } as ProfileSchemaErrorType,
-      message: {success: true, message: 'Profile updated successfully.'}
-    }
-  } catch (err) {
-    console.error('Error updating profile:', err)
-    return {
-      data: data as ProfileSchemaType,
-      errors: { fieldErrors: [], formErrors: [] } as ProfileSchemaErrorType,
-      message: {success: false, message: err instanceof Error ? err.message : 'An unexpected error occurred'}
-    }
-  }
-}
-
-// Create profile
-export async function createProfile(_prev: ProfileActionState, formData: FormData): Promise<ProfileActionState> {
-  const data = Object.fromEntries(formData)
-  const validationResult = profileSchema.safeParse(data)
-  if (!validationResult.success) {
-    return {
-      data: data as ProfileSchemaType,
-      errors: z.flattenError(validationResult.error) as ProfileSchemaErrorType,
-      message: {success: false, message: 'One or more fields are invalid.'}
-    }
-  }
-
-  try {
-    const response = await fetchApi('/profile', 'POST', validationResult.data)
-    if (!response.ok) {
-      console.log('API Response: Failed to create profile,', 'status:', response.status)
-      return {
-        data: data as ProfileSchemaType,
-        errors: {fieldErrors: [], formErrors: []} as ProfileSchemaErrorType,
-        message: {success: false, message: `Failed to create profile.`}
+        data: data as AboutmeSchemaType,
+        errors: { fieldErrors: [], formErrors: [] } as AboutmeSchemaErrorType,
+        message: { success: false, message: `Failed to update Aboutme.` }
       }
     }
 
     revalidatePath('/aboutme')
     return {
-      data: data as ProfileSchemaType,
-      errors: {fieldErrors: [], formErrors: []} as ProfileSchemaErrorType,
-      message: {success: true, message: 'Profile created successfully.'}
+      data: data as AboutmeSchemaType,
+      errors: { fieldErrors: [], formErrors: [] } as AboutmeSchemaErrorType,
+      message: { success: true, message: 'Aboutme updated successfully.' }
     }
   } catch (err) {
-    console.error('Error creating profile:', err)
+    console.error('Error updating Aboutme:', err)
     return {
-      data: data as ProfileSchemaType,
-      errors: {fieldErrors: [], formErrors: []} as ProfileSchemaErrorType,
-      message: {success: false, message: err instanceof Error ? err.message : 'An unexpected error occurred'}
+      data: data as AboutmeSchemaType,
+      errors: { fieldErrors: [], formErrors: [] } as AboutmeSchemaErrorType,
+      message: { success: false, message: err instanceof Error ? err.message : 'An unexpected error occurred' }
     }
   }
 }
 
+// Create Aboutme
+export async function createAboutme(_prev: AboutmeActionState, formData: FormData): Promise<AboutmeActionState> {
+  const data = Object.fromEntries(formData)
+  const validationResult = aboutmeSchema.safeParse(data)
+  if (!validationResult.success) {
+    return {
+      data: data as AboutmeSchemaType,
+      errors: z.flattenError(validationResult.error) as AboutmeSchemaErrorType,
+      message: { success: false, message: 'One or more fields are invalid.' }
+    }
+  }
 
-//==============================Profile Stats=====================================//
-// // Update profile stats
-// export async function updateProfileStats(profileStatsData: UpdateProfileStatsData) {
-//   try {
-//     const cookieStore = await cookies()
-//     const cookieHeader = cookieStore.toString()
+  try {
+    const response = await fetchApi('/aboutme', 'POST', validationResult.data)
+    if (!response.ok) {
+      console.log('API Response: Failed to create Aboutme,', 'status:', response.status)
+      return {
+        data: data as AboutmeSchemaType,
+        errors: { fieldErrors: [], formErrors: [] } as AboutmeSchemaErrorType,
+        message: { success: false, message: `Failed to create Aboutme.` }
+      }
+    }
 
-//     const API_BASE_URL = getCurrentUrl(await headers())
-//     const API_PROFILE_URL = API_BASE_URL + '/api/profile/stats'
-
-//     console.log('Updating profile stats...', API_PROFILE_URL)
-
-//     const response = await fetch(API_PROFILE_URL, {
-//       method: 'PATCH',
-//       headers: {
-//         'Content-Type': 'application/json',
-//         'Cookie': cookieHeader
-//       },
-//       body: JSON.stringify(profileStatsData),
-//     })
-
-//     if (!response.ok) {
-//       console.log('Failed to update profile stats,', 'status:', response.status)
-//       throw new Error('Failed to update profile stats')
-//     }
-//     revalidatePath('/aboutme')
-//     return (await response.json()) as ApiResponseMessage;
-//   } catch (err) {
-//     return { error: (err as Error).message } as ApiError;
-//   }
-// }
+    revalidatePath('/aboutme')
+    return {
+      data: data as AboutmeSchemaType,
+      errors: { fieldErrors: [], formErrors: [] } as AboutmeSchemaErrorType,
+      message: { success: true, message: 'Aboutme created successfully.' }
+    }
+  } catch (err) {
+    console.error('Error creating Aboutme:', err)
+    return {
+      data: data as AboutmeSchemaType,
+      errors: { fieldErrors: [], formErrors: [] } as AboutmeSchemaErrorType,
+      message: { success: false, message: err instanceof Error ? err.message : 'An unexpected error occurred' }
+    }
+  }
+}

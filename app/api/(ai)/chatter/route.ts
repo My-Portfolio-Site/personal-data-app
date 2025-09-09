@@ -1,9 +1,9 @@
 import { streamText, UIMessage, convertToModelMessages, stepCountIs } from 'ai';
-import { saveChat, loadChat } from '@/lib/ai/chat-store-db';
+import { saveChat, loadChat } from '@/server/ai/chat-store-db';
 import { ChatSchemaType } from '@/schemas/chat';
 import { generateId } from 'ai';
 // import { groq } from '@ai-sdk/groq';
-import { webSearchTool } from '@/lib/ai/tools';
+import { webSearchTool } from '@/server/ai/tools';
 
 
 // Allow streaming responses up to 30 seconds
@@ -15,7 +15,7 @@ export async function POST(req: Request) {
   // load the previous messages from the server
   const chat = await loadChat(id) as ChatSchemaType
   const previousMessages = JSON.parse(chat.messages) as UIMessage[]
-  const messageCount = chat?.messagesCount/2 || 0;
+  const messageCount = chat?.messagesCount / 2 || 0;
   if (messageCount >= 20) {
     console.log("Maxed Message count:", messageCount);
     return new Response('Chat message limit reached. Please start a new chat.', { status: 403 });

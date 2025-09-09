@@ -2,9 +2,9 @@ import Link from "next/link"
 import { Metadata } from 'next'
 import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
-import { ProfileSchemaType } from "@/schemas/profile"
+import { AboutmeSchemaType } from "@/schemas/aboutme"
 import { AboutmeForm } from "@/app/(resume)/aboutme/_components/aboutme-form"
-import { fetchProfile } from '@/app/(resume)/aboutme/actions'
+import { fetchAboutme } from '@/app/(resume)/aboutme/actions'
 import { PageHeader, PageContent } from "@/components/page-formatter";
 
 export const metadata: Metadata = {
@@ -12,12 +12,12 @@ export const metadata: Metadata = {
   description: 'App and API for personal data management',
 }
 
-export default async function EditProfilePage() {
-  const response = await fetchProfile()
+export default async function EditAboutmePage() {
+  const response = await fetchAboutme()
   if (!response.success) {
-    throw new Error(response.message || 'Failed to fetch profile data')
+    throw new Error(response.message || 'Failed to fetch aboutme data')
   }
-  const profileData = response.data as ProfileSchemaType
+  const aboutmeData = response.data as AboutmeSchemaType
 
   return (
     <section>
@@ -30,7 +30,7 @@ export default async function EditProfilePage() {
           </Link>
         </Button>
         <AboutmeForm
-          initialData={profileData}
+          initialData={aboutmeData}
           mode="edit"
         />
       </PageContent>

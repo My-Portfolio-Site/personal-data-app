@@ -11,10 +11,7 @@ import type { EducationSchemaType } from '@/schemas/education'
 import DeleteEducationButton from '@/app/(resume)/education/_components/delete-education-button'
 import EditEducationButton from '@/app/(resume)/education/_components/edit-education-button'
 
-
-interface EducationSectionProps {
-  education: EducationSchemaType
-}
+// Mock data for testing
 const mockEducation = [
   {
     id: 1,
@@ -59,7 +56,7 @@ const mockEducation = [
 
 export default function EducationSection({
   education
-}: EducationSectionProps) {
+}: {education: EducationSchemaType}) {
 
   const honors = JSON.parse(education.honors || "[]") as string[];
   const coursework = JSON.parse(education.coursework || "[]") as string[];

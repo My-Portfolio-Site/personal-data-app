@@ -6,7 +6,7 @@ export const metadata: Metadata = {
 
 import { PageHeader, PageContent } from "@/components/page-formatter";
 import ChatInterface from '@/app/(ai)/chatter/chat/[chatId]/_components/chat-interface'
-import { loadChat } from '@/lib/ai/chat-store-db';
+import { loadChat } from '@/server/ai/chat-store-db';
 import { getUser } from '@/lib/dal';
 import { User } from '@/schemas/user';
 import { ChatSchemaType } from '@/schemas/chat';
@@ -19,7 +19,7 @@ export default async function Chatter(props: { params: Promise<{ chatId: string 
   const chat = await loadChat(chatId) as ChatSchemaType
 
   const messages = JSON.parse(chat?.messages) as UIMessage[]
-  const messageCount = chat?.messagesCount/2 || 0;
+  const messageCount = chat?.messagesCount / 2 || 0;
   console.log("Message count:", messageCount);
 
 

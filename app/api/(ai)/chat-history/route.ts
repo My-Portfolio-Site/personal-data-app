@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from "uuid";
 import { NextResponse } from "next/server";
 import { z } from "zod/v4";
 
-import { db } from "@/lib/db";
+import { db } from "@/server/db/dbBinding";
 import { getCurrentUserId } from "@/lib/dal";
 import { MessageSchema, MessageSchemaType, ChatSchema, ChatSchemaType } from "@/schemas/chat";
 

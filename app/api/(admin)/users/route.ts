@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { NextResponse } from "next/server";
 
-import { db } from "@/lib/db";
+import { db } from "@/server/db/dbBinding";
 import { User, deleteUserSchema, updateUserFormSchema, addUserSchema } from "@/schemas/user";
 import { getCurrentUserId } from "@/lib/dal";
 
@@ -11,7 +11,7 @@ export async function GET() {
     const query = `SELECT * FROM "users";`;
     const result = await db.prepare(query).all();
     const users = (result.results || []) as User[];
-    return NextResponse.json( users , { status: 200 });
+    return NextResponse.json(users, { status: 200 });
   } catch (error: any) {
     console.error("API: Error fetching users:", error.message);
     return NextResponse.json({ error: "Failed to fetch users" }, { status: 500 });
@@ -66,7 +66,7 @@ export async function PUT(req: Request) {
       console.log("User not found with ID:", id);
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
-    console.log("Updating user:", id,role, userVerified);
+    console.log("Updating user:", id, role, userVerified);
     const query = `
       UPDATE "users" 
       SET
@@ -74,8 +74,8 @@ export async function PUT(req: Request) {
         "userVerified" = COALESCE(?, "userVerified")
       WHERE "id" = ?;
     `;
-    await db.prepare(query).bind( role, userVerified, id).run();
-    return NextResponse.json({ message: "User updated successfully" }, {status: 200});
+    await db.prepare(query).bind(role, userVerified, id).run();
+    return NextResponse.json({ message: "User updated successfully" }, { status: 200 });
   } catch (error: any) {
     console.error("Error updating user:", error.message);
     return NextResponse.json({ error: "Failed to update user" }, { status: 500 });
@@ -87,17 +87,17 @@ export async function POST(req: Request) {
   try {
     const { name, email, role, userVerified, emailVerified, image } = addUserSchema.parse(await req.json());
     console.log("Received data for new user:", { name, email, role, userVerified, emailVerified, image });
-    
+
     if (!email || !name) {
       return NextResponse.json(
         { error: "Email and name are required" },
         { status: 400 }
       );
     }
-    
+
     const checkQuery = `SELECT * FROM "users" WHERE "email" = ?;`;
     const existingUser = await db.prepare(checkQuery).bind(email).first();
-    
+
     if (existingUser) {
       return NextResponse.json(
         { error: "User with this email already exists" },
@@ -110,8 +110,8 @@ export async function POST(req: Request) {
       INSERT INTO "users" ("id", "name", "email", "role", "userVerified", "emailVerified", "image")
       VALUES (?, ?, ?, ?, ?, ?, ?);
     `;
-    
-    await db.prepare(query).bind(userId, name, email, role,  userVerified, emailVerified, image).run();
+
+    await db.prepare(query).bind(userId, name, email, role, userVerified, emailVerified, image).run();
     return NextResponse.json(
       { message: "User created successfully" },
       { status: 201 }

@@ -10,7 +10,7 @@ import { ArrowLeft } from "lucide-react"
 
 import type { ExperienceSchemaType } from "@/schemas/experience"
 import { ExperienceForm } from "@/app/(resume)/experience/_components/experience-form"
-import { fetchExperienceById } from '@/app/(resume)/experience/actions'
+import { fetchExperienceById } from '@/server/services/experiencesService'
 
 import { PageHeader, PageContent } from "@/components/page-formatter";
 

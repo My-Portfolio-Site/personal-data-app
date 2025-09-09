@@ -1,7 +1,7 @@
 import { type NextRequest } from 'next/server'
 
-import { db } from '@/lib/db';
-import { up, down } from '@/lib/migrations';
+import { db } from '@/server/db/dbBinding';
+import { up, down } from '@/migrations/migrations';
 
 export const GET = async (req: NextRequest) => {
   const searchParams = req.nextUrl.searchParams

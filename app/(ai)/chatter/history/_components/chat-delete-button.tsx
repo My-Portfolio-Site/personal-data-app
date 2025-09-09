@@ -1,7 +1,7 @@
 'use client'
 import { Trash2Icon } from 'lucide-react'
 import { Button } from '@/components/ui/button';
-import { deleteChat } from '@/app/(ai)/chatter/history/action';
+import { deleteChat } from '@/app/(ai)/chatter/history/actions';
 import { ConfirmDialog } from '@/components/confirm-dialog';
 import { toast } from 'sonner';
 
@@ -19,7 +19,7 @@ export default function ChatDeleteButton({ chatId, chatTitle }: { chatId: string
   return (
     <ConfirmDialog title='Confirm Deletion' description={`Are you sure you want to delete the chat: "${chatTitle}"?`} onConfirm={handleClick} variant='destructive' confirmText='Delete'>
       <Button size="icon" className="size-8 bg-destructive hover:bg-destructive/90">
-        <Trash2Icon/>
+        <Trash2Icon />
       </Button>
     </ConfirmDialog>
   )

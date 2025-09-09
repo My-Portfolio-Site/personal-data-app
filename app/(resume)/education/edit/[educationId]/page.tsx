@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Education | Personal Data App',
+  title: 'Edit Education | Personal Data App',
   description: 'App and API for personal data management',
 }
 
@@ -11,7 +11,7 @@ import { ArrowLeft } from "lucide-react"
 
 import type { EducationSchemaType } from "@/schemas/education"
 import { EducationForm } from "@/app/(resume)/education/_components/education-form"
-import { fetchEducationById } from '@/app/(resume)/education/actions'
+import { fetchEducationById } from '@/server/services/educationService'
 
 import { PageHeader, PageContent } from "@/components/page-formatter";
 

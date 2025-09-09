@@ -11,7 +11,7 @@ import ExperienceSection from "@/app/(resume)/experience/_components/experience-
 import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
 
-import { fetchExperiences } from '@/app/(resume)/experience/actions'
+import { fetchExperiences } from '@/server/services/experiencesService'
 
 import { PageContent, PageHeader } from '@/components/page-formatter'
 

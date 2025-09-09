@@ -4,61 +4,7 @@ import { revalidatePath } from 'next/cache'
 
 import type { SkillSchemaType, SkillSchemaErrorType } from '@/schemas/skill'
 import { skillSchema, SkillActionState } from '@/schemas/skill'
-import { fetchApi } from '@/lib/helpers'
-
-
-//==============================Skill=====================================//
-// Fetch all skills
-export async function fetchSkills() {
-  try {
-    const response = await fetchApi('/skills', 'GET')
-
-    if (!response.ok) {
-      console.log('Action: Failed to fetch skills,', 'status:', response.status)
-      throw new Error('Failed to fetch skills')
-    }
-    const responseData = await response.json() as SkillSchemaType[];
-    return { success: true, data: responseData } as ActionResponse<SkillSchemaType[]>;
-  } catch (err) {
-    return { message: (err as Error).message, success: false } as ActionResponse;
-  }
-}
-
-// Fetch a skill by ID
-export async function fetchSkillById(id: string) {
-  try {
-    const response = await fetchApi(`/skills?skillId=${id}`, 'GET')
-
-    if (!response.ok) {
-      console.log('Failed to fetch skill,', 'status:', response.status)
-      throw new Error('Failed to fetch skill')
-    }
-
-    const responseData = await response.json() as SkillSchemaType
-    return { success: true, data: responseData } as ActionResponse<SkillSchemaType>;
-  } catch (err) {
-    return { message: (err as Error).message, success: false } as ActionResponse;
-  }
-}
-
-
-// Delete a skill
-
-export async function deleteSkillById(id: string) {
-  try {
-    const response = await fetchApi(`/skills?skillId=${id}`, 'DELETE')
-
-    if (!response.ok) {
-      console.log('Failed to delete skill,', 'status:', response.status)
-      throw new Error('Failed to delete skill')
-    }
-    revalidatePath('/skills')
-    return { message: 'Skill deleted successfully', status: 200, success: true } as ActionResponse
-  } catch (err) {
-    return { message: (err as Error).message, status: 400, success: false } as ActionResponse
-  }
-}
-
+import { fetchApi } from '@/server/utils/fetchWrapper'
 
 // Add a new skill
 export async function addSkill(_prev: SkillActionState, formData: FormData): Promise<SkillActionState> {
@@ -70,7 +16,7 @@ export async function addSkill(_prev: SkillActionState, formData: FormData): Pro
     return {
       data: data as SkillSchemaType,
       errors: z.flattenError(validationResult.error) as SkillSchemaErrorType,
-      message: {success: false, message: 'One or more fields are invalid.'}
+      message: { success: false, message: 'One or more fields are invalid.' }
     }
   }
 
@@ -82,7 +28,7 @@ export async function addSkill(_prev: SkillActionState, formData: FormData): Pro
       return {
         data: data as SkillSchemaType,
         errors: { fieldErrors: [], formErrors: [] } as SkillSchemaErrorType,
-        message: {success: false, message: `Failed to create skill.`}
+        message: { success: false, message: `Failed to create skill.` }
       }
     }
 
@@ -90,18 +36,17 @@ export async function addSkill(_prev: SkillActionState, formData: FormData): Pro
     return {
       data: data as SkillSchemaType,
       errors: { fieldErrors: [], formErrors: [] } as SkillSchemaErrorType,
-      message: {success: true, message: 'Skill created successfully'}
+      message: { success: true, message: 'Skill created successfully' }
     }
   } catch (err) {
     console.error('Error updating skill:', err)
     return {
       data: data as SkillSchemaType,
       errors: { fieldErrors: [], formErrors: [] } as SkillSchemaErrorType,
-      message: {success: false, message: err instanceof Error ? err.message : 'An unexpected error occurred'}
+      message: { success: false, message: err instanceof Error ? err.message : 'An unexpected error occurred' }
     }
   }
 }
-
 
 // Update an existing skill
 export async function updateSkill(_prev: SkillActionState, formData: FormData): Promise<SkillActionState> {
@@ -114,7 +59,7 @@ export async function updateSkill(_prev: SkillActionState, formData: FormData): 
     return {
       data: data as SkillSchemaType,
       errors: z.flattenError(validationResult.error) as SkillSchemaErrorType,
-      message: {success: false, message: 'One or more fields are invalid.'}
+      message: { success: false, message: 'One or more fields are invalid.' }
     }
   }
 
@@ -128,7 +73,7 @@ export async function updateSkill(_prev: SkillActionState, formData: FormData): 
       return {
         data: data as SkillSchemaType,
         errors: { fieldErrors: [], formErrors: [] } as SkillSchemaErrorType,
-        message: {success: false, message: `Failed to update skill.`}
+        message: { success: false, message: `Failed to update skill.` }
       }
     }
 
@@ -136,14 +81,30 @@ export async function updateSkill(_prev: SkillActionState, formData: FormData): 
     return {
       data: data as SkillSchemaType,
       errors: { fieldErrors: [], formErrors: [] } as SkillSchemaErrorType,
-      message: {success: true, message: 'Skill updated successfully.'}
+      message: { success: true, message: 'Skill updated successfully.' }
     }
   } catch (err) {
     console.error('Error creating skill:', err)
     return {
       data: data as SkillSchemaType,
       errors: { fieldErrors: [], formErrors: [] } as SkillSchemaErrorType,
-      message: {success: false, message: err instanceof Error ? err.message : 'An unexpected error occurred'}
+      message: { success: false, message: err instanceof Error ? err.message : 'An unexpected error occurred' }
     }
+  }
+}
+
+// Delete a skill
+export async function deleteSkillById(id: string) {
+  try {
+    const response = await fetchApi(`/skills?skillId=${id}`, 'DELETE')
+
+    if (!response.ok) {
+      console.log('Failed to delete skill,', 'status:', response.status)
+      throw new Error('Failed to delete skill')
+    }
+    revalidatePath('/skills')
+    return { message: 'Skill deleted successfully', status: 200, success: true } as ActionResponse
+  } catch (err) {
+    return { message: (err as Error).message, status: 400, success: false } as ActionResponse
   }
 }

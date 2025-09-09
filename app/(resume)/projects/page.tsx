@@ -11,7 +11,7 @@ import { ProjectSection } from "@/app/(resume)/projects/_components/project-sect
 import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
 
-import { fetchProjects } from '@/app/(resume)/projects/actions'
+import { fetchProjects } from '@/server/services/projectsService'
 
 import { PageContent, PageHeader } from '@/components/page-formatter'
 

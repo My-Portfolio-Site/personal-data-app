@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 import { NextResponse } from "next/server";
 
-import { db } from "@/lib/db";
+import { db } from "@/server/db/dbBinding";
 import { Invite } from "@/schemas/invite";
 import { userSchema, User } from "@/schemas/user";
 import { auth } from "@/lib/auth";
@@ -78,6 +78,6 @@ export async function GET(req: Request) {
 
 
 export async function POST(req: Request) {
-  
+
   return NextResponse.json({ message: "Hello World" });
 }

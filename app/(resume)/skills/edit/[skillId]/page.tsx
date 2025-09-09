@@ -10,7 +10,7 @@ import { ArrowLeft } from "lucide-react"
 
 import type { SkillSchemaType } from "@/schemas/skill"
 import { SkillForm } from "@/app/(resume)/skills/_components/skill-form"
-import { fetchSkillById } from '@/app/(resume)/skills/actions'
+import { fetchSkillById } from '@/server/services/skillsService'
 
 import { PageHeader, PageContent } from "@/components/page-formatter";
 

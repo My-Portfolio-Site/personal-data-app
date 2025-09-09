@@ -2,8 +2,8 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { AboutMeSection } from '@/app/(resume)/aboutme/_components/aboutme-section'
-import { fetchProfile } from '@/app/(resume)/aboutme/actions'
-import { ProfileSchemaType } from '@/schemas/profile'
+import { fetchAboutme } from '@/app/(resume)/aboutme/actions'
+import { AboutmeSchemaType } from '@/schemas/aboutme'
 import { AboutmeForm } from '@/app/(resume)/aboutme/_components/aboutme-form'
 import { Button } from '@/components/ui/button'
 import { Edit } from 'lucide-react'
@@ -18,12 +18,12 @@ export const metadata: Metadata = {
 }
 
 export default async function AboutMe() {
-  const response = await fetchProfile()
+  const response = await fetchAboutme()
   if (!response.success) {
-    // toast.error(response.message || 'Failed to fetch profile data')
-    throw new Error(response.message || 'Failed to fetch profile data')
+    // toast.error(response.message || 'Failed to fetch aboutme data')
+    throw new Error(response.message || 'Failed to fetch aboutme data')
   }
-  const profileData = response.data as ProfileSchemaType
+  const aboutmeData = response.data as AboutmeSchemaType
 
   return (
     <section>
@@ -35,20 +35,20 @@ export default async function AboutMe() {
         </Button>
       </PageHeader>
       <PageContent className='my-2'>
-        {(Object.entries(profileData).length === 0) ? (
+        {(Object.entries(aboutmeData).length === 0) ? (
           <div>
             <Card className='border-dashed text-center mb-2'>
               <CardHeader>
-                <CardTitle>Profile data not found</CardTitle>
+                <CardTitle>Aboutme data not found</CardTitle>
                 <CardDescription>
-                  Enter details below to create your profile
+                  Enter details below to create your aboutme
                 </CardDescription>
               </CardHeader>
             </Card>
-            <AboutmeForm initialData={profileData} mode="add" />
+            <AboutmeForm initialData={aboutmeData} mode="add" />
           </div>
         ) : (
-          <AboutMeSection data={profileData} />
+          <AboutMeSection data={aboutmeData} />
         )}
       </PageContent>
     </section>

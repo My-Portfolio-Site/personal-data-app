@@ -1,8 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { ProfileSchemaType } from '@/schemas/profile'
-import { Button } from '@/components/ui/button'
+import { AboutmeSchemaType } from '@/schemas/aboutme'
 import {
   Card,
   CardContent,
@@ -10,12 +8,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Separator } from '@/components/ui/separator'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
-import { toast } from 'sonner'
+
 import {
   MapPin,
   Mail,
@@ -23,75 +17,11 @@ import {
   Globe,
   Linkedin,
   Github,
-  Edit,
-  Camera,
-  Save,
-  X,
 } from 'lucide-react'
 
 
-// Quick Stats Component
-function QuickStats({
-  yearsOfExperience,
-  projectsDone,
-  totalSkills,
-  certificationCompleted,
-}: {
-  yearsOfExperience: number,
-  projectsDone: number,
-  totalSkills: number,
-  certificationCompleted: number
-}) {
-  return (
-    <div className='grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4'>
-      <Card>
-        <CardContent className='p-3 sm:p-4 text-center'>
-          <div className='text-lg sm:text-xl lg:text-2xl font-bold text-primary'>
-            {yearsOfExperience}+
-          </div>
-          <p className='text-xs sm:text-sm text-muted-foreground leading-tight'>
-            Years Experience
-          </p>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardContent className='p-3 sm:p-4 text-center'>
-          <div className='text-lg sm:text-xl lg:text-2xl font-bold text-primary'>
-            {projectsDone}+
-          </div>
-          <p className='text-xs sm:text-sm text-muted-foreground leading-tight'>
-            Projects Completed
-          </p>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardContent className='p-3 sm:p-4 text-center'>
-          <div className='text-lg sm:text-xl lg:text-2xl font-bold text-primary'>
-            {totalSkills}+
-
-          </div>
-          <p className='text-xs sm:text-sm text-muted-foreground leading-tight'>
-            Total Skills
-          </p>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardContent className='p-3 sm:p-4 text-center'>
-          <div className='text-lg sm:text-xl lg:text-2xl font-bold text-primary'>
-            {certificationCompleted}+
-          </div>
-          <p className='text-xs sm:text-sm text-muted-foreground leading-tight'>
-            Certifications
-          </p>
-        </CardContent>
-      </Card>
-    </div>
-  )
-}
-
 // Main Personal Info Section Component
-export function AboutMeSection({ data }: { data: ProfileSchemaType }) {
-  
+export function AboutMeSection({ data }: { data: AboutmeSchemaType }) {
   return (
     <div className='space-y-4 md:space-y-6'>
       <Card>
@@ -250,6 +180,65 @@ export function AboutMeSection({ data }: { data: ProfileSchemaType }) {
         totalSkills={10}
         certificationCompleted={2}
       />
+    </div>
+  )
+}
+
+// Quick Stats Component
+function QuickStats({
+  yearsOfExperience,
+  projectsDone,
+  totalSkills,
+  certificationCompleted,
+}: {
+  yearsOfExperience: number,
+  projectsDone: number,
+  totalSkills: number,
+  certificationCompleted: number
+}) {
+  return (
+    <div className='grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4'>
+      <Card>
+        <CardContent className='p-3 sm:p-4 text-center'>
+          <div className='text-lg sm:text-xl lg:text-2xl font-bold text-primary'>
+            {yearsOfExperience}+
+          </div>
+          <p className='text-xs sm:text-sm text-muted-foreground leading-tight'>
+            Years Experience
+          </p>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardContent className='p-3 sm:p-4 text-center'>
+          <div className='text-lg sm:text-xl lg:text-2xl font-bold text-primary'>
+            {projectsDone}+
+          </div>
+          <p className='text-xs sm:text-sm text-muted-foreground leading-tight'>
+            Projects Completed
+          </p>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardContent className='p-3 sm:p-4 text-center'>
+          <div className='text-lg sm:text-xl lg:text-2xl font-bold text-primary'>
+            {totalSkills}+
+
+          </div>
+          <p className='text-xs sm:text-sm text-muted-foreground leading-tight'>
+            Total Skills
+          </p>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardContent className='p-3 sm:p-4 text-center'>
+          <div className='text-lg sm:text-xl lg:text-2xl font-bold text-primary'>
+            {certificationCompleted}+
+          </div>
+          <p className='text-xs sm:text-sm text-muted-foreground leading-tight'>
+            Certifications
+          </p>
+        </CardContent>
+      </Card>
     </div>
   )
 }

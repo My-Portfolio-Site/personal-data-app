@@ -7,7 +7,7 @@ import { Plus } from 'lucide-react'
 import Link from 'next/link'
 import { PageHeader, PageContent } from "@/components/page-formatter";
 
-import { fetchEducations } from '@/app/(resume)/education/actions'
+import { fetchEducations } from '@/server/services/educationService'
 
 export const metadata: Metadata = {
   title: 'Education | Personal Data App',

@@ -1,10 +1,9 @@
 "use client"
 
-import { Edit, Code, Palette, Users, Zap, Info, MoreVertical, Trash2 } from "lucide-react"
+import { Info, MoreVertical } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip"
 import { SkillSchemaType } from "@/schemas/skill"
-import { ConfirmDialog } from "@/components/confirm-dialog"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import { deleteSkillById } from "@/app/(resume)/skills/actions"
@@ -21,7 +20,6 @@ interface SkillsProps {
     hover: string
   }
 }
-
 
 const categoryColors = {
   languages: {

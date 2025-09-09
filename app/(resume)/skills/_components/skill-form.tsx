@@ -2,21 +2,19 @@
 
 import { z, ZodOptional, ZodType } from 'zod/v4'
 import { useState, useActionState, useCallback } from "react"
+import { toast } from "sonner"
+import { redirect } from 'next/navigation'
+
+import { Building, Save } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ValidatedInput, ValidatedTextarea } from "@/components/validated-input"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
 import { Separator } from "@/components/ui/separator"
-import { Badge } from "@/components/ui/badge"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Building, X, Plus, Save, Trash2, CalendarIcon } from "lucide-react"
+
 import type { SkillSchemaType, SkillSchemaErrorType } from "@/schemas/skill"
 import { skillSchema } from "@/schemas/skill"
-import { ConfirmDialog } from "@/components/confirm-dialog"
 import { addSkill, updateSkill } from "@/app/(resume)/skills/actions"
-import { toast } from "sonner"
-import { redirect } from 'next/navigation'
 
 import {
   Select,
