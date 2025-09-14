@@ -23,7 +23,7 @@ export async function fetchExperiences() {
 // Fetch an experience by ID
 export async function fetchExperienceById(id: string) {
   try {
-    const response = await fetchApi(`/experience?experienceId=${id}`, 'GET')
+    const response = await fetchApi(`/experience/${id}`, 'GET')
 
     if (!response.ok) {
       console.log('Server: Failed to fetch experience,', 'status:', response.status)

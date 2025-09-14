@@ -17,21 +17,6 @@ export async function GET(req: Request) {
       );
     }
 
-    const url = new URL(req.url);
-    const experienceId = url.searchParams.get("experienceId");
-    if (experienceId) {
-      // Fetch a single
-      console.log(`Fetching experiences for currentUserId: ${currentUserId} and experienceId: ${experienceId}`);
-
-      const query = `SELECT * FROM "experiences" WHERE "id" = ? AND "userId" = ?;`;
-      const result = await db.prepare(query).bind(experienceId, currentUserId).first();
-      if (!result) {
-        return NextResponse.json({ error: "Experience not found" }, { status: 404 });
-      }
-
-      return NextResponse.json(result, { status: 200 });
-    }
-
     // Fetch experiences for the given currentUserId
     console.log(`Fetching experiences for userId: ${currentUserId}`);
     const query = `SELECT * FROM "experiences" WHERE "userId" = ?;`;
@@ -138,38 +123,5 @@ export async function PUT(req: Request) {
   } catch (error: any) {
     console.error("Error updating experience:", error.message);
     return NextResponse.json({ error: "Failed to update experience" }, { status: 500 });
-  }
-}
-
-// Delete an experience by ID
-export async function DELETE(req: Request) {
-  try {
-    const currentUserId = await getCurrentUserId();
-
-    if (!currentUserId) {
-      console.log("Not authenticated.");
-      return NextResponse.json(
-        { error: "Not authenticated." },
-        { status: 400 }
-      );
-    }
-    const url = new URL(req.url);
-    const experienceId = url.searchParams.get("experienceId");
-
-    if (!experienceId) {
-      return NextResponse.json({ error: "Experience ID is required" }, { status: 400 });
-    }
-    const queryFind = `SELECT * FROM "experiences" WHERE "id" = ? AND "userId" = ?;`;
-    const resultFind = await db.prepare(queryFind).bind(experienceId, currentUserId).first();
-    if (!resultFind) {
-      return NextResponse.json({ error: "Experience not found" }, { status: 404 });
-    }
-
-    const query = `DELETE FROM "experiences" WHERE "id" = ? AND "userId" = ?;`;
-    await db.prepare(query).bind(experienceId, currentUserId).run();
-    return NextResponse.json({ message: "Experience deleted successfully" }, { status: 200 });
-  } catch (error: any) {
-    console.error("Error deleting experience:", error.message);
-    return NextResponse.json({ error: "Failed to delete experience" }, { status: 500 });
   }
 }

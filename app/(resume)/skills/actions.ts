@@ -96,7 +96,7 @@ export async function updateSkill(_prev: SkillActionState, formData: FormData): 
 // Delete a skill
 export async function deleteSkillById(id: string) {
   try {
-    const response = await fetchApi(`/skills?skillId=${id}`, 'DELETE')
+    const response = await fetchApi(`/skills/${id}`, 'DELETE')
 
     if (!response.ok) {
       console.log('Failed to delete skill,', 'status:', response.status)

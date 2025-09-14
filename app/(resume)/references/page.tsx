@@ -78,10 +78,7 @@ export default async function ReferencesPage() {
         </Button>
       </PageHeader>
       <PageContent>
-
-
-        {/* Empty State */}
-        {references.length === 0 && (
+        {references.length === 0 ? (
           <Card className='border-dashed text-center'>
             <CardHeader>
               <CardTitle>No Reference Added</CardTitle>
@@ -90,8 +87,9 @@ export default async function ReferencesPage() {
               </CardDescription>
             </CardHeader>
           </Card>
+        ) : (
+          <ReferencesSection references={references} />
         )}
-        <ReferencesSection references={references} />
       </PageContent>
     </section>
   )

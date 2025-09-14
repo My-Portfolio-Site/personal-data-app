@@ -9,28 +9,12 @@ import { educationSchema, EducationSchemaType } from "@/schemas/education";
 export async function GET(req: Request) {
   try {
     const currentUserId = await getCurrentUserId();
-
-    const url = new URL(req.url);
-    const educationId = url.searchParams.get("educationId");
-
     if (!currentUserId) {
       console.log("Not authenticated.");
       return NextResponse.json(
         { error: "Not authenticated." },
         { status: 400 }
       );
-    }
-    if (educationId) {
-      // Fetch a single
-      console.log(`Fetching education for currentUserId: ${currentUserId} and educationId: ${educationId}`);
-
-      const query = `SELECT * FROM "educations" WHERE "id" = ? AND "userId" = ?;`;
-      const result = await db.prepare(query).bind(educationId, currentUserId).first();
-      if (!result) {
-        return NextResponse.json({ error: "Education not found" }, { status: 404 });
-      }
-
-      return NextResponse.json(result, { status: 200 });
     }
 
     // Fetch educations for the given currentUserId
@@ -143,38 +127,5 @@ export async function PUT(req: Request) {
   } catch (error: any) {
     console.error("Error updating education:", error.message);
     return NextResponse.json({ error: "Failed to update education" }, { status: 500 });
-  }
-}
-
-// Delete an education by ID
-export async function DELETE(req: Request) {
-  try {
-    const currentUserId = await getCurrentUserId();
-
-    if (!currentUserId) {
-      console.log("Not authenticated.");
-      return NextResponse.json(
-        { error: "Not authenticated." },
-        { status: 400 }
-      );
-    }
-    const url = new URL(req.url);
-    const educationId = url.searchParams.get("educationId");
-
-    if (!educationId) {
-      return NextResponse.json({ error: "Education ID is required" }, { status: 400 });
-    }
-    const queryFind = `SELECT * FROM "educations" WHERE "id" = ? AND "userId" = ?;`;
-    const resultFind = await db.prepare(queryFind).bind(educationId, currentUserId).first();
-    if (!resultFind) {
-      return NextResponse.json({ error: "Education not found" }, { status: 404 });
-    }
-
-    const query = `DELETE FROM "educations" WHERE "id" = ? AND "userId" = ?;`;
-    await db.prepare(query).bind(educationId, currentUserId).run();
-    return NextResponse.json({ message: "Education deleted successfully" }, { status: 200 });
-  } catch (error: any) {
-    console.error("Error deleting education:", error.message);
-    return NextResponse.json({ error: "Failed to delete education" }, { status: 500 });
   }
 }

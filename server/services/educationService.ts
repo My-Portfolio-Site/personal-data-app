@@ -22,7 +22,7 @@ export async function fetchEducations() {
 
 export async function fetchEducationById(id: string) {
   try {
-    const response = await fetchApi(`/education?educationId=${id}`, 'GET')
+    const response = await fetchApi(`/education/${id}`, 'GET')
 
     if (!response.ok) {
       console.log('Failed to fetch education,', 'status:', response.status)

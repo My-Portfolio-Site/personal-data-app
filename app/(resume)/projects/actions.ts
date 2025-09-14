@@ -96,7 +96,7 @@ export async function updateProject(_prev: ProjectActionState, formData: FormDat
 // Delete a project
 export async function deleteProjectById(id: string) {
   try {
-    const response = await fetchApi(`/projects?projectId=${id}`, 'DELETE')
+    const response = await fetchApi(`/projects/${id}`, 'DELETE')
 
     if (!response.ok) {
       console.log('Failed to delete project,', 'status:', response.status)

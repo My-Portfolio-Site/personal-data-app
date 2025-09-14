@@ -22,7 +22,7 @@ export async function fetchSkills() {
 // Fetch a skill by ID
 export async function fetchSkillById(id: string) {
   try {
-    const response = await fetchApi(`/skills?skillId=${id}`, 'GET')
+    const response = await fetchApi(`/skills/${id}`, 'GET')
 
     if (!response.ok) {
       console.log('Failed to fetch skill,', 'status:', response.status)

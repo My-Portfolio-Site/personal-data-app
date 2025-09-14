@@ -23,7 +23,7 @@ export async function fetchProjects() {
 // Fetch a single project by ID
 export async function fetchProjectById(id: string) {
   try {
-    const response = await fetchApi(`/projects?projectId=${id}`, 'GET')
+    const response = await fetchApi(`/projects/${id}`, 'GET')
 
     if (!response.ok) {
       console.log('Failed to fetch project,', 'status:', response.status)

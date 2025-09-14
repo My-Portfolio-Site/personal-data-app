@@ -96,7 +96,7 @@ export async function updateExperience(_prev: ExperienceActionState, formData: F
 // Delete an experience
 export async function deleteExperienceById(id: string) {
   try {
-    const response = await fetchApi(`/experience/${id}`, 'DELETE')
+    const response = await fetchApi(`/experience?experienceId=${id}`, 'DELETE')
 
     if (!response.ok) {
       console.log('Failed to delete experience,', 'status:', response.status)

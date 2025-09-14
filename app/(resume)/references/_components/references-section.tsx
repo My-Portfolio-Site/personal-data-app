@@ -108,17 +108,24 @@ export function ReferencesSection({  references }: { references: ReferenceSchema
         ))}
       </div>
 
-      <Card className="bg-muted/50 mt-6">
-        <CardHeader>
-          <CardTitle className="text-sm">Reference Guidelines</CardTitle>
-        </CardHeader>
-        <CardContent className="text-xs space-y-2">
-          <p>• Always ask permission before adding someone as a reference</p>
-          <p>• Provide context about the role you're applying for</p>
-          <p>• Keep references updated about your job search progress</p>
-          <p>• Thank your references after they've been contacted</p>
-        </CardContent>
-      </Card>
+      <ReferenceGuidelines />
     </div>
+  )
+}
+
+
+const ReferenceGuidelines = () => {
+  return (
+    <Card className="bg-muted/50 mt-6 gap-3">
+      <CardHeader>
+        <CardTitle className="text-sm">Reference Guidelines</CardTitle>
+      </CardHeader>
+      <CardContent className="text-xs space-y-2">
+        <p>• Always ask permission before adding someone as a reference</p>
+        <p>• Provide context about the role you're applying for</p>
+        <p>• Keep references updated about your job search progress</p>
+        <p>• Thank your references after they've been contacted</p>
+      </CardContent>
+    </Card>
   )
 }
