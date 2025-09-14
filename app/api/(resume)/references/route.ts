@@ -19,7 +19,7 @@ export async function GET(req: Request) {
 
     // Fetch references for the given currentUserId
     console.log(`Fetching reference for userId: ${currentUserId}`);
-    const query = `SELECT * FROM "reference" WHERE "userId" = ?;`;
+    const query = `SELECT * FROM "references" WHERE "userId" = ?;`;
     const { results } = await db.prepare(query).bind(currentUserId).all<ReferenceSchemaType>();
 
     return NextResponse.json(results, { status: 200 });

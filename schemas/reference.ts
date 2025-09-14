@@ -12,7 +12,7 @@ export const referenceSchema = z.object({
   linkedin: z.union([z.url().trim(), z.string().max(0)]).optional(),
   workingPeriod: z.string().nonempty({ error: 'Working Period required.' }),
   testimonial: z.string().nonempty({ error: 'Testimonial required.' }),
-  canContact: z.boolean().default(false),
+  canContact: z.string({ error: 'Please specify if the reference can be contacted.' }),
 });
 
 

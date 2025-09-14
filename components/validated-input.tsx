@@ -4,6 +4,8 @@ import { useState, useCallback } from "react"
 import { Input } from "@/components/ui/input"
 import { Label } from '@/components/ui/label'
 import { Textarea } from "@/components/ui/textarea"
+import { Checkbox } from "@/components/ui/checkbox"
+
 
 import { ZodType, z } from "zod/v4"
 
@@ -119,4 +121,39 @@ const ValidatedTextarea = ({
   )
 }
 
-export { ValidatedInput, ValidatedTextarea }
+
+const ValidatedCheckbox = ({
+  name,
+  label,
+  wasSubmitted,
+  errors,
+  fieldSchema,
+  isRequired = false,
+  defaultValue,
+  ...props
+}: ValidatedInputProps) => {
+  const [checked, setChecked] = useState(defaultValue === "true" || false)
+
+  const handleCheckedChange = (checked: boolean) => {
+    setChecked(checked)
+  }
+
+  return (
+    <div className="space-y-1.5 flex flex-col">
+      <input type="hidden" name={name} value={checked ? "true" : "false"} />
+      <div className="flex items-center space-x-2">
+        <Checkbox
+          id={`${name}_checkbox`}
+          name={`${name}_checkbox`}
+          checked={checked}
+          onCheckedChange={handleCheckedChange}
+          {...props}
+        />
+        <Label htmlFor={name}>{label} {isRequired && <span className="text-red-500">*</span>}</Label>
+      </div>
+    </div>
+  )
+}
+
+
+export { ValidatedInput, ValidatedTextarea, ValidatedCheckbox }

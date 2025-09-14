@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/server/db/dbBinding";
 import { getCurrentUserId } from "@/lib/dal";
 
-// Get all reference
+// Get a reference by ID
 export async function GET(req: Request, { params }: { params: { referenceId: string } }) {
   try {
     const currentUserId = await getCurrentUserId();

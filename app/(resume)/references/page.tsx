@@ -7,6 +7,7 @@ import { ReferencesSection } from './_components/references-section'
 import { PageContent, PageHeader } from '@/components/page-formatter'
 import { ReferenceSchemaType } from '@/schemas/reference'
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { fetchReferences } from '@/server/services/referencesService'
 
 export const metadata: Metadata = {
   title: 'References | Personal Data App',
@@ -59,14 +60,14 @@ const mockReferences = [
 ]
 
 export default async function ReferencesPage() {
-  // const response = await fetchReferences()
-  // if (!response.success) {
-  //   throw new Error(response.message || 'Failed to fetch profile data')
-  // }
+  const response = await fetchReferences()
+  if (!response.success) {
+    throw new Error(response.message || 'Failed to fetch reference data')
+  }
 
-  // const references = response.data as ReferenceSchemaType[]
+  const references = response.data as ReferenceSchemaType[]
 
-  const references = mockReferences as ReferenceSchemaType[]
+  // const references = mockReferences as ReferenceSchemaType[]  
 
   return (
     <section>

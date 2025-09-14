@@ -2,108 +2,109 @@
 import { z } from "zod/v4";
 import { revalidatePath } from 'next/cache'
 
-import type { ExperienceSchemaType, ExperienceSchemaErrorType } from '@/schemas/experience'
-import { experienceSchema, ExperienceActionState } from '@/schemas/experience'
+import type { ReferenceSchemaType, ReferenceSchemaErrorType } from '@/schemas/reference'
+import { referenceSchema, ReferenceActionState } from '@/schemas/reference'
 import { fetchApi } from '@/server/utils/fetchWrapper'
 
-// Add a new experience
-export async function addExperience(_prev: ExperienceActionState, formData: FormData): Promise<ExperienceActionState> {
+// Add a new reference
+export async function addReference(_prev: ReferenceActionState, formData: FormData): Promise<ReferenceActionState> {
   const data = Object.fromEntries(formData)
-  console.log('Action: Adding experience with data:', data);
 
-  const validationResult = experienceSchema.safeParse(data)
+  console.log('Action: Adding reference with data:', data);
+
+  const validationResult = referenceSchema.safeParse(data)
   if (!validationResult.success) {
     return {
-      data: data as ExperienceSchemaType,
-      errors: z.flattenError(validationResult.error) as ExperienceSchemaErrorType,
+      data: data as ReferenceSchemaType,
+      errors: z.flattenError(validationResult.error) as ReferenceSchemaErrorType,
       message: { success: false, message: 'One or more fields are invalid.' }
     }
   }
 
   try {
-    const response = await fetchApi<ExperienceSchemaType>('/experience', 'POST', validationResult.data)
+    const response = await fetchApi<ReferenceSchemaType>('/references', 'POST', validationResult.data)
 
     if (!response.ok) {
-      console.log('API Response: Failed to create experience,', 'status:', response.status)
+      console.log('API Response: Failed to create reference,', 'status:', response.status)
       return {
-        data: data as ExperienceSchemaType,
-        errors: { fieldErrors: [], formErrors: [] } as ExperienceSchemaErrorType,
-        message: { success: false, message: `Failed to create experience.` }
+        data: data as ReferenceSchemaType,
+        errors: { fieldErrors: [], formErrors: [] } as ReferenceSchemaErrorType,
+        message: { success: false, message: `Failed to create reference.` }
       }
     }
 
-    revalidatePath('/experience')
+    revalidatePath('/references')
     return {
-      data: data as ExperienceSchemaType,
-      errors: { fieldErrors: [], formErrors: [] } as ExperienceSchemaErrorType,
-      message: { success: true, message: 'Experience created successfully' }
+      data: data as ReferenceSchemaType,
+      errors: { fieldErrors: [], formErrors: [] } as ReferenceSchemaErrorType,
+      message: { success: true, message: 'Reference created successfully' }
     }
   } catch (err) {
-    console.error('Error creating experience:', err)
+    console.error('Error creating reference:', err)
     return {
-      data: data as ExperienceSchemaType,
-      errors: { fieldErrors: [], formErrors: [] } as ExperienceSchemaErrorType,
+      data: data as ReferenceSchemaType,
+      errors: { fieldErrors: [], formErrors: [] } as ReferenceSchemaErrorType,
       message: { success: false, message: err instanceof Error ? err.message : 'An unexpected error occurred' }
     }
   }
 }
 
-// Update an existing experience
-export async function updateExperience(_prev: ExperienceActionState, formData: FormData): Promise<ExperienceActionState> {
+// Update an existing reference
+export async function updateReference(_prev: ReferenceActionState, formData: FormData): Promise<ReferenceActionState> {
   const data = Object.fromEntries(formData)
 
   console.log("RD:", data)
 
-  const validationResult = experienceSchema.safeParse(data)
+  const validationResult = referenceSchema.safeParse(data)
   if (!validationResult.success) {
     return {
-      data: data as ExperienceSchemaType,
-      errors: z.flattenError(validationResult.error) as ExperienceSchemaErrorType,
+      data: data as ReferenceSchemaType,
+      errors: z.flattenError(validationResult.error) as ReferenceSchemaErrorType,
       message: { success: false, message: 'One or more fields are invalid.' }
     }
   }
 
   try {
-    const response = await fetchApi<ExperienceSchemaType>('/experience', 'PUT', validationResult.data)
+    const response = await fetchApi<ReferenceSchemaType>('/references', 'PUT', validationResult.data)
 
     if (!response.ok) {
-      console.log('Action: Failed to update experience with data:', data);
+      console.log('Action: Failed to update reference with data:', data);
 
-      console.log('API Response: Failed to update experience,', 'status:', response.status)
+      console.log('API Response: Failed to update reference,', 'status:', response.status)
       return {
-        data: data as ExperienceSchemaType,
-        errors: { fieldErrors: [], formErrors: [] } as ExperienceSchemaErrorType,
-        message: { success: false, message: `Failed to update experience.` }
+        data: data as ReferenceSchemaType,
+        errors: { fieldErrors: [], formErrors: [] } as ReferenceSchemaErrorType,
+        message: { success: false, message: `Failed to update reference.` }
       }
     }
 
-    revalidatePath('/experience')
+    revalidatePath('/references')
     return {
-      data: data as ExperienceSchemaType,
-      errors: { fieldErrors: [], formErrors: [] } as ExperienceSchemaErrorType,
-      message: { success: true, message: 'Experience updated successfully.' }
+      data: data as ReferenceSchemaType,
+      errors: { fieldErrors: [], formErrors: [] } as ReferenceSchemaErrorType,
+      message: { success: true, message: 'Reference updated successfully.' }
     }
   } catch (err) {
-    console.error('Error creating experience:', err)
+    console.error('Error creating reference:', err)
     return {
-      data: data as ExperienceSchemaType,
-      errors: { fieldErrors: [], formErrors: [] } as ExperienceSchemaErrorType,
+      data: data as ReferenceSchemaType,
+      errors: { fieldErrors: [], formErrors: [] } as ReferenceSchemaErrorType,
       message: { success: false, message: err instanceof Error ? err.message : 'An unexpected error occurred' }
     }
   }
 }
 
-// Delete an experience
-export async function deleteExperienceById(id: string) {
+// Delete an reference
+export async function deleteReferenceById(id: string) {
   try {
-    const response = await fetchApi(`/experience?experienceId=${id}`, 'DELETE')
+    const response = await fetchApi(`/references/${id}`, 'DELETE')
 
     if (!response.ok) {
-      console.log('Failed to delete experience,', 'status:', response.status)
-      throw new Error('Failed to delete experience')
+      console.log('Failed to delete reference,', 'status:', response.status)
+      throw new Error('Failed to delete reference')
     }
-    revalidatePath('/experience')
-    return { message: 'Experience deleted successfully', status: 200, success: true } as ActionResponse
+    revalidatePath('/references')
+    return { message: 'Reference deleted successfully', status: 200, success: true } as ActionResponse
   } catch (err) {
     return { message: (err as Error).message, status: 400, success: false } as ActionResponse
   }

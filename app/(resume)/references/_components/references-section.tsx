@@ -6,8 +6,10 @@ import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Edit, Trash2, Users, Mail, Phone, Linkedin, Building } from "lucide-react"
 import { ReferenceSchemaType } from "@/schemas/reference"
+import DeleteReferenceButton from "@/app/(resume)/references/_components/delete-reference-button"
+import EditReferenceButton from "@/app/(resume)/references/_components/edit-reference-button"
 
-export function ReferencesSection({  references }: { references: ReferenceSchemaType[] }) {
+export function ReferencesSection({ references }: { references: ReferenceSchemaType[] }) {
   return (
     <div className="">
       <div className="space-y-4">
@@ -17,7 +19,6 @@ export function ReferencesSection({  references }: { references: ReferenceSchema
               <div className="flex items-start justify-between">
                 <div className="flex items-start gap-4">
                   <Avatar className="w-12 h-12">
-                    <AvatarImage src={`/placeholder.svg?height=48&width=48`} />
                     <AvatarFallback>
                       {ref.name
                         .split(" ")
@@ -46,13 +47,12 @@ export function ReferencesSection({  references }: { references: ReferenceSchema
                     </CardDescription>
                   </div>
                 </div>
-                <div className="flex gap-2">
-                  <Button variant="ghost" size="sm">
-                    <Edit className="w-4 h-4" />
-                  </Button>
-                  <Button variant="ghost" size="sm">
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
+                <div className='flex gap-2'>
+                  {ref.id && (
+                    <EditReferenceButton referenceId={ref.id} />)}
+                  {ref.id && (
+                    <DeleteReferenceButton referenceId={ref.id} reference_provider={ref.name} />)
+                  }
                 </div>
               </div>
             </CardHeader>
@@ -96,8 +96,8 @@ export function ReferencesSection({  references }: { references: ReferenceSchema
                 <div className="space-y-2">
                   <h4 className="font-medium text-sm">Contact Preference</h4>
                   <div className="flex items-center gap-2">
-                    <Badge variant={ref.canContact ? "default" : "secondary"}>
-                      {ref.canContact ? "Available for Contact" : "Limited Contact"}
+                    <Badge variant={ref.canContact === "true" ? "default" : "secondary"}>
+                      {ref.canContact === "true" ? "Available for Contact" : "Limited Contact"}
                     </Badge>
                   </div>
                   {/* {ref.note && <p className="text-xs text-muted-foreground">{ref.note}</p>} */}
