@@ -5,8 +5,12 @@ import { db } from "@/server/db/dbBinding";
 import { getCurrentUserId } from "@/lib/dal";
 import { experienceSchema, ExperienceSchemaType } from "@/schemas/experience";
 
+interface Context {
+  params: Promise<{ experienceId: string }>;
+}
+
 // Get all experiences
-export async function GET(req: Request, { params }: { params: { experienceId: string } }) {
+export async function GET(req: Request, context: Context) {
   try {
     const currentUserId = await getCurrentUserId();
     if (!currentUserId) {
@@ -16,6 +20,8 @@ export async function GET(req: Request, { params }: { params: { experienceId: st
         { status: 400 }
       );
     }
+
+    const params = await context.params;
 
     const experienceId = params.experienceId;
     if (!experienceId) {
@@ -38,7 +44,7 @@ export async function GET(req: Request, { params }: { params: { experienceId: st
 }
 
 // Delete an experience by ID
-export async function DELETE(req: Request, {params}: {params: {experienceId: string}}) {
+export async function DELETE(req: Request, context: Context) {
   try {
     const currentUserId = await getCurrentUserId();
 
@@ -49,7 +55,7 @@ export async function DELETE(req: Request, {params}: {params: {experienceId: str
         { status: 400 }
       );
     }
-
+    const params = await context.params;
     const experienceId = params.experienceId;
 
     if (!experienceId) {

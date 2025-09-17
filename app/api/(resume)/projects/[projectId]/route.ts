@@ -5,8 +5,12 @@ import { db } from "@/server/db/dbBinding";
 import { getCurrentUserId } from "@/lib/dal";
 import { projectSchema, ProjectSchemaType } from "@/schemas/project";
 
+interface Context {
+  params: Promise<{ projectId: string }>;
+}
+
 // Get a project by ID
-export async function GET(req: Request, { params }: { params: { projectId: string } }) {
+export async function GET(req: Request, context: Context) {
   try {
     const currentUserId = await getCurrentUserId();
     if (!currentUserId) {
@@ -17,6 +21,7 @@ export async function GET(req: Request, { params }: { params: { projectId: strin
       );
     }
 
+    const params = await context.params;
     const projectId = params.projectId;
     if (!projectId) {
       return NextResponse.json({ error: "Project ID is required" }, { status: 400 });
@@ -39,7 +44,7 @@ export async function GET(req: Request, { params }: { params: { projectId: strin
 }
 
 // Delete a project by ID
-export async function DELETE(req: Request, { params }: { params: { projectId: string } }) {
+export async function DELETE(req: Request, context: Context) {
   try {
     const currentUserId = await getCurrentUserId();
 
@@ -50,6 +55,8 @@ export async function DELETE(req: Request, { params }: { params: { projectId: st
         { status: 400 }
       );
     }
+
+    const params = await context.params;
     const projectId = params.projectId;
 
     if (!projectId) {

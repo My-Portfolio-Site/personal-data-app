@@ -5,8 +5,12 @@ import { db } from "@/server/db/dbBinding";
 import { getCurrentUserId } from "@/lib/dal";
 import { skillSchema, SkillSchemaType } from "@/schemas/skill";
 
+interface Context {
+  params: Promise<{ skillId: string }>;
+}
+
 // Get a skill by ID
-export async function GET(req: Request, { params }: { params: { skillId?: string } }) {
+export async function GET(req: Request, contect: Context) {
   try {
     const currentUserId = await getCurrentUserId();
     if (!currentUserId) {
@@ -17,6 +21,7 @@ export async function GET(req: Request, { params }: { params: { skillId?: string
       );
     }
 
+    const params = await contect.params
     const skillId = params.skillId;
 
     console.log(`Fetching skills for currentUserId: ${currentUserId} and skillId: ${skillId}`);
@@ -36,7 +41,7 @@ export async function GET(req: Request, { params }: { params: { skillId?: string
 }
 
 // Delete a skill by ID
-export async function DELETE(req: Request, { params }: { params: { skillId?: string } }) {
+export async function DELETE(req: Request, contect: Context) {
   try {
     const currentUserId = await getCurrentUserId();
 
@@ -47,6 +52,8 @@ export async function DELETE(req: Request, { params }: { params: { skillId?: str
         { status: 400 }
       );
     }
+
+    const params = await contect.params
     const skillId = params.skillId;
 
     if (!skillId) {

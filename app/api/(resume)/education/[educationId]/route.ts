@@ -5,11 +5,15 @@ import { db } from "@/server/db/dbBinding";
 import { getCurrentUserId } from "@/lib/dal";
 import { educationSchema, EducationSchemaType } from "@/schemas/education";
 
+interface Context {
+  params: Promise<{ educationId: string }>;
+}
 // Get a education by ID
-export async function GET(req: Request, { params }: { params: { educationId: string } }) {
+export async function GET(req: Request, context: Context) {
   try {
     const currentUserId = await getCurrentUserId();
 
+    const params = await context.params;
     const educationId = params.educationId;
 
     if (!currentUserId) {
@@ -37,7 +41,7 @@ export async function GET(req: Request, { params }: { params: { educationId: str
 
 
 // Delete an education by ID
-export async function DELETE(req: Request, { params }: { params: { educationId: string } }) {
+export async function DELETE(req: Request, context: Context) {
   try {
     const currentUserId = await getCurrentUserId();
 
@@ -48,6 +52,7 @@ export async function DELETE(req: Request, { params }: { params: { educationId: 
         { status: 400 }
       );
     }
+    const params = await context.params;
     const educationId = params.educationId;
 
     if (!educationId) {

@@ -3,8 +3,12 @@ import { NextResponse } from "next/server";
 import { db } from "@/server/db/dbBinding";
 import { getCurrentUserId } from "@/lib/dal";
 
+interface Context {
+  params: Promise<{ referenceId: string }>;
+}
+
 // Get a reference by ID
-export async function GET(req: Request, { params }: { params: { referenceId: string } }) {
+export async function GET(req: Request, contect: Context) {
   try {
     const currentUserId = await getCurrentUserId();
     if (!currentUserId) {
@@ -15,6 +19,7 @@ export async function GET(req: Request, { params }: { params: { referenceId: str
       );
     }
 
+    const params = await contect.params;
     const referenceId = params.referenceId;
     if (!referenceId) {
       return NextResponse.json({ error: "References ID is required" }, { status: 400 });
@@ -37,7 +42,7 @@ export async function GET(req: Request, { params }: { params: { referenceId: str
 
 
 // Delete an reference by ID
-export async function DELETE(req: Request, { params }: { params: { referenceId: string } }) {
+export async function DELETE(req: Request,context: Context) {
   try {
     const currentUserId = await getCurrentUserId();
 
@@ -48,6 +53,8 @@ export async function DELETE(req: Request, { params }: { params: { referenceId: 
         { status: 400 }
       );
     }
+
+    const params = await context.params
     const referenceId = params.referenceId;
 
     if (!referenceId) {
