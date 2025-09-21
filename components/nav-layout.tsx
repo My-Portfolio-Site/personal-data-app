@@ -312,8 +312,8 @@ const ResumeNavSection = ({ currentPath }: { currentPath: string }) => {
           url: "/projects",
         },
         {
-          title: 'Certifications',
-          url: '/certifications',
+          title: 'Certification',
+          url: '/certification',
         }
       ]
     },

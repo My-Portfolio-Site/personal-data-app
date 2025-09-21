@@ -220,3 +220,24 @@ CREATE TABLE IF NOT EXISTS "references" (
 CREATE INDEX idx_references_userId ON "references" (userId);
 CREATE INDEX idx_references_id ON "references" (id);
 CREATE INDEX idx_references_userId_id ON "references" (userId, id);
+
+
+DROP TABLE IF EXISTS "certifications";
+CREATE TABLE IF NOT EXISTS "certifications" (
+    "id" text NOT NULL,
+    "userId" text NOT NULL,
+    "title" text NOT NULL,
+    "issuer" text NOT NULL,
+    "issueDate" date NOT NULL,
+    "expiryDate" date,
+    "credentialId" text,
+    "credentialUrl" text,
+    "status" text CHECK (status IN ('Active', 'Expired')) NOT NULL,
+    "description" text NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (userId) REFERENCES "users" (id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_certifications_userId ON "certifications" (userId);
+CREATE INDEX idx_certifications_id ON "certifications" (id);
+CREATE INDEX idx_certifications_userId_id ON "certifications" (userId, id);

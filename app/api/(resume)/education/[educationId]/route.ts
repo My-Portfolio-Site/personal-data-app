@@ -1,9 +1,7 @@
-import { v4 as uuidv4 } from "uuid";
 import { NextResponse } from "next/server";
 
 import { db } from "@/server/db/dbBinding";
 import { getCurrentUserId } from "@/lib/dal";
-import { educationSchema, EducationSchemaType } from "@/schemas/education";
 
 interface Context {
   params: Promise<{ educationId: string }>;
